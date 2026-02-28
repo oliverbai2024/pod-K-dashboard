@@ -371,7 +371,17 @@
     @media (prefers-reduced-motion: reduce){
       .tab, .view, .btn, .toast{ transition: none !important; }
       .tab:hover, .btn:hover{ transform:none !important; }
-    }
+ 
+  .btn.disabled,
+  .btn[aria-disabled="true"]{
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+    transform: none;
+  }
+
+</style>
   </style>
 </head>
 
@@ -618,47 +628,60 @@
     }
 
     function cardHtml(m, idx, nextIdx) {
-      const now = Date.now();
-      const start = new Date(m.startUtc).getTime();
-      const passed = now >= start;
-      const gcal = makeGoogleCalendarUrl(m);
+  const now = Date.now();
+  const start = new Date(m.startUtc).getTime();
+  const passed = now >= start;
+  const gcal = makeGoogleCalendarUrl(m);
 
-      const badge = (idx === nextIdx && !passed) ? "Next up" : (passed ? "Passed" : "Upcoming");
-      const countdownBlock = passed
-        ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
-        : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+  const badge = (idx === nextIdx && !passed) ? "Next up" : (passed ? "Passed" : "Upcoming");
 
-      const notesBtn = passed
-        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
-        : "";
+  const countdownBlock = passed
+    ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
+    : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
 
-      return `
-        <article class="card ${idx === nextIdx ? "next" : ""}">
-          <div class="card-top">
-            <p class="title">${escapeHtml(m.title)}</p>
-            <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
-          </div>
+  const notesBtn = passed
+    ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
+    : "";
 
-          <div class="times">
-            <div class="row">
-              <div class="label">GMT time</div>
-              <div class="value">${formatUtcLabel(m.startUtc)}</div>
-            </div>
-            <div class="row">
-              <div class="label">Your local time</div>
-              <div class="value">${formatLocalLabel(m.startUtc)}</div>
-            </div>
-          </div>
+  // -------- Disable buttons if missing --------
+  const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
+  const gcalBtn = hasCalendar
+    ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>`
+    : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not set">Add to Google Calendar</span>`;
 
-          ${countdownBlock}
+  const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim());
+  const meetBtn = hasMeetLink
+    ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
+    : `<span class="btn disabled" aria-disabled="true" title="Meeting link not set">Open meeting link</span>`;
 
-          <div class="actions">
-            <a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
-            <a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>
-            ${notesBtn}
-          </div>
-        </article>
-      `;
+  return `
+    <article class="card ${idx === nextIdx ? "next" : ""}">
+      <div class="card-top">
+        <p class="title">${escapeHtml(m.title)}</p>
+        <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
+      </div>
+
+      <div class="times">
+        <div class="row">
+          <div class="label">GMT time</div>
+          <div class="value">${formatUtcLabel(m.startUtc)}</div>
+        </div>
+        <div class="row">
+          <div class="label">Your local time</div>
+          <div class="value">${formatLocalLabel(m.startUtc)}</div>
+        </div>
+      </div>
+
+      ${countdownBlock}
+
+      <div class="actions">
+        ${gcalBtn}
+        ${meetBtn}
+        ${notesBtn}
+      </div>
+    </article>
+  `;
+}
     }
 
     function renderMeetings() {
