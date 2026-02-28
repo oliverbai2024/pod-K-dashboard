@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Project Imperium – Pod K Meeting Dashboard</title>
+
   <style>
     :root{
       --bg:#ffffff;
@@ -242,6 +243,16 @@
       font-weight: 600;
     }
 
+    /* Disabled button style (for missing links/details) */
+    .btn.disabled,
+    .btn[aria-disabled="true"]{
+      opacity: .45;
+      cursor: not-allowed;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+
     /* Archive */
     .panel{
       border: 1px solid var(--border);
@@ -371,17 +382,7 @@
     @media (prefers-reduced-motion: reduce){
       .tab, .view, .btn, .toast{ transition: none !important; }
       .tab:hover, .btn:hover{ transform:none !important; }
- 
-  .btn.disabled,
-  .btn[aria-disabled="true"]{
-    opacity: .45;
-    cursor: not-allowed;
-    pointer-events: none;
-    box-shadow: none;
-    transform: none;
-  }
-
-</style>
+    }
   </style>
 </head>
 
@@ -399,7 +400,6 @@
 
   <div class="wrap">
     <div class="views">
-      <!-- Dashboard -->
       <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="header">
           <div>
@@ -414,14 +414,11 @@
         <div class="grid" id="cards"></div>
       </section>
 
-      <!-- Archive -->
       <section class="view hidden" id="view-archive" role="tabpanel" aria-labelledby="tab-archive">
         <div class="header">
           <div>
             <h1>Meeting Notes Archive</h1>
-            <div class="sub">
-              Shared archive. Minutes are uploaded by an admin and visible to everyone.
-            </div>
+            <div class="sub">Shared archive. Minutes are uploaded by an admin and visible to everyone.</div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn" id="refresh-archive">Refresh</button>
@@ -430,15 +427,12 @@
 
         <div class="divider"></div>
 
-        <!-- Filter -->
         <div class="panel">
           <div class="form-grid" style="margin-top:0;">
             <div>
               <label for="filter-meeting">Filter by meeting</label>
               <select id="filter-meeting"></select>
-              <div class="sub" style="margin-top:8px;">
-                Tip: the dashboard ‘View notes’ button sets this filter automatically.
-              </div>
+              <div class="sub" style="margin-top:8px;">Tip: the dashboard ‘View notes’ button sets this filter automatically.</div>
             </div>
             <div>
               <label>&nbsp;</label>
@@ -450,7 +444,6 @@
           </div>
         </div>
 
-        <!-- Admin upload (hidden unless ?admin=1) -->
         <div class="panel" id="admin-panel" style="margin-top:12px; display:none;">
           <div class="item-top">
             <div>
@@ -470,9 +463,7 @@
                 <button class="btn btn-primary" id="save-token">Save token</button>
                 <button class="btn" id="clear-token">Clear token</button>
               </div>
-              <div class="sub" style="margin-top:8px;">
-                Token is saved only for this browser session.
-              </div>
+              <div class="sub" style="margin-top:8px;">Token is saved only for this browser session.</div>
             </div>
 
             <div>
@@ -512,13 +503,15 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    // Meetings (UTC). Edit meetLink values as needed.
     const meetings = [
-      { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"https://example.com/meeting-1" },
-      { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"ttps://meet.google.com/mbk-awyj-hwd" },
-      { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"https://example.com/meeting-3" }
+      { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
+      { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
+      { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"" }
     ];
 
     const pad2 = (n) => String(n).padStart(2, "0");
+
     function escapeHtml(str) {
       return String(str)
         .replaceAll("&", "&amp;")
@@ -534,14 +527,17 @@
       const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
       return `${date}, ${time} (GMT)`;
     }
+
     function formatLocalLabel(isoZ) {
       const d = new Date(isoZ);
       const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
       const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
       const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" })
-        .formatToParts(d).find(p => p.type === "timeZoneName")?.value;
+        .formatToParts(d)
+        .find(p => p.type === "timeZoneName")?.value;
       return `${date}, ${time} (${tzAbbr || "local"})`;
     }
+
     function msToParts(ms) {
       const total = Math.max(0, Math.floor(ms / 1000));
       const days = Math.floor(total / 86400);
@@ -551,6 +547,7 @@
       return { days, hours, mins, secs };
     }
 
+    // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
       return (
@@ -564,15 +561,17 @@
         "Z"
       );
     }
+
     function makeGoogleCalendarUrl({ title, startUtc, endUtc, meetLink }) {
       const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
       const dates = `${toGCalUtc(startUtc)}/${toGCalUtc(endUtc)}`;
-      const details = `Meeting link: ${meetLink}`;
-      const location = meetLink;
+      const details = meetLink ? `Meeting link: ${meetLink}` : "";
+      const location = meetLink || "";
       const params = new URLSearchParams({ text: title, dates, details, location });
       return `${base}&${params.toString()}`;
     }
 
+    // Toast
     let toastTimer = null;
     function toast(msg) {
       const el = document.getElementById("toast");
@@ -582,10 +581,12 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
+    // Tabs
     const tabDashboard = document.getElementById("tab-dashboard");
     const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
     const viewArchive = document.getElementById("view-archive");
+
     function show(which) {
       const isDash = which === "dashboard";
       tabDashboard.setAttribute("aria-selected", String(isDash));
@@ -593,6 +594,7 @@
       viewDashboard.classList.toggle("hidden", !isDash);
       viewArchive.classList.toggle("hidden", isDash);
     }
+
     tabDashboard.addEventListener("click", () => show("dashboard"));
     tabArchive.addEventListener("click", () => show("archive"));
 
@@ -627,61 +629,59 @@
       return "badge";
     }
 
+    // FULL cardHtml with disabled buttons
     function cardHtml(m, idx, nextIdx) {
-  const now = Date.now();
-  const start = new Date(m.startUtc).getTime();
-  const passed = now >= start;
-  const gcal = makeGoogleCalendarUrl(m);
+      const now = Date.now();
+      const start = new Date(m.startUtc).getTime();
+      const passed = now >= start;
 
-  const badge = (idx === nextIdx && !passed) ? "Next up" : (passed ? "Passed" : "Upcoming");
+      const badge = (idx === nextIdx && !passed) ? "Next up" : (passed ? "Passed" : "Upcoming");
+      const countdownBlock = passed
+        ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
+        : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
 
-  const countdownBlock = passed
-    ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
-    : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+      const notesBtn = passed
+        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
+        : "";
 
-  const notesBtn = passed
-    ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
-    : "";
+      const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
+      const gcal = hasCalendar ? makeGoogleCalendarUrl(m) : "";
+      const gcalBtn = hasCalendar
+        ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>`
+        : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not set">Add to Google Calendar</span>`;
 
-  // -------- Disable buttons if missing --------
-  const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
-  const gcalBtn = hasCalendar
-    ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>`
-    : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not set">Add to Google Calendar</span>`;
+      const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim());
+      const meetBtn = hasMeetLink
+        ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
+        : `<span class="btn disabled" aria-disabled="true" title="Meeting link not set">Open meeting link</span>`;
 
-  const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim());
-  const meetBtn = hasMeetLink
-    ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
-    : `<span class="btn disabled" aria-disabled="true" title="Meeting link not set">Open meeting link</span>`;
+      return `
+        <article class="card ${idx === nextIdx ? "next" : ""}">
+          <div class="card-top">
+            <p class="title">${escapeHtml(m.title || "Meeting")}</p>
+            <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
+          </div>
 
-  return `
-    <article class="card ${idx === nextIdx ? "next" : ""}">
-      <div class="card-top">
-        <p class="title">${escapeHtml(m.title)}</p>
-        <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
-      </div>
+          <div class="times">
+            <div class="row">
+              <div class="label">GMT time</div>
+              <div class="value">${formatUtcLabel(m.startUtc)}</div>
+            </div>
+            <div class="row">
+              <div class="label">Your local time</div>
+              <div class="value">${formatLocalLabel(m.startUtc)}</div>
+            </div>
+          </div>
 
-      <div class="times">
-        <div class="row">
-          <div class="label">GMT time</div>
-          <div class="value">${formatUtcLabel(m.startUtc)}</div>
-        </div>
-        <div class="row">
-          <div class="label">Your local time</div>
-          <div class="value">${formatLocalLabel(m.startUtc)}</div>
-        </div>
-      </div>
+          ${countdownBlock}
 
-      ${countdownBlock}
-
-      <div class="actions">
-        ${gcalBtn}
-        ${meetBtn}
-        ${notesBtn}
-      </div>
-    </article>
-  `;
-}
+          <div class="actions">
+            ${gcalBtn}
+            ${meetBtn}
+            ${notesBtn}
+          </div>
+        </article>
+      `;
     }
 
     function renderMeetings() {
@@ -722,6 +722,7 @@
       });
     }
 
+    // Archive API
     async function fetchNotes(meetingId = "") {
       const url = meetingId ? `/api/notes?meetingId=${encodeURIComponent(meetingId)}` : `/api/notes`;
       const res = await fetch(url, { method: "GET" });
@@ -757,8 +758,8 @@
 
         list.innerHTML = notes.map(n => {
           const title = (n.title && String(n.title).trim()) ? String(n.title).trim() : "Meeting minutes";
-          const overview = (n.overview && String(n.overview).trim()) ? String(n.overview).trim() : "—";
-          const createdAt = n.createdAt ? formatWhen(n.createdAt) : "—";
+          const overview = (n.overview && String(n.overview).trim()) ? String(n.overview).trim() : "–";
+          const createdAt = n.createdAt ? formatWhen(n.createdAt) : "–";
           const pdfName = n.pdfName ? String(n.pdfName) : "minutes.pdf";
 
           return `
@@ -775,9 +776,7 @@
                 <span class="pill">${escapeHtml(n.meetingId || "")}</span>
               </div>
 
-              <div class="item-meta" style="margin-top:10px;">
-                ${escapeHtml(overview)}
-              </div>
+              <div class="item-meta" style="margin-top:10px;">${escapeHtml(overview)}</div>
 
               <div class="item-actions">
                 <a class="btn btn-primary" href="/api/notes-download?id=${encodeURIComponent(n.id)}" target="_blank" rel="noopener noreferrer">Open PDF</a>
@@ -798,10 +797,12 @@
       }
     }
 
+    // Filter persistence
     const FILTER_KEY = "imperium_archive_filter_v1";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
+    // Admin upload
     const TOKEN_KEY = "imperium_admin_token_v1";
     function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }
     function setToken(t) { if (t) sessionStorage.setItem(TOKEN_KEY, t); else sessionStorage.removeItem(TOKEN_KEY); updateAdminStatus(); }
@@ -863,6 +864,7 @@
       rememberFilter(meetingId);
       await loadArchive(meetingId);
     }
+
     async function clearFilter() {
       document.getElementById("filter-meeting").value = "";
       rememberFilter("");
@@ -903,6 +905,7 @@
       document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
 
       updateAdminStatus();
+
       const saveTokenBtn = document.getElementById("save-token");
       const clearTokenBtn = document.getElementById("clear-token");
       const uploadBtn = document.getElementById("upload-note");
