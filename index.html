@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Meeting Dashboard</title>
+  <style>
+    :root{
+      --bg: #ffffff;
+      --ink: #1f1235;
+      --muted: rgba(31, 18, 53, .72);
+      --border: rgba(31, 18, 53, .12);
+      --purple: #b79cff;     /* pastel purple */
+      --purple2:#e9e1ff;     /* lighter pastel */
+      --shadow: 0 12px 30px rgba(31,18,53,.08);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg), #faf7ff);
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 22px 16px 56px; }
+
+    /* Top bar */
+    .topbar{
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.78);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+    .topbar-inner{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--purple);
+      box-shadow: 0 0 0 6px rgba(183,156,255,.22);
+    }
+
+    .tabs{
+      display:flex;
+      gap: 8px;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(233,225,255,.35);
+      box-shadow: 0 8px 22px rgba(31,18,53,.06);
+    }
+    .tab{
+      appearance:none;
+      border:0;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight: 650;
+      transition: transform .18s ease, background .18s ease, color .18s ease;
+      will-change: transform;
+    }
+    .tab:hover{ transform: translateY(-1px); }
+    .tab[aria-selected="true"]{
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(31,18,53,.10);
+    }
+
+    /* Views + animation */
+    .views{
+      position: relative;
+      margin-top: 22px;
+    }
+    .view{
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      transform-origin: top center;
+      transition: opacity .22s ease, transform .22s ease, filter .22s ease;
+    }
+    .view.hidden{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      transform: translateY(10px) scale(.985);
+      filter: blur(2px);
+      pointer-events:none;
+    }
+
+    /* Cards */
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    h1{ font-size: 20px; margin: 0; }
+    .sub{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    @media (max-width: 860px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff, rgba(233,225,255,.18));
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(31,18,53,.06);
+    }
+    .card-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .badge{
+      font-size: 12px;
+      color: var(--ink);
+      background: rgba(183,156,255,.25);
+      border: 1px solid rgba(183,156,255,.35);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .title{
+      font-weight: 760;
+      font-size: 15px;
+      margin: 0;
+    }
+    .times{
+      margin-top: 10px;
+      display:grid;
+      gap: 8px;
+    }
+    .row{
+      display:flex; justify-content:space-between; gap: 10px;
+      padding: 10px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.85);
+    }
+    .label{ font-size: 12px; color: var(--muted); }
+    .value{ font-size: 13px; font-weight: 700; }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      text-decoration:none;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 700;
+      font-size: 13px;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      will-change: transform;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn-primary{
+      background: var(--purple);
+      color: #1a0f2e;
+      box-shadow: 0 12px 24px rgba(183,156,255,.35);
+      border: 1px solid rgba(183,156,255,.55);
+    }
+    .btn-ghost{
+      background: rgba(233,225,255,.45);
+      color: var(--ink);
+      border: 1px solid rgba(183,156,255,.35);
+    }
+
+    /* Notes */
+    textarea{
+      width: 100%;
+      min-height: 260px;
+      resize: vertical;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      outline: none;
+      font-size: 14px;
+      line-height: 1.5;
+      background: rgba(255,255,255,.9);
+    }
+    textarea:focus{
+      border-color: rgba(183,156,255,.9);
+      box-shadow: 0 0 0 6px rgba(183,156,255,.20);
+    }
+    .note-hint{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    code.inline{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background: rgba(233,225,255,.55);
+      border: 1px solid rgba(183,156,255,.35);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Mercor Meetings</span>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Dashboard tabs">
+        <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
+        <button class="tab" id="tab-notes" role="tab" aria-selected="false" aria-controls="view-notes">Meeting Notes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="views">
+      <!-- Dashboard view -->
+      <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+        <div class="header">
+          <div>
+            <h1>Meeting Dashboard</h1>
+            <div class="sub" id="tz-line"></div>
+          </div>
+        </div>
+
+        <div class="grid" id="cards"></div>
+      </section>
+
+      <!-- Notes view -->
+      <section class="view hidden" id="view-notes" role="tabpanel" aria-labelledby="tab-notes">
+        <div class="header">
+          <div>
+            <h1>Meeting Notes</h1>
+            <div class="sub">Notes are saved locally in your browser.</div>
+          </div>
+          <a class="btn btn-ghost" href="#" id="clear-notes">Clear</a>
+        </div>
+
+        <textarea id="notes" placeholder="Write notes here…"></textarea>
+        <div class="note-hint">
+          Uses <code class="inline">localStorage</code>. If you want shared notes, you’ll need a backend (e.g. Cloudflare D1 + API).
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ------------- Data (UTC) -------------
+    // For accuracy across timezones: store UTC start/end as ISO strings with 'Z'.
+    // You said: 27 Feb 5pm, 2 Mar 4pm, 4 Mar 5pm (GMT).
+    // Assuming these are GMT/UTC times. Adjust years if needed.
+    const meetings = [
+      {
+        id: "m1",
+        title: "Meeting – 27 Feb",
+        startUtc: "2026-02-27T17:00:00Z",
+        endUtc:   "2026-02-27T17:30:00Z",
+        meetLink: "https://example.com/meeting-1" // replace
+      },
+      {
+        id: "m2",
+        title: "Meeting – 2 Mar",
+        startUtc: "2026-03-02T16:00:00Z",
+        endUtc:   "2026-03-02T16:30:00Z",
+        meetLink: "https://example.com/meeting-2" // replace
+      },
+      {
+        id: "m3",
+        title: "Meeting – 4 Mar",
+        startUtc: "2026-03-04T17:00:00Z",
+        endUtc:   "2026-03-04T17:30:00Z",
+        meetLink: "https://example.com/meeting-3" // replace
+      }
+    ];
+
+    // ------------- Helpers -------------
+    const pad2 = (n) => String(n).padStart(2, "0");
+
+    function formatUtcLabel(isoZ) {
+      const d = new Date(isoZ);
+      // Show as '27 Feb 2026, 17:00 (GMT)'
+      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" }).format(d);
+      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
+      return `${date}, ${time} (GMT)`;
+    }
+
+    function formatLocalLabel(isoZ) {
+      const d = new Date(isoZ);
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local time";
+      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
+      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
+      // Also show timezone abbreviation if available
+      const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" }).formatToParts(d).find(p => p.type === "timeZoneName")?.value;
+      const suffix = tzAbbr ? `${tzAbbr}` : tz;
+      return `${date}, ${time} (${suffix})`;
+    }
+
+    // Google Calendar expects dates in YYYYMMDDTHHMMSSZ format (UTC).
+    function toGCalUtc(isoZ) {
+      const d = new Date(isoZ);
+      return (
+        d.getUTCFullYear() +
+        pad2(d.getUTCMonth() + 1) +
+        pad2(d.getUTCDate()) +
+        "T" +
+        pad2(d.getUTCHours()) +
+        pad2(d.getUTCMinutes()) +
+        pad2(d.getUTCSeconds()) +
+        "Z"
+      );
+    }
+
+    function makeGoogleCalendarUrl({ title, startUtc, endUtc, meetLink }) {
+      const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+      const dates = `${toGCalUtc(startUtc)}/${toGCalUtc(endUtc)}`;
+      const details = `Meeting link: ${meetLink}`;
+      const location = meetLink; // often useful; can also be blank
+      const params = new URLSearchParams({
+        text: title,
+        dates,
+        details,
+        location
+      });
+      return `${base}&${params.toString()}`;
+    }
+
+    function cardHtml(m, idx) {
+      const badge = idx === 0 ? "Next up" : "Upcoming";
+      const gcal = makeGoogleCalendarUrl(m);
+      return `
+        <article class="card">
+          <div class="card-top">
+            <p class="title">${escapeHtml(m.title)}</p>
+            <span class="badge">${badge}</span>
+          </div>
+
+          <div class="times">
+            <div class="row">
+              <div class="label">GMT time</div>
+              <div class="value">${formatUtcLabel(m.startUtc)}</div>
+            </div>
+            <div class="row">
+              <div class="label">Your local time</div>
+              <div class="value">${formatLocalLabel(m.startUtc)}</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">
+              Add to Google Calendar
+            </a>
+            <a class="btn btn-ghost" href="${escapeAttr(m.meetLink)}" target="_blank" rel="noopener noreferrer">
+              Open meeting link
+            </a>
+          </div>
+        </article>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function escapeAttr(str) { return escapeHtml(str); }
+
+    // ------------- Render -------------
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown timezone";
+    document.getElementById("tz-line").textContent = `Your system timezone: ${tz}. Local times below are calculated automatically.`;
+
+    const cardsEl = document.getElementById("cards");
+    cardsEl.innerHTML = meetings.map((m, i) => cardHtml(m, i)).join("");
+
+    // ------------- Tab switching with smooth transitions -------------
+    const tabDashboard = document.getElementById("tab-dashboard");
+    const tabNotes = document.getElementById("tab-notes");
+    const viewDashboard = document.getElementById("view-dashboard");
+    const viewNotes = document.getElementById("view-notes");
+
+    function show(which) {
+      const isDash = which === "dashboard";
+
+      tabDashboard.setAttribute("aria-selected", String(isDash));
+      tabNotes.setAttribute("aria-selected", String(!isDash));
+
+      if (isDash) {
+        viewDashboard.classList.remove("hidden");
+        viewNotes.classList.add("hidden");
+      } else {
+        viewNotes.classList.remove("hidden");
+        viewDashboard.classList.add("hidden");
+      }
+    }
+
+    tabDashboard.addEventListener("click", () => show("dashboard"));
+    tabNotes.addEventListener("click", () => show("notes"));
+
+    // ------------- Notes persistence -------------
+    const notesEl = document.getElementById("notes");
+    const clearBtn = document.getElementById("clear-notes");
+    const LS_KEY = "mercor_meeting_notes_v1";
+
+    notesEl.value = localStorage.getItem(LS_KEY) || "";
+    notesEl.addEventListener("input", () => localStorage.setItem(LS_KEY, notesEl.value));
+
+    clearBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      notesEl.value = "";
+      localStorage.removeItem(LS_KEY);
+    });
+  </script>
+</body>
+</html>
