@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#ffffff;
-      --ink:#2f2f33;                 /* softer than black */
+      --ink:#2f2f33;
       --muted:rgba(47,47,51,.68);
       --border:rgba(47,47,51,.14);
       --panel:#ffffff;
@@ -15,11 +15,11 @@
       --radius: 16px;
       --focus: rgba(47,47,51,.12);
 
-      --next-bg: rgba(66, 180, 120, .18);   /* pastel green */
+      --next-bg: rgba(66, 180, 120, .18);
       --next-br: rgba(66, 180, 120, .38);
       --next-tx: rgba(24, 110, 70, 1);
 
-      --pass-bg: rgba(245, 106, 106, .16);  /* pastel red */
+      --pass-bg: rgba(245, 106, 106, .16);
       --pass-br: rgba(245, 106, 106, .36);
       --pass-tx: rgba(150, 40, 40, 1);
     }
@@ -31,6 +31,7 @@
       color: var(--ink);
       background: var(--bg);
       min-height:100vh;
+      font-weight: 400;
     }
     .wrap{ max-width: 1040px; margin: 0 auto; padding: 18px 16px 56px; }
 
@@ -54,7 +55,7 @@
       flex-wrap: wrap;
     }
     .brand{
-      font-weight: 760;
+      font-weight: 700;
       letter-spacing: .2px;
       line-height: 1.2;
       max-width: 70ch;
@@ -76,7 +77,7 @@
       padding: 10px 14px;
       border-radius: 999px;
       cursor:pointer;
-      font-weight: 700;
+      font-weight: 600;
       transition: transform .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
       will-change: transform;
       white-space: nowrap;
@@ -86,6 +87,7 @@
       background: #2f2f33;
       color: #fff;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      font-weight: 600;
     }
 
     /* Views */
@@ -116,12 +118,13 @@
       flex-wrap: wrap;
       margin-bottom: 12px;
     }
-    h1{ font-size: 20px; margin: 0; }
+    h1{ font-size: 20px; margin: 0; font-weight: 700; }
     .sub{
       margin-top: 6px;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.4;
+      font-weight: 400;
     }
 
     .divider{
@@ -159,7 +162,7 @@
       margin-bottom: 8px;
     }
     .title{
-      font-weight: 800;
+      font-weight: 700;
       font-size: 15px;
       margin: 0;
     }
@@ -169,7 +172,7 @@
       border: 1px solid var(--border);
       padding: 6px 10px;
       border-radius: 999px;
-      font-weight: 760;
+      font-weight: 600;
       white-space: nowrap;
       background: rgba(0,0,0,.02);
       color: var(--ink);
@@ -192,9 +195,10 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       background: rgba(0,0,0,.015);
+      font-weight: 400;
     }
-    .label{ font-size: 12px; color: var(--muted); }
-    .value{ font-size: 13px; font-weight: 760; }
+    .label{ font-size: 12px; color: var(--muted); font-weight: 400; }
+    .value{ font-size: 13px; font-weight: 500; }
 
     .count{
       margin-top: 10px;
@@ -203,8 +207,8 @@
       padding: 10px 10px;
       background: rgba(0,0,0,.015);
     }
-    .count .k{ font-size: 12px; color: var(--muted); font-weight: 650; }
-    .count .v{ margin-top: 6px; font-size: 14px; font-weight: 850; letter-spacing: .2px; }
+    .count .k{ font-size: 12px; color: var(--muted); font-weight: 400; }
+    .count .v{ margin-top: 6px; font-size: 14px; font-weight: 700; letter-spacing: .2px; }
 
     .actions{
       display:flex;
@@ -220,7 +224,7 @@
       text-decoration:none;
       border-radius: 12px;
       padding: 10px 12px;
-      font-weight: 760;
+      font-weight: 500;
       font-size: 13px;
       transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
       will-change: transform;
@@ -235,6 +239,7 @@
       background: #2f2f33;
       color: #fff;
       border-color: #2f2f33;
+      font-weight: 600;
     }
 
     /* Archive */
@@ -257,7 +262,7 @@
       display:block;
       font-size: 12px;
       color: var(--muted);
-      font-weight: 650;
+      font-weight: 400;
       margin-bottom: 6px;
     }
     input[type="text"], input[type="password"], select, textarea{
@@ -270,6 +275,7 @@
       line-height: 1.4;
       background: #fff;
       color: var(--ink);
+      font-weight: 400;
     }
     textarea{ min-height: 120px; resize: vertical; }
     input:focus, select:focus, textarea:focus{
@@ -282,6 +288,7 @@
       border-radius: 14px;
       border: 1px dashed rgba(47,47,51,.25);
       background: rgba(0,0,0,.02);
+      font-weight: 400;
     }
 
     .list{ margin-top: 12px; display:grid; gap: 10px; }
@@ -300,7 +307,7 @@
       flex-wrap: wrap;
     }
     .item-title{
-      font-weight: 820;
+      font-weight: 700;
       font-size: 14px;
       margin: 0;
     }
@@ -309,6 +316,7 @@
       color: var(--muted);
       margin-top: 6px;
       line-height: 1.35;
+      font-weight: 400;
     }
     .item-actions{
       margin-top: 10px;
@@ -324,7 +332,7 @@
       border: 1px solid var(--border);
       background: rgba(0,0,0,.02);
       font-size: 12px;
-      font-weight: 720;
+      font-weight: 500;
       color: var(--ink);
     }
     code.inline{
@@ -334,6 +342,7 @@
       padding: 1px 6px;
       border-radius: 8px;
       font-size: 12px;
+      font-weight: 400;
     }
 
     /* Toast */
@@ -351,7 +360,7 @@
       border-radius: 999px;
       padding: 10px 14px;
       box-shadow: 0 16px 40px rgba(0,0,0,.16);
-      font-weight: 760;
+      font-weight: 500;
       font-size: 13px;
     }
     .toast.show{
@@ -493,34 +502,13 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ---------------- Meetings (UTC) ----------------
     const meetings = [
-      {
-        id: "m1",
-        title: "Meeting – 27 Feb",
-        startUtc: "2026-02-27T17:00:00Z",
-        endUtc:   "2026-02-27T17:30:00Z",
-        meetLink: "https://example.com/meeting-1"
-      },
-      {
-        id: "m2",
-        title: "Meeting – 2 Mar",
-        startUtc: "2026-03-02T16:00:00Z",
-        endUtc:   "2026-03-02T16:30:00Z",
-        meetLink: "https://example.com/meeting-2"
-      },
-      {
-        id: "m3",
-        title: "Meeting – 4 Mar",
-        startUtc: "2026-03-04T17:00:00Z",
-        endUtc:   "2026-03-04T17:30:00Z",
-        meetLink: "https://example.com/meeting-3"
-      }
+      { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"https://example.com/meeting-1" },
+      { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://example.com/meeting-2" },
+      { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"https://example.com/meeting-3" }
     ];
 
-    // ---------------- Helpers ----------------
     const pad2 = (n) => String(n).padStart(2, "0");
-
     function escapeHtml(str) {
       return String(str)
         .replaceAll("&", "&amp;")
@@ -536,17 +524,14 @@
       const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
       return `${date}, ${time} (GMT)`;
     }
-
     function formatLocalLabel(isoZ) {
       const d = new Date(isoZ);
       const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
       const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
       const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" })
-        .formatToParts(d)
-        .find(p => p.type === "timeZoneName")?.value;
+        .formatToParts(d).find(p => p.type === "timeZoneName")?.value;
       return `${date}, ${time} (${tzAbbr || "local"})`;
     }
-
     function msToParts(ms) {
       const total = Math.max(0, Math.floor(ms / 1000));
       const days = Math.floor(total / 86400);
@@ -556,7 +541,6 @@
       return { days, hours, mins, secs };
     }
 
-    // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
       return (
@@ -570,7 +554,6 @@
         "Z"
       );
     }
-
     function makeGoogleCalendarUrl({ title, startUtc, endUtc, meetLink }) {
       const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
       const dates = `${toGCalUtc(startUtc)}/${toGCalUtc(endUtc)}`;
@@ -580,7 +563,6 @@
       return `${base}&${params.toString()}`;
     }
 
-    // ---------------- Toast ----------------
     let toastTimer = null;
     function toast(msg) {
       const el = document.getElementById("toast");
@@ -590,12 +572,10 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
-    // ---------------- Tabs ----------------
     const tabDashboard = document.getElementById("tab-dashboard");
     const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
     const viewArchive = document.getElementById("view-archive");
-
     function show(which) {
       const isDash = which === "dashboard";
       tabDashboard.setAttribute("aria-selected", String(isDash));
@@ -603,11 +583,9 @@
       viewDashboard.classList.toggle("hidden", !isDash);
       viewArchive.classList.toggle("hidden", isDash);
     }
-
     tabDashboard.addEventListener("click", () => show("dashboard"));
     tabArchive.addEventListener("click", () => show("archive"));
 
-    // ---------------- Selects ----------------
     function populateMeetingSelect(selectEl, includeAll = false) {
       selectEl.innerHTML = "";
       if (includeAll) {
@@ -633,7 +611,6 @@
       return future.length ? future[0].i : -1;
     }
 
-    // ---------------- Dashboard ----------------
     function badgeClass(badge) {
       if (badge === "Next up") return "badge badge-next";
       if (badge === "Passed") return "badge badge-pass";
@@ -676,12 +653,8 @@
           ${countdownBlock}
 
           <div class="actions">
-            <a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">
-              Add to Google Calendar
-            </a>
-            <a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">
-              Open meeting link
-            </a>
+            <a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
+            <a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>
             ${notesBtn}
           </div>
         </article>
@@ -726,7 +699,6 @@
       });
     }
 
-    // ---------------- Archive (shared backend) ----------------
     async function fetchNotes(meetingId = "") {
       const url = meetingId ? `/api/notes?meetingId=${encodeURIComponent(meetingId)}` : `/api/notes`;
       const res = await fetch(url, { method: "GET" });
@@ -772,9 +744,9 @@
                 <div>
                   <p class="item-title">${escapeHtml(title)}</p>
                   <div class="item-meta">
-                    <div><strong>Meeting:</strong> ${escapeHtml(meetingLabel(n.meetingId))}</div>
-                    <div><strong>Uploaded:</strong> ${escapeHtml(createdAt)}</div>
-                    <div><strong>File:</strong> ${escapeHtml(pdfName)}</div>
+                    <div>Meeting: ${escapeHtml(meetingLabel(n.meetingId))}</div>
+                    <div>Uploaded: ${escapeHtml(createdAt)}</div>
+                    <div>File: ${escapeHtml(pdfName)}</div>
                   </div>
                 </div>
                 <span class="pill">${escapeHtml(n.meetingId || "")}</span>
@@ -803,24 +775,13 @@
       }
     }
 
-    // ---------------- Filter persistence (per device) ----------------
     const FILTER_KEY = "imperium_archive_filter_v1";
-    function rememberFilter(meetingId) {
-      try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {}
-    }
-    function recallFilter() {
-      try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; }
-    }
+    function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
+    function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
-    // ---------------- Admin upload ----------------
     const TOKEN_KEY = "imperium_admin_token_v1";
-
     function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }
-    function setToken(t) {
-      if (t) sessionStorage.setItem(TOKEN_KEY, t);
-      else sessionStorage.removeItem(TOKEN_KEY);
-      updateAdminStatus();
-    }
+    function setToken(t) { if (t) sessionStorage.setItem(TOKEN_KEY, t); else sessionStorage.removeItem(TOKEN_KEY); updateAdminStatus(); }
     function updateAdminStatus() {
       const status = document.getElementById("admin-status");
       if (!status) return;
@@ -874,7 +835,6 @@
       await loadArchive(document.getElementById("filter-meeting").value || "");
     }
 
-    // ---------------- Filter actions ----------------
     async function applyFilter() {
       const meetingId = document.getElementById("filter-meeting").value || "";
       rememberFilter(meetingId);
@@ -886,18 +846,14 @@
       await loadArchive("");
     }
 
-    // ---------------- Init ----------------
     (function init(){
-      // Show admin panel only if ?admin=1
       const url = new URL(window.location.href);
       const isAdminView = url.searchParams.get("admin") === "1";
       const adminPanel = document.getElementById("admin-panel");
       if (isAdminView && adminPanel) adminPanel.style.display = "block";
 
-      // Timezone line + now pill
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
-      document.getElementById("tz-line").textContent =
-        `Your system timezone: ${tz}. Local times update automatically.`;
+      document.getElementById("tz-line").textContent = `Your system timezone: ${tz}. Local times update automatically.`;
 
       function tickNow() {
         const d = new Date();
@@ -907,28 +863,22 @@
       tickNow();
       setInterval(tickNow, 1000);
 
-      // Populate selects
       populateMeetingSelect(document.getElementById("filter-meeting"), true);
       populateMeetingSelect(document.getElementById("upload-meeting"), false);
 
-      // Restore filter and load archive
       const remembered = recallFilter();
       if (remembered) document.getElementById("filter-meeting").value = remembered;
 
-      // Render dashboard
       renderMeetings();
       tickCountdowns();
       setInterval(tickCountdowns, 1000);
 
-      // Load archive initially (with remembered filter)
       loadArchive(remembered || "");
 
-      // Bind archive controls
       document.getElementById("refresh-archive").addEventListener("click", () => applyFilter());
       document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
       document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
 
-      // Admin controls (only relevant if panel is shown)
       updateAdminStatus();
       const saveTokenBtn = document.getElementById("save-token");
       const clearTokenBtn = document.getElementById("clear-token");
@@ -943,17 +893,9 @@
           toast("Token saved for this session.");
         });
       }
-      if (clearTokenBtn) {
-        clearTokenBtn.addEventListener("click", () => {
-          setToken("");
-          toast("Token cleared.");
-        });
-      }
-      if (uploadBtn) {
-        uploadBtn.addEventListener("click", () => uploadNote());
-      }
+      if (clearTokenBtn) clearTokenBtn.addEventListener("click", () => { setToken(""); toast("Token cleared."); });
+      if (uploadBtn) uploadBtn.addEventListener("click", () => uploadNote());
 
-      // If opened with ?tab=archive&meetingId=m1 then show and apply
       const tab = url.searchParams.get("tab");
       const meetingId = url.searchParams.get("meetingId") || "";
       if (tab === "archive") {
