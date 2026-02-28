@@ -7,14 +7,23 @@
   <style>
     :root{
       --bg:#ffffff;
-      --ink:#0b0b0f;
-      --muted:rgba(11,11,15,.65);
-      --border:rgba(11,11,15,.12);
+      --ink:#2f2f33;                 /* softer than black */
+      --muted:rgba(47,47,51,.68);
+      --border:rgba(47,47,51,.14);
       --panel:#ffffff;
       --shadow: 0 12px 30px rgba(0,0,0,.08);
       --radius: 16px;
-      --focus: rgba(11,11,15,.12);
+      --focus: rgba(47,47,51,.12);
+
+      --next-bg: rgba(66, 180, 120, .18);   /* pastel green */
+      --next-br: rgba(66, 180, 120, .38);
+      --next-tx: rgba(24, 110, 70, 1);
+
+      --pass-bg: rgba(245, 106, 106, .16);  /* pastel red */
+      --pass-br: rgba(245, 106, 106, .36);
+      --pass-tx: rgba(150, 40, 40, 1);
     }
+
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -29,7 +38,7 @@
     .topbar{
       position: sticky;
       top: 0;
-      background: rgba(255,255,255,.86);
+      background: rgba(255,255,255,.88);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(10px);
       z-index: 10;
@@ -45,7 +54,7 @@
       flex-wrap: wrap;
     }
     .brand{
-      font-weight: 750;
+      font-weight: 760;
       letter-spacing: .2px;
       line-height: 1.2;
       max-width: 70ch;
@@ -74,7 +83,7 @@
     }
     .tab:hover{ transform: translateY(-1px); }
     .tab[aria-selected="true"]{
-      background: #0b0b0f;
+      background: #2f2f33;
       color: #fff;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
@@ -115,6 +124,13 @@
       line-height: 1.4;
     }
 
+    .divider{
+      height:1px;
+      background: var(--border);
+      opacity:.6;
+      margin: 12px 0;
+    }
+
     /* Cards */
     .grid{
       display:grid;
@@ -132,7 +148,7 @@
       box-shadow: 0 10px 22px rgba(0,0,0,.05);
     }
     .card.next{
-      border-color: rgba(11,11,15,.22);
+      border-color: rgba(47,47,51,.22);
       box-shadow: 0 16px 34px rgba(0,0,0,.10);
     }
     .card-top{
@@ -147,16 +163,28 @@
       font-size: 15px;
       margin: 0;
     }
+
     .badge{
       font-size: 12px;
       border: 1px solid var(--border);
       padding: 6px 10px;
       border-radius: 999px;
-      font-weight: 750;
+      font-weight: 760;
       white-space: nowrap;
       background: rgba(0,0,0,.02);
       color: var(--ink);
     }
+    .badge-next{
+      background: var(--next-bg);
+      border-color: var(--next-br);
+      color: var(--next-tx);
+    }
+    .badge-pass{
+      background: var(--pass-bg);
+      border-color: var(--pass-br);
+      color: var(--pass-tx);
+    }
+
     .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
       display:flex; justify-content:space-between; gap: 10px;
@@ -166,7 +194,7 @@
       background: rgba(0,0,0,.015);
     }
     .label{ font-size: 12px; color: var(--muted); }
-    .value{ font-size: 13px; font-weight: 750; }
+    .value{ font-size: 13px; font-weight: 760; }
 
     .count{
       margin-top: 10px;
@@ -192,7 +220,7 @@
       text-decoration:none;
       border-radius: 12px;
       padding: 10px 12px;
-      font-weight: 750;
+      font-weight: 760;
       font-size: 13px;
       transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
       will-change: transform;
@@ -204,9 +232,9 @@
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     .btn-primary{
-      background: #0b0b0f;
+      background: #2f2f33;
       color: #fff;
-      border-color: #0b0b0f;
+      border-color: #2f2f33;
     }
 
     /* Archive */
@@ -245,14 +273,14 @@
     }
     textarea{ min-height: 120px; resize: vertical; }
     input:focus, select:focus, textarea:focus{
-      border-color: rgba(11,11,15,.28);
+      border-color: rgba(47,47,51,.28);
       box-shadow: 0 0 0 6px var(--focus);
     }
     input[type="file"]{
       width:100%;
       padding: 10px;
       border-radius: 14px;
-      border: 1px dashed rgba(11,11,15,.25);
+      border: 1px dashed rgba(47,47,51,.25);
       background: rgba(0,0,0,.02);
     }
 
@@ -296,8 +324,16 @@
       border: 1px solid var(--border);
       background: rgba(0,0,0,.02);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 720;
       color: var(--ink);
+    }
+    code.inline{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background: rgba(0,0,0,.03);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 12px;
     }
 
     /* Toast */
@@ -310,12 +346,12 @@
       pointer-events: none;
       transition: opacity .18s ease, transform .18s ease;
       z-index: 100;
-      background: #0b0b0f;
+      background: #2f2f33;
       color:#fff;
       border-radius: 999px;
       padding: 10px 14px;
       box-shadow: 0 16px 40px rgba(0,0,0,.16);
-      font-weight: 750;
+      font-weight: 760;
       font-size: 13px;
     }
     .toast.show{
@@ -354,6 +390,8 @@
           <div class="pill" id="now-pill">–</div>
         </div>
 
+        <div class="divider"></div>
+
         <div class="grid" id="cards"></div>
       </section>
 
@@ -363,13 +401,15 @@
           <div>
             <h1>Meeting Notes Archive</h1>
             <div class="sub">
-              This is a shared archive. PDFs and summaries are stored in your Cloudflare backend.
+              Shared archive. Minutes are uploaded by an admin and visible to everyone.
             </div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn" id="refresh-archive">Refresh</button>
           </div>
         </div>
+
+        <div class="divider"></div>
 
         <!-- Filter -->
         <div class="panel">
@@ -391,13 +431,13 @@
           </div>
         </div>
 
-        <!-- Admin upload (optional) -->
-        <div class="panel" style="margin-top:12px;">
+        <!-- Admin upload (hidden unless ?admin=1) -->
+        <div class="panel" id="admin-panel" style="margin-top:12px; display:none;">
           <div class="item-top">
             <div>
               <p class="item-title">Admin: upload minutes (PDF)</p>
               <div class="item-meta">
-                If you enter the admin token, you can upload a PDF + summary to the shared archive.
+                Only shown when you open the site with <code class="inline">?admin=1</code>. Upload still requires the admin token.
               </div>
             </div>
             <span class="pill" id="admin-status">Not signed in</span>
@@ -410,6 +450,9 @@
               <div class="actions" style="margin-top:10px;">
                 <button class="btn btn-primary" id="save-token">Save token</button>
                 <button class="btn" id="clear-token">Clear token</button>
+              </div>
+              <div class="sub" style="margin-top:8px;">
+                Token is saved only for this browser session.
               </div>
             </div>
 
@@ -451,7 +494,6 @@
 
   <script>
     // ---------------- Meetings (UTC) ----------------
-    // Store in UTC with 'Z'. Edit titles/links/durations here.
     const meetings = [
       {
         id: "m1",
@@ -548,7 +590,7 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
-    // ---------------- Tabs + navigation ----------------
+    // ---------------- Tabs ----------------
     const tabDashboard = document.getElementById("tab-dashboard");
     const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
@@ -565,7 +607,7 @@
     tabDashboard.addEventListener("click", () => show("dashboard"));
     tabArchive.addEventListener("click", () => show("archive"));
 
-    // ---------------- Meeting selects ----------------
+    // ---------------- Selects ----------------
     function populateMeetingSelect(selectEl, includeAll = false) {
       selectEl.innerHTML = "";
       if (includeAll) {
@@ -591,7 +633,13 @@
       return future.length ? future[0].i : -1;
     }
 
-    // ---------------- Dashboard render ----------------
+    // ---------------- Dashboard ----------------
+    function badgeClass(badge) {
+      if (badge === "Next up") return "badge badge-next";
+      if (badge === "Passed") return "badge badge-pass";
+      return "badge";
+    }
+
     function cardHtml(m, idx, nextIdx) {
       const now = Date.now();
       const start = new Date(m.startUtc).getTime();
@@ -611,7 +659,7 @@
         <article class="card ${idx === nextIdx ? "next" : ""}">
           <div class="card-top">
             <p class="title">${escapeHtml(m.title)}</p>
-            <span class="badge">${escapeHtml(badge)}</span>
+            <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
           </div>
 
           <div class="times">
@@ -645,11 +693,11 @@
       const cardsEl = document.getElementById("cards");
       cardsEl.innerHTML = meetings.map((m, i) => cardHtml(m, i, nextIdx)).join("");
 
-      // Bind "View notes" buttons for passed meetings
       cardsEl.querySelectorAll("[data-view-notes]").forEach(btn => {
         btn.addEventListener("click", async () => {
           const meetingId = btn.getAttribute("data-view-notes");
           document.getElementById("filter-meeting").value = meetingId || "";
+          rememberFilter(meetingId || "");
           show("archive");
           await loadArchive(meetingId || "");
           toast("Showing notes for selected meeting.");
@@ -668,7 +716,6 @@
         const diff = start - now;
 
         if (diff <= 0) {
-          // Meeting has just passed – swap text without rerender
           el.textContent = "Meeting passed";
           return;
         }
@@ -709,7 +756,7 @@
         const notes = await fetchNotes(meetingId);
 
         if (!notes.length) {
-          list.innerHTML = `<div class="item"><p class="item-title">No notes found.</p><div class="item-meta">Try ‘Clear’ then ‘Refresh’, or upload minutes as admin.</div></div>`;
+          list.innerHTML = `<div class="item"><p class="item-title">No notes found.</p><div class="item-meta">If minutes have not been uploaded yet, they will appear here once available.</div></div>`;
           return;
         }
 
@@ -749,19 +796,26 @@
           <div class="item">
             <p class="item-title">Archive unavailable</p>
             <div class="item-meta">
-              The frontend could not reach <code>/api/notes</code>. If you have not deployed the backend Functions yet, this is expected.
+              Could not reach <code class="inline">/api/notes</code>. If you have not deployed the backend Functions yet, this is expected.
             </div>
           </div>
         `;
       }
     }
 
+    // ---------------- Filter persistence (per device) ----------------
+    const FILTER_KEY = "imperium_archive_filter_v1";
+    function rememberFilter(meetingId) {
+      try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {}
+    }
+    function recallFilter() {
+      try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; }
+    }
+
     // ---------------- Admin upload ----------------
     const TOKEN_KEY = "imperium_admin_token_v1";
 
-    function getToken() {
-      return sessionStorage.getItem(TOKEN_KEY) || "";
-    }
+    function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }
     function setToken(t) {
       if (t) sessionStorage.setItem(TOKEN_KEY, t);
       else sessionStorage.removeItem(TOKEN_KEY);
@@ -769,6 +823,7 @@
     }
     function updateAdminStatus() {
       const status = document.getElementById("admin-status");
+      if (!status) return;
       status.textContent = getToken() ? "Token saved (this session)" : "Not signed in";
     }
 
@@ -810,7 +865,6 @@
         return;
       }
 
-      // Reset fields
       document.getElementById("upload-title").value = "";
       document.getElementById("upload-overview").value = "";
       fileInput.value = "";
@@ -823,15 +877,23 @@
     // ---------------- Filter actions ----------------
     async function applyFilter() {
       const meetingId = document.getElementById("filter-meeting").value || "";
+      rememberFilter(meetingId);
       await loadArchive(meetingId);
     }
     async function clearFilter() {
       document.getElementById("filter-meeting").value = "";
+      rememberFilter("");
       await loadArchive("");
     }
 
     // ---------------- Init ----------------
     (function init(){
+      // Show admin panel only if ?admin=1
+      const url = new URL(window.location.href);
+      const isAdminView = url.searchParams.get("admin") === "1";
+      const adminPanel = document.getElementById("admin-panel");
+      if (isAdminView && adminPanel) adminPanel.style.display = "block";
+
       // Timezone line + now pill
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
       document.getElementById("tz-line").textContent =
@@ -849,44 +911,58 @@
       populateMeetingSelect(document.getElementById("filter-meeting"), true);
       populateMeetingSelect(document.getElementById("upload-meeting"), false);
 
+      // Restore filter and load archive
+      const remembered = recallFilter();
+      if (remembered) document.getElementById("filter-meeting").value = remembered;
+
       // Render dashboard
       renderMeetings();
       tickCountdowns();
       setInterval(tickCountdowns, 1000);
 
-      // Default archive load (all)
-      loadArchive("");
+      // Load archive initially (with remembered filter)
+      loadArchive(remembered || "");
 
       // Bind archive controls
       document.getElementById("refresh-archive").addEventListener("click", () => applyFilter());
       document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
       document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
 
-      // Admin token controls
+      // Admin controls (only relevant if panel is shown)
       updateAdminStatus();
-      document.getElementById("save-token").addEventListener("click", () => {
-        const t = document.getElementById("admin-token").value.trim();
-        if (!t) { toast("Token is empty."); return; }
-        setToken(t);
-        document.getElementById("admin-token").value = "";
-        toast("Token saved for this session.");
-      });
-      document.getElementById("clear-token").addEventListener("click", () => {
-        setToken("");
-        toast("Token cleared.");
-      });
+      const saveTokenBtn = document.getElementById("save-token");
+      const clearTokenBtn = document.getElementById("clear-token");
+      const uploadBtn = document.getElementById("upload-note");
 
-      // Upload button
-      document.getElementById("upload-note").addEventListener("click", () => uploadNote());
+      if (saveTokenBtn) {
+        saveTokenBtn.addEventListener("click", () => {
+          const t = document.getElementById("admin-token").value.trim();
+          if (!t) { toast("Token is empty."); return; }
+          setToken(t);
+          document.getElementById("admin-token").value = "";
+          toast("Token saved for this session.");
+        });
+      }
+      if (clearTokenBtn) {
+        clearTokenBtn.addEventListener("click", () => {
+          setToken("");
+          toast("Token cleared.");
+        });
+      }
+      if (uploadBtn) {
+        uploadBtn.addEventListener("click", () => uploadNote());
+      }
 
-      // If the page is opened with ?tab=archive&meetingId=m1, apply it
-      const url = new URL(window.location.href);
+      // If opened with ?tab=archive&meetingId=m1 then show and apply
       const tab = url.searchParams.get("tab");
       const meetingId = url.searchParams.get("meetingId") || "";
       if (tab === "archive") {
         show("archive");
-        if (meetingId) document.getElementById("filter-meeting").value = meetingId;
-        loadArchive(meetingId);
+        if (meetingId) {
+          document.getElementById("filter-meeting").value = meetingId;
+          rememberFilter(meetingId);
+        }
+        loadArchive(meetingId || remembered || "");
       }
     })();
   </script>
