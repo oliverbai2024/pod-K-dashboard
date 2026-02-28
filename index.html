@@ -6,59 +6,49 @@
   <title>Project Imperium – Pod K Meeting Dashboard</title>
   <style>
     :root{
-      --bg: #ffffff;
-      --ink: #1f1235;
-      --muted: rgba(31, 18, 53, .72);
-      --border: rgba(31, 18, 53, .12);
-      --purple: #b79cff;     /* pastel purple */
-      --purple2:#efe9ff;     /* lighter pastel */
-      --shadow: 0 12px 30px rgba(31,18,53,.08);
-      --radius: 18px;
-      --ok: rgba(183,156,255,.25);
-      --warn: rgba(255, 194, 102, .28);
+      --bg:#ffffff;
+      --ink:#0b0b0f;
+      --muted:rgba(11,11,15,.65);
+      --border:rgba(11,11,15,.12);
+      --panel:#ffffff;
+      --shadow: 0 12px 30px rgba(0,0,0,.08);
+      --radius: 16px;
+      --focus: rgba(11,11,15,.12);
     }
-
     *{ box-sizing:border-box; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
       color: var(--ink);
-      background: linear-gradient(180deg, var(--bg), #faf7ff);
-      min-height: 100vh;
+      background: var(--bg);
+      min-height:100vh;
     }
-
-    .wrap{ max-width: 1040px; margin: 0 auto; padding: 22px 16px 56px; }
+    .wrap{ max-width: 1040px; margin: 0 auto; padding: 18px 16px 56px; }
 
     /* Top bar */
     .topbar{
       position: sticky;
       top: 0;
-      backdrop-filter: blur(10px);
-      background: rgba(255,255,255,.78);
+      background: rgba(255,255,255,.86);
       border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
       z-index: 10;
     }
     .topbar-inner{
       max-width: 1040px;
       margin: 0 auto;
-      padding: 14px 16px;
+      padding: 12px 16px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 12px;
+      flex-wrap: wrap;
     }
     .brand{
-      display:flex; align-items:center; gap:10px;
-      font-weight: 760;
+      font-weight: 750;
       letter-spacing: .2px;
       line-height: 1.2;
-      max-width: 56ch;
-    }
-    .dot{
-      width: 10px; height: 10px; border-radius: 999px;
-      background: var(--purple);
-      box-shadow: 0 0 0 6px rgba(183,156,255,.22);
-      flex: 0 0 auto;
+      max-width: 70ch;
     }
 
     .tabs{
@@ -67,10 +57,7 @@
       padding: 6px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: rgba(233,225,255,.35);
-      box-shadow: 0 8px 22px rgba(31,18,53,.06);
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      background: rgba(0,0,0,.02);
     }
     .tab{
       appearance:none;
@@ -81,45 +68,44 @@
       border-radius: 999px;
       cursor:pointer;
       font-weight: 700;
-      transition: transform .18s ease, background .18s ease, color .18s ease;
+      transition: transform .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
       will-change: transform;
       white-space: nowrap;
     }
     .tab:hover{ transform: translateY(-1px); }
     .tab[aria-selected="true"]{
-      background: #fff;
-      color: var(--ink);
-      box-shadow: 0 10px 24px rgba(31,18,53,.10);
+      background: #0b0b0f;
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
 
-    /* Views + animation */
-    .views{ position: relative; margin-top: 18px; }
+    /* Views */
+    .views{ position: relative; margin-top: 16px; }
     .view{
-      background: rgba(255,255,255,.9);
+      background: var(--panel);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 18px;
       transform-origin: top center;
-      transition: opacity .22s ease, transform .22s ease, filter .22s ease;
+      transition: opacity .18s ease, transform .18s ease, filter .18s ease;
     }
     .view.hidden{
       position:absolute;
       inset:0;
       opacity:0;
-      transform: translateY(10px) scale(.985);
+      transform: translateY(10px) scale(.99);
       filter: blur(2px);
       pointer-events:none;
     }
 
-    /* Header blocks */
     .header{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap: 14px;
-      margin-bottom: 14px;
       flex-wrap: wrap;
+      margin-bottom: 12px;
     }
     h1{ font-size: 20px; margin: 0; }
     .sub{
@@ -129,51 +115,25 @@
       line-height: 1.4;
     }
 
-    /* Countdown */
-    .countdown{
-      border: 1px solid rgba(183,156,255,.40);
-      background: linear-gradient(180deg, #fff, rgba(233,225,255,.25));
-      border-radius: 16px;
-      padding: 12px 14px;
-      min-width: 280px;
-      box-shadow: 0 10px 24px rgba(31,18,53,.06);
-    }
-    .countdown .kicker{
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 650;
-    }
-    .countdown .big{
-      font-size: 18px;
-      font-weight: 850;
-      letter-spacing: .2px;
-    }
-    .countdown .mini{
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* Grid + cards */
+    /* Cards */
     .grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
       gap: 12px;
-      margin-top: 14px;
+      margin-top: 12px;
     }
     @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
 
     .card{
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: linear-gradient(180deg, #fff, rgba(233,225,255,.18));
+      background: #fff;
       padding: 14px;
-      box-shadow: 0 10px 24px rgba(31,18,53,.06);
+      box-shadow: 0 10px 22px rgba(0,0,0,.05);
     }
     .card.next{
-      border-color: rgba(183,156,255,.55);
-      box-shadow: 0 16px 34px rgba(183,156,255,.20);
+      border-color: rgba(11,11,15,.22);
+      box-shadow: 0 16px 34px rgba(0,0,0,.10);
     }
     .card-top{
       display:flex;
@@ -182,32 +142,41 @@
       gap: 10px;
       margin-bottom: 8px;
     }
+    .title{
+      font-weight: 800;
+      font-size: 15px;
+      margin: 0;
+    }
     .badge{
       font-size: 12px;
-      color: var(--ink);
-      background: rgba(183,156,255,.25);
-      border: 1px solid rgba(183,156,255,.35);
+      border: 1px solid var(--border);
       padding: 6px 10px;
       border-radius: 999px;
       font-weight: 750;
       white-space: nowrap;
+      background: rgba(0,0,0,.02);
+      color: var(--ink);
     }
-    .title{
-      font-weight: 820;
-      font-size: 15px;
-      margin: 0;
-    }
-
     .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
       display:flex; justify-content:space-between; gap: 10px;
       padding: 10px 10px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      background: rgba(255,255,255,.85);
+      background: rgba(0,0,0,.015);
     }
     .label{ font-size: 12px; color: var(--muted); }
     .value{ font-size: 13px; font-weight: 750; }
+
+    .count{
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 10px;
+      background: rgba(0,0,0,.015);
+    }
+    .count .k{ font-size: 12px; color: var(--muted); font-weight: 650; }
+    .count .v{ margin-top: 6px; font-size: 14px; font-weight: 850; letter-spacing: .2px; }
 
     .actions{
       display:flex;
@@ -225,37 +194,28 @@
       padding: 10px 12px;
       font-weight: 750;
       font-size: 13px;
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
       will-change: transform;
       cursor: pointer;
-      border: 1px solid transparent;
       user-select:none;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
     }
-    .btn:hover{ transform: translateY(-1px); }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     .btn-primary{
-      background: var(--purple);
-      color: #1a0f2e;
-      box-shadow: 0 12px 24px rgba(183,156,255,.35);
-      border-color: rgba(183,156,255,.55);
-    }
-    .btn-ghost{
-      background: rgba(233,225,255,.45);
-      color: var(--ink);
-      border-color: rgba(183,156,255,.35);
-    }
-    .btn-danger{
-      background: rgba(255, 194, 102, .22);
-      border-color: rgba(255, 194, 102, .45);
-      color: var(--ink);
+      background: #0b0b0f;
+      color: #fff;
+      border-color: #0b0b0f;
     }
 
-    /* Forms */
+    /* Archive */
     .panel{
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: rgba(255,255,255,.85);
+      background: #fff;
       padding: 14px;
-      box-shadow: 0 10px 24px rgba(31,18,53,.06);
+      box-shadow: 0 10px 22px rgba(0,0,0,.05);
     }
     .form-grid{
       display:grid;
@@ -272,7 +232,7 @@
       font-weight: 650;
       margin-bottom: 6px;
     }
-    input[type="text"], select, textarea{
+    input[type="text"], input[type="password"], select, textarea{
       width: 100%;
       padding: 12px 12px;
       border-radius: 14px;
@@ -280,33 +240,29 @@
       outline: none;
       font-size: 14px;
       line-height: 1.4;
-      background: rgba(255,255,255,.92);
+      background: #fff;
+      color: var(--ink);
     }
     textarea{ min-height: 120px; resize: vertical; }
     input:focus, select:focus, textarea:focus{
-      border-color: rgba(183,156,255,.9);
-      box-shadow: 0 0 0 6px rgba(183,156,255,.20);
+      border-color: rgba(11,11,15,.28);
+      box-shadow: 0 0 0 6px var(--focus);
     }
     input[type="file"]{
       width:100%;
       padding: 10px;
       border-radius: 14px;
-      border: 1px dashed rgba(31,18,53,.22);
-      background: rgba(233,225,255,.18);
+      border: 1px dashed rgba(11,11,15,.25);
+      background: rgba(0,0,0,.02);
     }
 
-    /* Lists */
-    .list{
-      margin-top: 12px;
-      display:grid;
-      gap: 10px;
-    }
+    .list{ margin-top: 12px; display:grid; gap: 10px; }
     .item{
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: linear-gradient(180deg, #fff, rgba(233,225,255,.14));
+      background: #fff;
       padding: 12px 12px;
-      box-shadow: 0 10px 24px rgba(31,18,53,.05);
+      box-shadow: 0 10px 22px rgba(0,0,0,.04);
     }
     .item-top{
       display:flex;
@@ -332,44 +288,44 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.02);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
 
     /* Toast */
     .toast{
       position: fixed;
       bottom: 16px;
       left: 50%;
-      transform: translateX(-50%) translateY(20px);
+      transform: translateX(-50%) translateY(18px);
       opacity: 0;
       pointer-events: none;
-      transition: opacity .2s ease, transform .2s ease;
+      transition: opacity .18s ease, transform .18s ease;
       z-index: 100;
-      background: rgba(255,255,255,.9);
-      border: 1px solid rgba(183,156,255,.45);
+      background: #0b0b0f;
+      color:#fff;
       border-radius: 999px;
       padding: 10px 14px;
-      box-shadow: 0 16px 40px rgba(31,18,53,.12);
-      font-weight: 700;
+      box-shadow: 0 16px 40px rgba(0,0,0,.16);
+      font-weight: 750;
       font-size: 13px;
-      color: var(--ink);
     }
     .toast.show{
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       .tab, .view, .btn, .toast{ transition: none !important; }
       .tab:hover, .btn:hover{ transform:none !important; }
-    }
-
-    code.inline{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      background: rgba(233,225,255,.55);
-      border: 1px solid rgba(183,156,255,.35);
-      padding: 1px 6px;
-      border-radius: 8px;
-      font-size: 12px;
     }
   </style>
 </head>
@@ -377,124 +333,116 @@
 <body>
   <div class="topbar">
     <div class="topbar-inner">
-      <div class="brand">
-        <span class="dot" aria-hidden="true"></span>
-        <span>Project Imperium – Pod K Meeting Dashboard</span>
-      </div>
+      <div class="brand">Project Imperium – Pod K Meeting Dashboard</div>
 
       <div class="tabs" role="tablist" aria-label="Dashboard tabs">
         <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
-        <button class="tab" id="tab-notes" role="tab" aria-selected="false" aria-controls="view-notes">Meeting Notes</button>
-        <button class="tab" id="tab-focus" role="tab" aria-selected="false" aria-controls="view-focus">Next Meeting Focus</button>
+        <button class="tab" id="tab-archive" role="tab" aria-selected="false" aria-controls="view-archive">Meeting Notes Archive</button>
       </div>
     </div>
   </div>
 
   <div class="wrap">
     <div class="views">
-      <!-- Dashboard view -->
+      <!-- Dashboard -->
       <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="header">
           <div>
             <h1>Meeting Dashboard</h1>
             <div class="sub" id="tz-line"></div>
           </div>
-
-          <div class="countdown" aria-live="polite">
-            <div class="kicker">Countdown to next meeting</div>
-            <div class="big" id="countdown-big">–</div>
-            <div class="mini" id="countdown-mini">–</div>
-          </div>
+          <div class="pill" id="now-pill">–</div>
         </div>
 
         <div class="grid" id="cards"></div>
       </section>
 
-      <!-- Notes / Archive view -->
-      <section class="view hidden" id="view-notes" role="tabpanel" aria-labelledby="tab-notes">
+      <!-- Archive -->
+      <section class="view hidden" id="view-archive" role="tabpanel" aria-labelledby="tab-archive">
         <div class="header">
           <div>
             <h1>Meeting Notes Archive</h1>
             <div class="sub">
-              Upload a PDF and add a short overview. Stored locally on this device via <code class="inline">IndexedDB</code>.
+              This is a shared archive. PDFs and summaries are stored in your Cloudflare backend.
             </div>
           </div>
-
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn-danger" id="clear-archive">Clear archive</button>
+            <button class="btn" id="refresh-archive">Refresh</button>
           </div>
         </div>
 
+        <!-- Filter -->
         <div class="panel">
-          <div class="form-grid">
+          <div class="form-grid" style="margin-top:0;">
             <div>
-              <label for="note-meeting">Meeting</label>
-              <select id="note-meeting"></select>
+              <label for="filter-meeting">Filter by meeting</label>
+              <select id="filter-meeting"></select>
+              <div class="sub" style="margin-top:8px;">
+                Tip: the dashboard ‘View notes’ button sets this filter automatically.
+              </div>
             </div>
             <div>
-              <label for="note-title">Title (optional)</label>
-              <input id="note-title" type="text" placeholder="e.g. Decisions, actions, blockers" />
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <div>
-              <label for="note-overview">Overview</label>
-              <textarea id="note-overview" placeholder="Short summary, action points, owners, deadlines…"></textarea>
-            </div>
-            <div>
-              <label for="note-pdf">PDF</label>
-              <input id="note-pdf" type="file" accept="application/pdf" />
-              <div class="sub" style="margin-top:10px;">
-                Tip: keep PDFs modest in size. This is browser storage, not a shared drive.
+              <label>&nbsp;</label>
+              <div class="actions" style="margin-top:0;">
+                <button class="btn btn-primary" id="apply-filter">Apply filter</button>
+                <button class="btn" id="clear-filter">Clear</button>
               </div>
             </div>
           </div>
-
-          <div class="actions" style="margin-top:12px;">
-            <button class="btn btn-primary" id="save-note">Save to archive</button>
-          </div>
         </div>
 
-        <div class="list" id="archive-list" style="margin-top:14px;"></div>
-      </section>
-
-      <!-- Focus view -->
-      <section class="view hidden" id="view-focus" role="tabpanel" aria-labelledby="tab-focus">
-        <div class="header">
-          <div>
-            <h1>Next Meeting Focus</h1>
-            <div class="sub">Capture suggestions for what to prioritise next time. Saved locally on this device.</div>
+        <!-- Admin upload (optional) -->
+        <div class="panel" style="margin-top:12px;">
+          <div class="item-top">
+            <div>
+              <p class="item-title">Admin: upload minutes (PDF)</p>
+              <div class="item-meta">
+                If you enter the admin token, you can upload a PDF + summary to the shared archive.
+              </div>
+            </div>
+            <span class="pill" id="admin-status">Not signed in</span>
           </div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn-danger" id="clear-suggestions">Clear suggestions</button>
-          </div>
-        </div>
-
-        <div class="panel">
           <div class="form-grid">
             <div>
-              <label for="focus-meeting">Related meeting</label>
-              <select id="focus-meeting"></select>
+              <label for="admin-token">Admin token</label>
+              <input id="admin-token" type="password" placeholder="Paste token, press ‘Save token’" />
+              <div class="actions" style="margin-top:10px;">
+                <button class="btn btn-primary" id="save-token">Save token</button>
+                <button class="btn" id="clear-token">Clear token</button>
+              </div>
+            </div>
+
+            <div>
+              <label for="upload-meeting">Meeting</label>
+              <select id="upload-meeting"></select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="upload-title">Title (optional)</label>
+              <input id="upload-title" type="text" placeholder="e.g. Minutes, decisions, actions" />
             </div>
             <div>
-              <label for="focus-owner">Suggested owner (optional)</label>
-              <input id="focus-owner" type="text" placeholder="e.g. Skye / Oliver / EPM / Reviewer lead" />
+              <label for="upload-pdf">PDF</label>
+              <input id="upload-pdf" type="file" accept="application/pdf" />
             </div>
           </div>
 
           <div style="margin-top:12px;">
-            <label for="focus-text">Suggestion</label>
-            <textarea id="focus-text" placeholder="e.g. Clarify QA bottleneck owners and SLA; decide next week’s target sample size; align on escalation rules."></textarea>
+            <label for="upload-overview">Overview / summary</label>
+            <textarea id="upload-overview" placeholder="Short summary, action points, owners, deadlines…"></textarea>
           </div>
 
           <div class="actions" style="margin-top:12px;">
-            <button class="btn btn-primary" id="add-suggestion">Add suggestion</button>
+            <button class="btn btn-primary" id="upload-note">Upload to archive</button>
           </div>
+
+          <div class="sub" id="upload-hint" style="margin-top:10px;"></div>
         </div>
 
-        <div class="list" id="suggestions-list" style="margin-top:14px;"></div>
+        <div class="list" id="archive-list" style="margin-top:12px;"></div>
       </section>
     </div>
   </div>
@@ -502,8 +450,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ---------------- Data (UTC) ----------------
-    // Store meeting times as UTC (Z). Edit these and the meeting links/titles.
+    // ---------------- Meetings (UTC) ----------------
+    // Store in UTC with 'Z'. Edit titles/links/durations here.
     const meetings = [
       {
         id: "m1",
@@ -528,7 +476,7 @@
       }
     ];
 
-    // ---------------- Utilities ----------------
+    // ---------------- Helpers ----------------
     const pad2 = (n) => String(n).padStart(2, "0");
 
     function escapeHtml(str) {
@@ -557,6 +505,15 @@
       return `${date}, ${time} (${tzAbbr || "local"})`;
     }
 
+    function msToParts(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const days = Math.floor(total / 86400);
+      const hours = Math.floor((total % 86400) / 3600);
+      const mins = Math.floor((total % 3600) / 60);
+      const secs = total % 60;
+      return { days, hours, mins, secs };
+    }
+
     // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
@@ -581,15 +538,6 @@
       return `${base}&${params.toString()}`;
     }
 
-    function msToParts(ms) {
-      const total = Math.max(0, Math.floor(ms / 1000));
-      const days = Math.floor(total / 86400);
-      const hours = Math.floor((total % 86400) / 3600);
-      const mins = Math.floor((total % 3600) / 60);
-      const secs = total % 60;
-      return { days, hours, mins, secs };
-    }
-
     // ---------------- Toast ----------------
     let toastTimer = null;
     function toast(msg) {
@@ -597,36 +545,43 @@
       el.textContent = msg;
       el.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
-    // ---------------- Tabs ----------------
+    // ---------------- Tabs + navigation ----------------
     const tabDashboard = document.getElementById("tab-dashboard");
-    const tabNotes = document.getElementById("tab-notes");
-    const tabFocus = document.getElementById("tab-focus");
-
+    const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
-    const viewNotes = document.getElementById("view-notes");
-    const viewFocus = document.getElementById("view-focus");
+    const viewArchive = document.getElementById("view-archive");
 
     function show(which) {
-      const map = {
-        dashboard: { tab: tabDashboard, view: viewDashboard },
-        notes:     { tab: tabNotes,     view: viewNotes },
-        focus:     { tab: tabFocus,     view: viewFocus }
-      };
+      const isDash = which === "dashboard";
+      tabDashboard.setAttribute("aria-selected", String(isDash));
+      tabArchive.setAttribute("aria-selected", String(!isDash));
+      viewDashboard.classList.toggle("hidden", !isDash);
+      viewArchive.classList.toggle("hidden", isDash);
+    }
 
-      for (const k of Object.keys(map)) {
-        const isOn = k === which;
-        map[k].tab.setAttribute("aria-selected", String(isOn));
-        map[k].view.classList.toggle("hidden", !isOn);
+    tabDashboard.addEventListener("click", () => show("dashboard"));
+    tabArchive.addEventListener("click", () => show("archive"));
+
+    // ---------------- Meeting selects ----------------
+    function populateMeetingSelect(selectEl, includeAll = false) {
+      selectEl.innerHTML = "";
+      if (includeAll) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "All meetings";
+        selectEl.appendChild(opt);
+      }
+      for (const m of meetings) {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = `${m.title} — ${formatUtcLabel(m.startUtc)}`;
+        selectEl.appendChild(opt);
       }
     }
-    tabDashboard.addEventListener("click", () => show("dashboard"));
-    tabNotes.addEventListener("click", () => show("notes"));
-    tabFocus.addEventListener("click", () => show("focus"));
 
-    // ---------------- Render meetings ----------------
     function getNextMeetingIndex() {
       const now = Date.now();
       const future = meetings
@@ -636,16 +591,27 @@
       return future.length ? future[0].i : -1;
     }
 
+    // ---------------- Dashboard render ----------------
     function cardHtml(m, idx, nextIdx) {
-      const isNext = idx === nextIdx;
-      const badge = isNext ? "Next up" : "Upcoming";
+      const now = Date.now();
+      const start = new Date(m.startUtc).getTime();
+      const passed = now >= start;
       const gcal = makeGoogleCalendarUrl(m);
 
+      const badge = (idx === nextIdx && !passed) ? "Next up" : (passed ? "Passed" : "Upcoming");
+      const countdownBlock = passed
+        ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
+        : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+
+      const notesBtn = passed
+        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
+        : "";
+
       return `
-        <article class="card ${isNext ? "next" : ""}">
+        <article class="card ${idx === nextIdx ? "next" : ""}">
           <div class="card-top">
             <p class="title">${escapeHtml(m.title)}</p>
-            <span class="badge">${badge}</span>
+            <span class="badge">${escapeHtml(badge)}</span>
           </div>
 
           <div class="times">
@@ -659,13 +625,16 @@
             </div>
           </div>
 
+          ${countdownBlock}
+
           <div class="actions">
             <a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">
               Add to Google Calendar
             </a>
-            <a class="btn btn-ghost" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">
+            <a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">
               Open meeting link
             </a>
+            ${notesBtn}
           </div>
         </article>
       `;
@@ -675,110 +644,48 @@
       const nextIdx = getNextMeetingIndex();
       const cardsEl = document.getElementById("cards");
       cardsEl.innerHTML = meetings.map((m, i) => cardHtml(m, i, nextIdx)).join("");
-      return nextIdx;
+
+      // Bind "View notes" buttons for passed meetings
+      cardsEl.querySelectorAll("[data-view-notes]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const meetingId = btn.getAttribute("data-view-notes");
+          document.getElementById("filter-meeting").value = meetingId || "";
+          show("archive");
+          await loadArchive(meetingId || "");
+          toast("Showing notes for selected meeting.");
+        });
+      });
     }
 
-    // ---------------- Countdown ----------------
-    function startCountdown() {
-      const big = document.getElementById("countdown-big");
-      const mini = document.getElementById("countdown-mini");
+    function tickCountdowns() {
+      const now = Date.now();
+      document.querySelectorAll("[data-countdown]").forEach(el => {
+        const meetingId = el.getAttribute("data-countdown");
+        const m = meetings.find(x => x.id === meetingId);
+        if (!m) return;
 
-      function tick() {
-        const nextIdx = getNextMeetingIndex();
-        if (nextIdx === -1) {
-          big.textContent = "No upcoming meetings";
-          mini.textContent = "Add more dates in index.html.";
+        const start = new Date(m.startUtc).getTime();
+        const diff = start - now;
+
+        if (diff <= 0) {
+          // Meeting has just passed – swap text without rerender
+          el.textContent = "Meeting passed";
           return;
         }
-        const m = meetings[nextIdx];
-        const start = new Date(m.startUtc).getTime();
-        const diff = start - Date.now();
+
         const p = msToParts(diff);
-
         const dayPart = p.days > 0 ? `${p.days}d ` : "";
-        big.textContent = `${dayPart}${pad2(p.hours)}:${pad2(p.mins)}:${pad2(p.secs)}`;
-        mini.textContent = `${m.title} • ${formatUtcLabel(m.startUtc)} • ${formatLocalLabel(m.startUtc)}`;
-      }
-
-      tick();
-      setInterval(tick, 1000);
-    }
-
-    // ---------------- Meeting dropdowns ----------------
-    function populateMeetingSelect(selectEl) {
-      selectEl.innerHTML = "";
-      for (const m of meetings) {
-        const opt = document.createElement("option");
-        opt.value = m.id;
-        opt.textContent = `${m.title} — ${formatUtcLabel(m.startUtc)}`;
-        selectEl.appendChild(opt);
-      }
-    }
-
-    // ---------------- IndexedDB (PDF archive) ----------------
-    const DB_NAME = "imperium_meetings_db_v1";
-    const DB_VERSION = 1;
-    const STORE_NOTES = "notes";
-
-    function openDb() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onupgradeneeded = () => {
-          const db = req.result;
-          if (!db.objectStoreNames.contains(STORE_NOTES)) {
-            const store = db.createObjectStore(STORE_NOTES, { keyPath: "id" });
-            store.createIndex("createdAt", "createdAt");
-            store.createIndex("meetingId", "meetingId");
-          }
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
+        el.textContent = `${dayPart}${pad2(p.hours)}:${pad2(p.mins)}:${pad2(p.secs)}`;
       });
     }
 
-    async function dbPut(storeName, value) {
-      const db = await openDb();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, "readwrite");
-        tx.objectStore(storeName).put(value);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function dbGetAll(storeName) {
-      const db = await openDb();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, "readonly");
-        const req = tx.objectStore(storeName).getAll();
-        req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    async function dbDelete(storeName, key) {
-      const db = await openDb();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, "readwrite");
-        tx.objectStore(storeName).delete(key);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function dbClear(storeName) {
-      const db = await openDb();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, "readwrite");
-        tx.objectStore(storeName).clear();
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    // ---------------- Archive rendering ----------------
-    function meetingById(id) {
-      return meetings.find(m => m.id === id);
+    // ---------------- Archive (shared backend) ----------------
+    async function fetchNotes(meetingId = "") {
+      const url = meetingId ? `/api/notes?meetingId=${encodeURIComponent(meetingId)}` : `/api/notes`;
+      const res = await fetch(url, { method: "GET" });
+      if (!res.ok) throw new Error("Failed to fetch notes");
+      const data = await res.json();
+      return data.notes || [];
     }
 
     function formatWhen(ts) {
@@ -788,252 +695,199 @@
       return `${date}, ${time}`;
     }
 
-    async function renderArchive() {
+    function meetingLabel(meetingId) {
+      const m = meetings.find(x => x.id === meetingId);
+      if (!m) return "Unknown meeting";
+      return `${m.title} — ${formatUtcLabel(m.startUtc)}`;
+    }
+
+    async function loadArchive(meetingId = "") {
       const list = document.getElementById("archive-list");
-      const all = await dbGetAll(STORE_NOTES);
-      all.sort((a,b) => b.createdAt - a.createdAt);
+      list.innerHTML = `<div class="item"><p class="item-title">Loading…</p><div class="item-meta">Fetching shared archive.</div></div>`;
 
-      if (!all.length) {
-        list.innerHTML = `<div class="item"><p class="item-title">No archived notes yet.</p><div class="item-meta">Upload a PDF above.</div></div>`;
-        return;
-      }
+      try {
+        const notes = await fetchNotes(meetingId);
 
-      list.innerHTML = all.map(n => {
-        const m = meetingById(n.meetingId);
-        const meetingLabel = m ? `${m.title} — ${formatUtcLabel(m.startUtc)}` : "Unknown meeting";
-        const title = n.title?.trim() ? n.title.trim() : "Meeting notes";
-        const hasPdf = !!n.pdfBlob;
-        return `
-          <div class="item" data-note-id="${escapeHtml(n.id)}">
-            <div class="item-top">
-              <div>
-                <p class="item-title">${escapeHtml(title)}</p>
-                <div class="item-meta">
-                  <div><strong>Meeting:</strong> ${escapeHtml(meetingLabel)}</div>
-                  <div><strong>Saved:</strong> ${escapeHtml(formatWhen(n.createdAt))}</div>
+        if (!notes.length) {
+          list.innerHTML = `<div class="item"><p class="item-title">No notes found.</p><div class="item-meta">Try ‘Clear’ then ‘Refresh’, or upload minutes as admin.</div></div>`;
+          return;
+        }
+
+        list.innerHTML = notes.map(n => {
+          const title = (n.title && String(n.title).trim()) ? String(n.title).trim() : "Meeting minutes";
+          const overview = (n.overview && String(n.overview).trim()) ? String(n.overview).trim() : "—";
+          const createdAt = n.createdAt ? formatWhen(n.createdAt) : "—";
+          const pdfName = n.pdfName ? String(n.pdfName) : "minutes.pdf";
+
+          return `
+            <div class="item">
+              <div class="item-top">
+                <div>
+                  <p class="item-title">${escapeHtml(title)}</p>
+                  <div class="item-meta">
+                    <div><strong>Meeting:</strong> ${escapeHtml(meetingLabel(n.meetingId))}</div>
+                    <div><strong>Uploaded:</strong> ${escapeHtml(createdAt)}</div>
+                    <div><strong>File:</strong> ${escapeHtml(pdfName)}</div>
+                  </div>
                 </div>
+                <span class="pill">${escapeHtml(n.meetingId || "")}</span>
+              </div>
+
+              <div class="item-meta" style="margin-top:10px;">
+                ${escapeHtml(overview)}
+              </div>
+
+              <div class="item-actions">
+                <a class="btn btn-primary" href="/api/notes-download?id=${encodeURIComponent(n.id)}" target="_blank" rel="noopener noreferrer">Open PDF</a>
+                <a class="btn" href="/api/notes-download?id=${encodeURIComponent(n.id)}" download>Download PDF</a>
               </div>
             </div>
-
-            <div class="item-meta" style="margin-top:10px;">
-              ${escapeHtml(n.overview || "—")}
-            </div>
-
-            <div class="item-actions">
-              ${hasPdf ? `<button class="btn btn-primary" data-action="open-pdf">Open PDF</button>` : ""}
-              ${hasPdf ? `<button class="btn btn-ghost" data-action="download-pdf">Download PDF</button>` : ""}
-              <button class="btn btn-danger" data-action="delete-note">Delete</button>
+          `;
+        }).join("");
+      } catch (e) {
+        list.innerHTML = `
+          <div class="item">
+            <p class="item-title">Archive unavailable</p>
+            <div class="item-meta">
+              The frontend could not reach <code>/api/notes</code>. If you have not deployed the backend Functions yet, this is expected.
             </div>
           </div>
         `;
-      }).join("");
+      }
+    }
 
-      // Bind actions
-      list.querySelectorAll(".item").forEach(el => {
-        el.addEventListener("click", async (e) => {
-          const btn = e.target.closest("button");
-          if (!btn) return;
+    // ---------------- Admin upload ----------------
+    const TOKEN_KEY = "imperium_admin_token_v1";
 
-          const id = el.getAttribute("data-note-id");
-          const action = btn.getAttribute("data-action");
-          const allNotes = await dbGetAll(STORE_NOTES);
-          const note = allNotes.find(x => x.id === id);
-          if (!note) return;
+    function getToken() {
+      return sessionStorage.getItem(TOKEN_KEY) || "";
+    }
+    function setToken(t) {
+      if (t) sessionStorage.setItem(TOKEN_KEY, t);
+      else sessionStorage.removeItem(TOKEN_KEY);
+      updateAdminStatus();
+    }
+    function updateAdminStatus() {
+      const status = document.getElementById("admin-status");
+      status.textContent = getToken() ? "Token saved (this session)" : "Not signed in";
+    }
 
-          if (action === "delete-note") {
-            await dbDelete(STORE_NOTES, id);
-            toast("Deleted.");
-            await renderArchive();
-            return;
-          }
+    async function uploadNote() {
+      const token = getToken();
+      const hint = document.getElementById("upload-hint");
+      hint.textContent = "";
 
-          if (action === "open-pdf" || action === "download-pdf") {
-            if (!note.pdfBlob) return;
-            const url = URL.createObjectURL(note.pdfBlob);
+      if (!token) { toast("Add admin token first."); return; }
 
-            if (action === "open-pdf") {
-              window.open(url, "_blank", "noopener,noreferrer");
-              // Let the browser use it, then revoke later.
-              setTimeout(() => URL.revokeObjectURL(url), 60_000);
-              return;
-            }
+      const meetingId = document.getElementById("upload-meeting").value;
+      const title = document.getElementById("upload-title").value || "";
+      const overview = document.getElementById("upload-overview").value || "";
+      const fileInput = document.getElementById("upload-pdf");
+      const file = fileInput.files && fileInput.files[0];
 
-            if (action === "download-pdf") {
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = note.pdfName || "meeting-notes.pdf";
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              setTimeout(() => URL.revokeObjectURL(url), 10_000);
-              return;
-            }
-          }
-        });
+      if (!meetingId) { toast("Choose a meeting."); return; }
+      if (!(file instanceof File)) { toast("Select a PDF."); return; }
+      if (file.type !== "application/pdf") { toast("PDF only."); return; }
+      if (!overview.trim()) { toast("Add a short overview."); return; }
+
+      const fd = new FormData();
+      fd.append("meetingId", meetingId);
+      fd.append("title", title.trim());
+      fd.append("overview", overview.trim());
+      fd.append("pdf", file);
+
+      hint.textContent = "Uploading…";
+
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: fd
       });
-    }
 
-    // ---------------- Suggestions (localStorage) ----------------
-    const SUG_KEY = "imperium_podk_focus_suggestions_v1";
-
-    function loadSuggestions() {
-      try { return JSON.parse(localStorage.getItem(SUG_KEY) || "[]"); }
-      catch { return []; }
-    }
-    function saveSuggestions(items) {
-      localStorage.setItem(SUG_KEY, JSON.stringify(items));
-    }
-
-    function renderSuggestions() {
-      const list = document.getElementById("suggestions-list");
-      const items = loadSuggestions().sort((a,b) => b.createdAt - a.createdAt);
-
-      if (!items.length) {
-        list.innerHTML = `<div class="item"><p class="item-title">No suggestions yet.</p><div class="item-meta">Add one above.</div></div>`;
+      if (!res.ok) {
+        hint.textContent = "Upload failed. Check token and backend logs.";
+        toast("Upload failed.");
         return;
       }
 
-      list.innerHTML = items.map(s => {
-        const m = meetingById(s.meetingId);
-        const meetingLabel = m ? `${m.title} — ${formatUtcLabel(m.startUtc)}` : "Unknown meeting";
-        const owner = s.owner?.trim() ? ` • Owner: ${escapeHtml(s.owner.trim())}` : "";
-        return `
-          <div class="item" data-sug-id="${escapeHtml(s.id)}">
-            <div class="item-top">
-              <div>
-                <p class="item-title">${escapeHtml(s.text)}</p>
-                <div class="item-meta">
-                  <div><strong>Meeting:</strong> ${escapeHtml(meetingLabel)}${owner}</div>
-                  <div><strong>Added:</strong> ${escapeHtml(formatWhen(s.createdAt))}</div>
-                </div>
-              </div>
-            </div>
+      // Reset fields
+      document.getElementById("upload-title").value = "";
+      document.getElementById("upload-overview").value = "";
+      fileInput.value = "";
+      hint.textContent = "Uploaded successfully.";
 
-            <div class="item-actions">
-              <button class="btn btn-danger" data-action="delete-sug">Delete</button>
-            </div>
-          </div>
-        `;
-      }).join("");
+      toast("Uploaded.");
+      await loadArchive(document.getElementById("filter-meeting").value || "");
+    }
 
-      list.querySelectorAll(".item").forEach(el => {
-        el.addEventListener("click", (e) => {
-          const btn = e.target.closest("button");
-          if (!btn) return;
-          const id = el.getAttribute("data-sug-id");
-          const action = btn.getAttribute("data-action");
-          if (action !== "delete-sug") return;
-
-          const items = loadSuggestions().filter(x => x.id !== id);
-          saveSuggestions(items);
-          toast("Deleted.");
-          renderSuggestions();
-        });
-      });
+    // ---------------- Filter actions ----------------
+    async function applyFilter() {
+      const meetingId = document.getElementById("filter-meeting").value || "";
+      await loadArchive(meetingId);
+    }
+    async function clearFilter() {
+      document.getElementById("filter-meeting").value = "";
+      await loadArchive("");
     }
 
     // ---------------- Init ----------------
     (function init(){
-      // Timezone line
+      // Timezone line + now pill
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
       document.getElementById("tz-line").textContent =
         `Your system timezone: ${tz}. Local times update automatically.`;
 
-      // Meetings + countdown
-      renderMeetings();
-      startCountdown();
+      function tickNow() {
+        const d = new Date();
+        const t = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false }).format(d);
+        document.getElementById("now-pill").textContent = `Now: ${t}`;
+      }
+      tickNow();
+      setInterval(tickNow, 1000);
 
       // Populate selects
-      const noteMeeting = document.getElementById("note-meeting");
-      const focusMeeting = document.getElementById("focus-meeting");
-      populateMeetingSelect(noteMeeting);
-      populateMeetingSelect(focusMeeting);
+      populateMeetingSelect(document.getElementById("filter-meeting"), true);
+      populateMeetingSelect(document.getElementById("upload-meeting"), false);
 
-      // Archive initial render
-      renderArchive().catch(() => {
-        toast("Archive failed to load (IndexedDB blocked?).");
+      // Render dashboard
+      renderMeetings();
+      tickCountdowns();
+      setInterval(tickCountdowns, 1000);
+
+      // Default archive load (all)
+      loadArchive("");
+
+      // Bind archive controls
+      document.getElementById("refresh-archive").addEventListener("click", () => applyFilter());
+      document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
+      document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
+
+      // Admin token controls
+      updateAdminStatus();
+      document.getElementById("save-token").addEventListener("click", () => {
+        const t = document.getElementById("admin-token").value.trim();
+        if (!t) { toast("Token is empty."); return; }
+        setToken(t);
+        document.getElementById("admin-token").value = "";
+        toast("Token saved for this session.");
+      });
+      document.getElementById("clear-token").addEventListener("click", () => {
+        setToken("");
+        toast("Token cleared.");
       });
 
-      // Suggestions initial render
-      renderSuggestions();
+      // Upload button
+      document.getElementById("upload-note").addEventListener("click", () => uploadNote());
 
-      // Save note
-      document.getElementById("save-note").addEventListener("click", async () => {
-        const meetingId = noteMeeting.value;
-        const title = document.getElementById("note-title").value || "";
-        const overview = document.getElementById("note-overview").value || "";
-        const fileInput = document.getElementById("note-pdf");
-        const file = fileInput.files && fileInput.files[0];
-
-        if (!meetingId) { toast("Choose a meeting."); return; }
-        if (!overview.trim() && !file) { toast("Add an overview or a PDF."); return; }
-        if (file && file.type !== "application/pdf") { toast("PDF only."); return; }
-
-        const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
-        const record = {
-          id,
-          meetingId,
-          title: title.trim(),
-          overview: overview.trim(),
-          createdAt: Date.now(),
-          pdfBlob: file ? file : null,
-          pdfName: file ? file.name : ""
-        };
-
-        try {
-          await dbPut(STORE_NOTES, record);
-          document.getElementById("note-title").value = "";
-          document.getElementById("note-overview").value = "";
-          fileInput.value = "";
-          toast("Saved to archive.");
-          await renderArchive();
-        } catch (e) {
-          toast("Could not save (storage blocked or full).");
-        }
-      });
-
-      // Clear archive
-      document.getElementById("clear-archive").addEventListener("click", async () => {
-        const ok = confirm("Clear the entire archive on this device?");
-        if (!ok) return;
-        await dbClear(STORE_NOTES);
-        toast("Archive cleared.");
-        await renderArchive();
-      });
-
-      // Add suggestion
-      document.getElementById("add-suggestion").addEventListener("click", () => {
-        const meetingId = focusMeeting.value;
-        const owner = document.getElementById("focus-owner").value || "";
-        const text = document.getElementById("focus-text").value || "";
-
-        if (!meetingId) { toast("Choose a meeting."); return; }
-        if (!text.trim()) { toast("Write a suggestion."); return; }
-
-        const items = loadSuggestions();
-        items.push({
-          id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
-          meetingId,
-          owner: owner.trim(),
-          text: text.trim(),
-          createdAt: Date.now()
-        });
-        saveSuggestions(items);
-
-        document.getElementById("focus-owner").value = "";
-        document.getElementById("focus-text").value = "";
-        toast("Suggestion added.");
-        renderSuggestions();
-      });
-
-      // Clear suggestions
-      document.getElementById("clear-suggestions").addEventListener("click", () => {
-        const ok = confirm("Clear all suggestions on this device?");
-        if (!ok) return;
-        localStorage.removeItem(SUG_KEY);
-        toast("Suggestions cleared.");
-        renderSuggestions();
-      });
+      // If the page is opened with ?tab=archive&meetingId=m1, apply it
+      const url = new URL(window.location.href);
+      const tab = url.searchParams.get("tab");
+      const meetingId = url.searchParams.get("meetingId") || "";
+      if (tab === "archive") {
+        show("archive");
+        if (meetingId) document.getElementById("filter-meeting").value = meetingId;
+        loadArchive(meetingId);
+      }
     })();
   </script>
 </body>
