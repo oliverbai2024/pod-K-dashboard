@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Meeting Dashboard</title>
+  <title>Project Imperium – Pod K Meeting Dashboard</title>
   <style>
     :root{
       --bg: #ffffff;
@@ -11,9 +11,11 @@
       --muted: rgba(31, 18, 53, .72);
       --border: rgba(31, 18, 53, .12);
       --purple: #b79cff;     /* pastel purple */
-      --purple2:#e9e1ff;     /* lighter pastel */
+      --purple2:#efe9ff;     /* lighter pastel */
       --shadow: 0 12px 30px rgba(31,18,53,.08);
       --radius: 18px;
+      --ok: rgba(183,156,255,.25);
+      --warn: rgba(255, 194, 102, .28);
     }
 
     *{ box-sizing:border-box; }
@@ -25,7 +27,7 @@
       min-height: 100vh;
     }
 
-    .wrap{ max-width: 980px; margin: 0 auto; padding: 22px 16px 56px; }
+    .wrap{ max-width: 1040px; margin: 0 auto; padding: 22px 16px 56px; }
 
     /* Top bar */
     .topbar{
@@ -37,7 +39,7 @@
       z-index: 10;
     }
     .topbar-inner{
-      max-width: 980px;
+      max-width: 1040px;
       margin: 0 auto;
       padding: 14px 16px;
       display:flex;
@@ -47,13 +49,16 @@
     }
     .brand{
       display:flex; align-items:center; gap:10px;
-      font-weight: 700;
+      font-weight: 760;
       letter-spacing: .2px;
+      line-height: 1.2;
+      max-width: 56ch;
     }
     .dot{
       width: 10px; height: 10px; border-radius: 999px;
       background: var(--purple);
       box-shadow: 0 0 0 6px rgba(183,156,255,.22);
+      flex: 0 0 auto;
     }
 
     .tabs{
@@ -64,6 +69,8 @@
       border-radius: 999px;
       background: rgba(233,225,255,.35);
       box-shadow: 0 8px 22px rgba(31,18,53,.06);
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .tab{
       appearance:none;
@@ -73,9 +80,10 @@
       padding: 10px 14px;
       border-radius: 999px;
       cursor:pointer;
-      font-weight: 650;
+      font-weight: 700;
       transition: transform .18s ease, background .18s ease, color .18s ease;
       will-change: transform;
+      white-space: nowrap;
     }
     .tab:hover{ transform: translateY(-1px); }
     .tab[aria-selected="true"]{
@@ -85,10 +93,7 @@
     }
 
     /* Views + animation */
-    .views{
-      position: relative;
-      margin-top: 22px;
-    }
+    .views{ position: relative; margin-top: 18px; }
     .view{
       background: rgba(255,255,255,.9);
       border: 1px solid var(--border);
@@ -107,13 +112,14 @@
       pointer-events:none;
     }
 
-    /* Cards */
+    /* Header blocks */
     .header{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap: 14px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
     }
     h1{ font-size: 20px; margin: 0; }
     .sub{
@@ -123,13 +129,40 @@
       line-height: 1.4;
     }
 
+    /* Countdown */
+    .countdown{
+      border: 1px solid rgba(183,156,255,.40);
+      background: linear-gradient(180deg, #fff, rgba(233,225,255,.25));
+      border-radius: 16px;
+      padding: 12px 14px;
+      min-width: 280px;
+      box-shadow: 0 10px 24px rgba(31,18,53,.06);
+    }
+    .countdown .kicker{
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 650;
+    }
+    .countdown .big{
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: .2px;
+    }
+    .countdown .mini{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Grid + cards */
     .grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 14px;
     }
-    @media (max-width: 860px){ .grid{ grid-template-columns: 1fr; } }
+    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
 
     .card{
       border: 1px solid var(--border);
@@ -137,6 +170,10 @@
       background: linear-gradient(180deg, #fff, rgba(233,225,255,.18));
       padding: 14px;
       box-shadow: 0 10px 24px rgba(31,18,53,.06);
+    }
+    .card.next{
+      border-color: rgba(183,156,255,.55);
+      box-shadow: 0 16px 34px rgba(183,156,255,.20);
     }
     .card-top{
       display:flex;
@@ -152,19 +189,16 @@
       border: 1px solid rgba(183,156,255,.35);
       padding: 6px 10px;
       border-radius: 999px;
-      font-weight: 650;
+      font-weight: 750;
       white-space: nowrap;
     }
     .title{
-      font-weight: 760;
+      font-weight: 820;
       font-size: 15px;
       margin: 0;
     }
-    .times{
-      margin-top: 10px;
-      display:grid;
-      gap: 8px;
-    }
+
+    .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
       display:flex; justify-content:space-between; gap: 10px;
       padding: 10px 10px;
@@ -173,7 +207,7 @@
       background: rgba(255,255,255,.85);
     }
     .label{ font-size: 12px; color: var(--muted); }
-    .value{ font-size: 13px; font-weight: 700; }
+    .value{ font-size: 13px; font-weight: 750; }
 
     .actions{
       display:flex;
@@ -189,46 +223,146 @@
       text-decoration:none;
       border-radius: 12px;
       padding: 10px 12px;
-      font-weight: 700;
+      font-weight: 750;
       font-size: 13px;
       transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
       will-change: transform;
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select:none;
     }
     .btn:hover{ transform: translateY(-1px); }
     .btn-primary{
       background: var(--purple);
       color: #1a0f2e;
       box-shadow: 0 12px 24px rgba(183,156,255,.35);
-      border: 1px solid rgba(183,156,255,.55);
+      border-color: rgba(183,156,255,.55);
     }
     .btn-ghost{
       background: rgba(233,225,255,.45);
       color: var(--ink);
-      border: 1px solid rgba(183,156,255,.35);
+      border-color: rgba(183,156,255,.35);
+    }
+    .btn-danger{
+      background: rgba(255, 194, 102, .22);
+      border-color: rgba(255, 194, 102, .45);
+      color: var(--ink);
     }
 
-    /* Notes */
-    textarea{
-      width: 100%;
-      min-height: 260px;
-      resize: vertical;
-      padding: 14px;
+    /* Forms */
+    .panel{
+      border: 1px solid var(--border);
       border-radius: 16px;
+      background: rgba(255,255,255,.85);
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(31,18,53,.06);
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 920px){ .form-grid{ grid-template-columns: 1fr; } }
+
+    label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 650;
+      margin-bottom: 6px;
+    }
+    input[type="text"], select, textarea{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
       border: 1px solid var(--border);
       outline: none;
       font-size: 14px;
-      line-height: 1.5;
-      background: rgba(255,255,255,.9);
+      line-height: 1.4;
+      background: rgba(255,255,255,.92);
     }
-    textarea:focus{
+    textarea{ min-height: 120px; resize: vertical; }
+    input:focus, select:focus, textarea:focus{
       border-color: rgba(183,156,255,.9);
       box-shadow: 0 0 0 6px rgba(183,156,255,.20);
     }
-    .note-hint{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
+    input[type="file"]{
+      width:100%;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px dashed rgba(31,18,53,.22);
+      background: rgba(233,225,255,.18);
     }
+
+    /* Lists */
+    .list{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .item{
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff, rgba(233,225,255,.14));
+      padding: 12px 12px;
+      box-shadow: 0 10px 24px rgba(31,18,53,.05);
+    }
+    .item-top{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      align-items:flex-start;
+      flex-wrap: wrap;
+    }
+    .item-title{
+      font-weight: 820;
+      font-size: 14px;
+      margin: 0;
+    }
+    .item-meta{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+    .item-actions{
+      margin-top: 10px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 100;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(183,156,255,.45);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: 0 16px 40px rgba(31,18,53,.12);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .tab, .view, .btn, .toast{ transition: none !important; }
+      .tab:hover, .btn:hover{ transform:none !important; }
+    }
+
     code.inline{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       background: rgba(233,225,255,.55);
@@ -245,12 +379,13 @@
     <div class="topbar-inner">
       <div class="brand">
         <span class="dot" aria-hidden="true"></span>
-        <span>Mercor Meetings</span>
+        <span>Project Imperium – Pod K Meeting Dashboard</span>
       </div>
 
       <div class="tabs" role="tablist" aria-label="Dashboard tabs">
         <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
         <button class="tab" id="tab-notes" role="tab" aria-selected="false" aria-controls="view-notes">Meeting Notes</button>
+        <button class="tab" id="tab-focus" role="tab" aria-selected="false" aria-controls="view-focus">Next Meeting Focus</button>
       </div>
     </div>
   </div>
@@ -264,64 +399,149 @@
             <h1>Meeting Dashboard</h1>
             <div class="sub" id="tz-line"></div>
           </div>
+
+          <div class="countdown" aria-live="polite">
+            <div class="kicker">Countdown to next meeting</div>
+            <div class="big" id="countdown-big">–</div>
+            <div class="mini" id="countdown-mini">–</div>
+          </div>
         </div>
 
         <div class="grid" id="cards"></div>
       </section>
 
-      <!-- Notes view -->
+      <!-- Notes / Archive view -->
       <section class="view hidden" id="view-notes" role="tabpanel" aria-labelledby="tab-notes">
         <div class="header">
           <div>
-            <h1>Meeting Notes</h1>
-            <div class="sub">Notes are saved locally in your browser.</div>
+            <h1>Meeting Notes Archive</h1>
+            <div class="sub">
+              Upload a PDF and add a short overview. Stored locally on this device via <code class="inline">IndexedDB</code>.
+            </div>
           </div>
-          <a class="btn btn-ghost" href="#" id="clear-notes">Clear</a>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-danger" id="clear-archive">Clear archive</button>
+          </div>
         </div>
 
-        <textarea id="notes" placeholder="Write notes here…"></textarea>
-        <div class="note-hint">
-          Uses <code class="inline">localStorage</code>. If you want shared notes, you’ll need a backend (e.g. Cloudflare D1 + API).
+        <div class="panel">
+          <div class="form-grid">
+            <div>
+              <label for="note-meeting">Meeting</label>
+              <select id="note-meeting"></select>
+            </div>
+            <div>
+              <label for="note-title">Title (optional)</label>
+              <input id="note-title" type="text" placeholder="e.g. Decisions, actions, blockers" />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="note-overview">Overview</label>
+              <textarea id="note-overview" placeholder="Short summary, action points, owners, deadlines…"></textarea>
+            </div>
+            <div>
+              <label for="note-pdf">PDF</label>
+              <input id="note-pdf" type="file" accept="application/pdf" />
+              <div class="sub" style="margin-top:10px;">
+                Tip: keep PDFs modest in size. This is browser storage, not a shared drive.
+              </div>
+            </div>
+          </div>
+
+          <div class="actions" style="margin-top:12px;">
+            <button class="btn btn-primary" id="save-note">Save to archive</button>
+          </div>
         </div>
+
+        <div class="list" id="archive-list" style="margin-top:14px;"></div>
+      </section>
+
+      <!-- Focus view -->
+      <section class="view hidden" id="view-focus" role="tabpanel" aria-labelledby="tab-focus">
+        <div class="header">
+          <div>
+            <h1>Next Meeting Focus</h1>
+            <div class="sub">Capture suggestions for what to prioritise next time. Saved locally on this device.</div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-danger" id="clear-suggestions">Clear suggestions</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="form-grid">
+            <div>
+              <label for="focus-meeting">Related meeting</label>
+              <select id="focus-meeting"></select>
+            </div>
+            <div>
+              <label for="focus-owner">Suggested owner (optional)</label>
+              <input id="focus-owner" type="text" placeholder="e.g. Skye / Oliver / EPM / Reviewer lead" />
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label for="focus-text">Suggestion</label>
+            <textarea id="focus-text" placeholder="e.g. Clarify QA bottleneck owners and SLA; decide next week’s target sample size; align on escalation rules."></textarea>
+          </div>
+
+          <div class="actions" style="margin-top:12px;">
+            <button class="btn btn-primary" id="add-suggestion">Add suggestion</button>
+          </div>
+        </div>
+
+        <div class="list" id="suggestions-list" style="margin-top:14px;"></div>
       </section>
     </div>
   </div>
 
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script>
-    // ------------- Data (UTC) -------------
-    // For accuracy across timezones: store UTC start/end as ISO strings with 'Z'.
-    // You said: 27 Feb 5pm, 2 Mar 4pm, 4 Mar 5pm (GMT).
-    // Assuming these are GMT/UTC times. Adjust years if needed.
+    // ---------------- Data (UTC) ----------------
+    // Store meeting times as UTC (Z). Edit these and the meeting links/titles.
     const meetings = [
       {
         id: "m1",
         title: "Meeting – 27 Feb",
         startUtc: "2026-02-27T17:00:00Z",
         endUtc:   "2026-02-27T17:30:00Z",
-        meetLink: "https://example.com/meeting-1" // replace
+        meetLink: "https://example.com/meeting-1"
       },
       {
         id: "m2",
         title: "Meeting – 2 Mar",
         startUtc: "2026-03-02T16:00:00Z",
         endUtc:   "2026-03-02T16:30:00Z",
-        meetLink: "https://example.com/meeting-2" // replace
+        meetLink: "https://example.com/meeting-2"
       },
       {
         id: "m3",
         title: "Meeting – 4 Mar",
         startUtc: "2026-03-04T17:00:00Z",
         endUtc:   "2026-03-04T17:30:00Z",
-        meetLink: "https://example.com/meeting-3" // replace
+        meetLink: "https://example.com/meeting-3"
       }
     ];
 
-    // ------------- Helpers -------------
+    // ---------------- Utilities ----------------
     const pad2 = (n) => String(n).padStart(2, "0");
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
     function formatUtcLabel(isoZ) {
       const d = new Date(isoZ);
-      // Show as '27 Feb 2026, 17:00 (GMT)'
       const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" }).format(d);
       const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
       return `${date}, ${time} (GMT)`;
@@ -329,16 +549,15 @@
 
     function formatLocalLabel(isoZ) {
       const d = new Date(isoZ);
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "local time";
       const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
       const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
-      // Also show timezone abbreviation if available
-      const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" }).formatToParts(d).find(p => p.type === "timeZoneName")?.value;
-      const suffix = tzAbbr ? `${tzAbbr}` : tz;
-      return `${date}, ${time} (${suffix})`;
+      const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" })
+        .formatToParts(d)
+        .find(p => p.type === "timeZoneName")?.value;
+      return `${date}, ${time} (${tzAbbr || "local"})`;
     }
 
-    // Google Calendar expects dates in YYYYMMDDTHHMMSSZ format (UTC).
+    // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
       return (
@@ -357,21 +576,73 @@
       const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
       const dates = `${toGCalUtc(startUtc)}/${toGCalUtc(endUtc)}`;
       const details = `Meeting link: ${meetLink}`;
-      const location = meetLink; // often useful; can also be blank
-      const params = new URLSearchParams({
-        text: title,
-        dates,
-        details,
-        location
-      });
+      const location = meetLink;
+      const params = new URLSearchParams({ text: title, dates, details, location });
       return `${base}&${params.toString()}`;
     }
 
-    function cardHtml(m, idx) {
-      const badge = idx === 0 ? "Next up" : "Upcoming";
+    function msToParts(ms) {
+      const total = Math.max(0, Math.floor(ms / 1000));
+      const days = Math.floor(total / 86400);
+      const hours = Math.floor((total % 86400) / 3600);
+      const mins = Math.floor((total % 3600) / 60);
+      const secs = total % 60;
+      return { days, hours, mins, secs };
+    }
+
+    // ---------------- Toast ----------------
+    let toastTimer = null;
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    // ---------------- Tabs ----------------
+    const tabDashboard = document.getElementById("tab-dashboard");
+    const tabNotes = document.getElementById("tab-notes");
+    const tabFocus = document.getElementById("tab-focus");
+
+    const viewDashboard = document.getElementById("view-dashboard");
+    const viewNotes = document.getElementById("view-notes");
+    const viewFocus = document.getElementById("view-focus");
+
+    function show(which) {
+      const map = {
+        dashboard: { tab: tabDashboard, view: viewDashboard },
+        notes:     { tab: tabNotes,     view: viewNotes },
+        focus:     { tab: tabFocus,     view: viewFocus }
+      };
+
+      for (const k of Object.keys(map)) {
+        const isOn = k === which;
+        map[k].tab.setAttribute("aria-selected", String(isOn));
+        map[k].view.classList.toggle("hidden", !isOn);
+      }
+    }
+    tabDashboard.addEventListener("click", () => show("dashboard"));
+    tabNotes.addEventListener("click", () => show("notes"));
+    tabFocus.addEventListener("click", () => show("focus"));
+
+    // ---------------- Render meetings ----------------
+    function getNextMeetingIndex() {
+      const now = Date.now();
+      const future = meetings
+        .map((m, i) => ({ i, t: new Date(m.startUtc).getTime() }))
+        .filter(x => x.t > now)
+        .sort((a,b) => a.t - b.t);
+      return future.length ? future[0].i : -1;
+    }
+
+    function cardHtml(m, idx, nextIdx) {
+      const isNext = idx === nextIdx;
+      const badge = isNext ? "Next up" : "Upcoming";
       const gcal = makeGoogleCalendarUrl(m);
+
       return `
-        <article class="card">
+        <article class="card ${isNext ? "next" : ""}">
           <div class="card-top">
             <p class="title">${escapeHtml(m.title)}</p>
             <span class="badge">${badge}</span>
@@ -392,7 +663,7 @@
             <a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">
               Add to Google Calendar
             </a>
-            <a class="btn btn-ghost" href="${escapeAttr(m.meetLink)}" target="_blank" rel="noopener noreferrer">
+            <a class="btn btn-ghost" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">
               Open meeting link
             </a>
           </div>
@@ -400,60 +671,370 @@
       `;
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function renderMeetings() {
+      const nextIdx = getNextMeetingIndex();
+      const cardsEl = document.getElementById("cards");
+      cardsEl.innerHTML = meetings.map((m, i) => cardHtml(m, i, nextIdx)).join("");
+      return nextIdx;
     }
-    function escapeAttr(str) { return escapeHtml(str); }
 
-    // ------------- Render -------------
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown timezone";
-    document.getElementById("tz-line").textContent = `Your system timezone: ${tz}. Local times below are calculated automatically.`;
+    // ---------------- Countdown ----------------
+    function startCountdown() {
+      const big = document.getElementById("countdown-big");
+      const mini = document.getElementById("countdown-mini");
 
-    const cardsEl = document.getElementById("cards");
-    cardsEl.innerHTML = meetings.map((m, i) => cardHtml(m, i)).join("");
+      function tick() {
+        const nextIdx = getNextMeetingIndex();
+        if (nextIdx === -1) {
+          big.textContent = "No upcoming meetings";
+          mini.textContent = "Add more dates in index.html.";
+          return;
+        }
+        const m = meetings[nextIdx];
+        const start = new Date(m.startUtc).getTime();
+        const diff = start - Date.now();
+        const p = msToParts(diff);
 
-    // ------------- Tab switching with smooth transitions -------------
-    const tabDashboard = document.getElementById("tab-dashboard");
-    const tabNotes = document.getElementById("tab-notes");
-    const viewDashboard = document.getElementById("view-dashboard");
-    const viewNotes = document.getElementById("view-notes");
+        const dayPart = p.days > 0 ? `${p.days}d ` : "";
+        big.textContent = `${dayPart}${pad2(p.hours)}:${pad2(p.mins)}:${pad2(p.secs)}`;
+        mini.textContent = `${m.title} • ${formatUtcLabel(m.startUtc)} • ${formatLocalLabel(m.startUtc)}`;
+      }
 
-    function show(which) {
-      const isDash = which === "dashboard";
+      tick();
+      setInterval(tick, 1000);
+    }
 
-      tabDashboard.setAttribute("aria-selected", String(isDash));
-      tabNotes.setAttribute("aria-selected", String(!isDash));
-
-      if (isDash) {
-        viewDashboard.classList.remove("hidden");
-        viewNotes.classList.add("hidden");
-      } else {
-        viewNotes.classList.remove("hidden");
-        viewDashboard.classList.add("hidden");
+    // ---------------- Meeting dropdowns ----------------
+    function populateMeetingSelect(selectEl) {
+      selectEl.innerHTML = "";
+      for (const m of meetings) {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = `${m.title} — ${formatUtcLabel(m.startUtc)}`;
+        selectEl.appendChild(opt);
       }
     }
 
-    tabDashboard.addEventListener("click", () => show("dashboard"));
-    tabNotes.addEventListener("click", () => show("notes"));
+    // ---------------- IndexedDB (PDF archive) ----------------
+    const DB_NAME = "imperium_meetings_db_v1";
+    const DB_VERSION = 1;
+    const STORE_NOTES = "notes";
 
-    // ------------- Notes persistence -------------
-    const notesEl = document.getElementById("notes");
-    const clearBtn = document.getElementById("clear-notes");
-    const LS_KEY = "mercor_meeting_notes_v1";
+    function openDb() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(STORE_NOTES)) {
+            const store = db.createObjectStore(STORE_NOTES, { keyPath: "id" });
+            store.createIndex("createdAt", "createdAt");
+            store.createIndex("meetingId", "meetingId");
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
 
-    notesEl.value = localStorage.getItem(LS_KEY) || "";
-    notesEl.addEventListener("input", () => localStorage.setItem(LS_KEY, notesEl.value));
+    async function dbPut(storeName, value) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        tx.objectStore(storeName).put(value);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
 
-    clearBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      notesEl.value = "";
-      localStorage.removeItem(LS_KEY);
-    });
+    async function dbGetAll(storeName) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbDelete(storeName, key) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        tx.objectStore(storeName).delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function dbClear(storeName) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        tx.objectStore(storeName).clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    // ---------------- Archive rendering ----------------
+    function meetingById(id) {
+      return meetings.find(m => m.id === id);
+    }
+
+    function formatWhen(ts) {
+      const d = new Date(ts);
+      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
+      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
+      return `${date}, ${time}`;
+    }
+
+    async function renderArchive() {
+      const list = document.getElementById("archive-list");
+      const all = await dbGetAll(STORE_NOTES);
+      all.sort((a,b) => b.createdAt - a.createdAt);
+
+      if (!all.length) {
+        list.innerHTML = `<div class="item"><p class="item-title">No archived notes yet.</p><div class="item-meta">Upload a PDF above.</div></div>`;
+        return;
+      }
+
+      list.innerHTML = all.map(n => {
+        const m = meetingById(n.meetingId);
+        const meetingLabel = m ? `${m.title} — ${formatUtcLabel(m.startUtc)}` : "Unknown meeting";
+        const title = n.title?.trim() ? n.title.trim() : "Meeting notes";
+        const hasPdf = !!n.pdfBlob;
+        return `
+          <div class="item" data-note-id="${escapeHtml(n.id)}">
+            <div class="item-top">
+              <div>
+                <p class="item-title">${escapeHtml(title)}</p>
+                <div class="item-meta">
+                  <div><strong>Meeting:</strong> ${escapeHtml(meetingLabel)}</div>
+                  <div><strong>Saved:</strong> ${escapeHtml(formatWhen(n.createdAt))}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="item-meta" style="margin-top:10px;">
+              ${escapeHtml(n.overview || "—")}
+            </div>
+
+            <div class="item-actions">
+              ${hasPdf ? `<button class="btn btn-primary" data-action="open-pdf">Open PDF</button>` : ""}
+              ${hasPdf ? `<button class="btn btn-ghost" data-action="download-pdf">Download PDF</button>` : ""}
+              <button class="btn btn-danger" data-action="delete-note">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // Bind actions
+      list.querySelectorAll(".item").forEach(el => {
+        el.addEventListener("click", async (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) return;
+
+          const id = el.getAttribute("data-note-id");
+          const action = btn.getAttribute("data-action");
+          const allNotes = await dbGetAll(STORE_NOTES);
+          const note = allNotes.find(x => x.id === id);
+          if (!note) return;
+
+          if (action === "delete-note") {
+            await dbDelete(STORE_NOTES, id);
+            toast("Deleted.");
+            await renderArchive();
+            return;
+          }
+
+          if (action === "open-pdf" || action === "download-pdf") {
+            if (!note.pdfBlob) return;
+            const url = URL.createObjectURL(note.pdfBlob);
+
+            if (action === "open-pdf") {
+              window.open(url, "_blank", "noopener,noreferrer");
+              // Let the browser use it, then revoke later.
+              setTimeout(() => URL.revokeObjectURL(url), 60_000);
+              return;
+            }
+
+            if (action === "download-pdf") {
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = note.pdfName || "meeting-notes.pdf";
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              setTimeout(() => URL.revokeObjectURL(url), 10_000);
+              return;
+            }
+          }
+        });
+      });
+    }
+
+    // ---------------- Suggestions (localStorage) ----------------
+    const SUG_KEY = "imperium_podk_focus_suggestions_v1";
+
+    function loadSuggestions() {
+      try { return JSON.parse(localStorage.getItem(SUG_KEY) || "[]"); }
+      catch { return []; }
+    }
+    function saveSuggestions(items) {
+      localStorage.setItem(SUG_KEY, JSON.stringify(items));
+    }
+
+    function renderSuggestions() {
+      const list = document.getElementById("suggestions-list");
+      const items = loadSuggestions().sort((a,b) => b.createdAt - a.createdAt);
+
+      if (!items.length) {
+        list.innerHTML = `<div class="item"><p class="item-title">No suggestions yet.</p><div class="item-meta">Add one above.</div></div>`;
+        return;
+      }
+
+      list.innerHTML = items.map(s => {
+        const m = meetingById(s.meetingId);
+        const meetingLabel = m ? `${m.title} — ${formatUtcLabel(m.startUtc)}` : "Unknown meeting";
+        const owner = s.owner?.trim() ? ` • Owner: ${escapeHtml(s.owner.trim())}` : "";
+        return `
+          <div class="item" data-sug-id="${escapeHtml(s.id)}">
+            <div class="item-top">
+              <div>
+                <p class="item-title">${escapeHtml(s.text)}</p>
+                <div class="item-meta">
+                  <div><strong>Meeting:</strong> ${escapeHtml(meetingLabel)}${owner}</div>
+                  <div><strong>Added:</strong> ${escapeHtml(formatWhen(s.createdAt))}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="item-actions">
+              <button class="btn btn-danger" data-action="delete-sug">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      list.querySelectorAll(".item").forEach(el => {
+        el.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) return;
+          const id = el.getAttribute("data-sug-id");
+          const action = btn.getAttribute("data-action");
+          if (action !== "delete-sug") return;
+
+          const items = loadSuggestions().filter(x => x.id !== id);
+          saveSuggestions(items);
+          toast("Deleted.");
+          renderSuggestions();
+        });
+      });
+    }
+
+    // ---------------- Init ----------------
+    (function init(){
+      // Timezone line
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
+      document.getElementById("tz-line").textContent =
+        `Your system timezone: ${tz}. Local times update automatically.`;
+
+      // Meetings + countdown
+      renderMeetings();
+      startCountdown();
+
+      // Populate selects
+      const noteMeeting = document.getElementById("note-meeting");
+      const focusMeeting = document.getElementById("focus-meeting");
+      populateMeetingSelect(noteMeeting);
+      populateMeetingSelect(focusMeeting);
+
+      // Archive initial render
+      renderArchive().catch(() => {
+        toast("Archive failed to load (IndexedDB blocked?).");
+      });
+
+      // Suggestions initial render
+      renderSuggestions();
+
+      // Save note
+      document.getElementById("save-note").addEventListener("click", async () => {
+        const meetingId = noteMeeting.value;
+        const title = document.getElementById("note-title").value || "";
+        const overview = document.getElementById("note-overview").value || "";
+        const fileInput = document.getElementById("note-pdf");
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!meetingId) { toast("Choose a meeting."); return; }
+        if (!overview.trim() && !file) { toast("Add an overview or a PDF."); return; }
+        if (file && file.type !== "application/pdf") { toast("PDF only."); return; }
+
+        const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+        const record = {
+          id,
+          meetingId,
+          title: title.trim(),
+          overview: overview.trim(),
+          createdAt: Date.now(),
+          pdfBlob: file ? file : null,
+          pdfName: file ? file.name : ""
+        };
+
+        try {
+          await dbPut(STORE_NOTES, record);
+          document.getElementById("note-title").value = "";
+          document.getElementById("note-overview").value = "";
+          fileInput.value = "";
+          toast("Saved to archive.");
+          await renderArchive();
+        } catch (e) {
+          toast("Could not save (storage blocked or full).");
+        }
+      });
+
+      // Clear archive
+      document.getElementById("clear-archive").addEventListener("click", async () => {
+        const ok = confirm("Clear the entire archive on this device?");
+        if (!ok) return;
+        await dbClear(STORE_NOTES);
+        toast("Archive cleared.");
+        await renderArchive();
+      });
+
+      // Add suggestion
+      document.getElementById("add-suggestion").addEventListener("click", () => {
+        const meetingId = focusMeeting.value;
+        const owner = document.getElementById("focus-owner").value || "";
+        const text = document.getElementById("focus-text").value || "";
+
+        if (!meetingId) { toast("Choose a meeting."); return; }
+        if (!text.trim()) { toast("Write a suggestion."); return; }
+
+        const items = loadSuggestions();
+        items.push({
+          id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
+          meetingId,
+          owner: owner.trim(),
+          text: text.trim(),
+          createdAt: Date.now()
+        });
+        saveSuggestions(items);
+
+        document.getElementById("focus-owner").value = "";
+        document.getElementById("focus-text").value = "";
+        toast("Suggestion added.");
+        renderSuggestions();
+      });
+
+      // Clear suggestions
+      document.getElementById("clear-suggestions").addEventListener("click", () => {
+        const ok = confirm("Clear all suggestions on this device?");
+        if (!ok) return;
+        localStorage.removeItem(SUG_KEY);
+        toast("Suggestions cleared.");
+        renderSuggestions();
+      });
+    })();
   </script>
 </body>
 </html>
