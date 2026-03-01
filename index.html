@@ -36,7 +36,6 @@
     }
     .wrap{ max-width: 1040px; margin: 0 auto; padding: 18px 16px 56px; }
 
-    /* Top bar */
     .topbar{
       position: sticky;
       top: 0;
@@ -88,10 +87,8 @@
       background: #2f2f33;
       color: #fff;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      font-weight: 600;
     }
 
-    /* Views */
     .views{ position: relative; margin-top: 16px; }
     .view{
       background: var(--panel);
@@ -127,7 +124,6 @@
       line-height: 1.4;
       font-weight: 400;
     }
-
     .divider{
       height:1px;
       background: var(--border);
@@ -135,7 +131,6 @@
       margin: 12px 0;
     }
 
-    /* Cards */
     .grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -178,16 +173,8 @@
       background: rgba(0,0,0,.02);
       color: var(--ink);
     }
-    .badge-next{
-      background: var(--next-bg);
-      border-color: var(--next-br);
-      color: var(--next-tx);
-    }
-    .badge-pass{
-      background: var(--pass-bg);
-      border-color: var(--pass-br);
-      color: var(--pass-tx);
-    }
+    .badge-next{ background: var(--next-bg); border-color: var(--next-br); color: var(--next-tx); }
+    .badge-pass{ background: var(--pass-bg); border-color: var(--pass-br); color: var(--pass-tx); }
 
     .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
@@ -242,8 +229,6 @@
       border-color: #2f2f33;
       font-weight: 600;
     }
-
-    /* Disabled button style (for missing links/details) */
     .btn.disabled,
     .btn[aria-disabled="true"]{
       opacity: .45;
@@ -253,7 +238,6 @@
       transform: none;
     }
 
-    /* Archive */
     .panel{
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -276,7 +260,7 @@
       font-weight: 400;
       margin-bottom: 6px;
     }
-    input[type="text"], input[type="password"], select, textarea{
+    select{
       width: 100%;
       padding: 12px 12px;
       border-radius: 14px;
@@ -288,18 +272,9 @@
       color: var(--ink);
       font-weight: 400;
     }
-    textarea{ min-height: 120px; resize: vertical; }
-    input:focus, select:focus, textarea:focus{
+    select:focus{
       border-color: rgba(47,47,51,.28);
       box-shadow: 0 0 0 6px var(--focus);
-    }
-    input[type="file"]{
-      width:100%;
-      padding: 10px;
-      border-radius: 14px;
-      border: 1px dashed rgba(47,47,51,.25);
-      background: rgba(0,0,0,.02);
-      font-weight: 400;
     }
 
     .list{ margin-top: 12px; display:grid; gap: 10px; }
@@ -346,17 +321,18 @@
       font-weight: 500;
       color: var(--ink);
     }
-    code.inline{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      background: rgba(0,0,0,.03);
-      border: 1px solid var(--border);
-      padding: 1px 6px;
-      border-radius: 8px;
+    .toggle-link{
+      border: none;
+      background: none;
+      padding: 0;
+      margin-left: 8px;
+      cursor: pointer;
+      text-decoration: underline;
       font-size: 12px;
-      font-weight: 400;
+      color: var(--ink);
+      font-weight: 500;
     }
 
-    /* Toast */
     .toast{
       position: fixed;
       bottom: 16px;
@@ -400,6 +376,7 @@
 
   <div class="wrap">
     <div class="views">
+      <!-- Dashboard -->
       <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="header">
           <div>
@@ -414,11 +391,12 @@
         <div class="grid" id="cards"></div>
       </section>
 
+      <!-- Archive -->
       <section class="view hidden" id="view-archive" role="tabpanel" aria-labelledby="tab-archive">
         <div class="header">
           <div>
             <h1>Meeting Notes Archive</h1>
-            <div class="sub">Shared archive. Minutes are uploaded by an admin and visible to everyone.</div>
+            <div class="sub">Shared archive (frontend-only). To add notes, edit the <span class="pill">notes</span> array in the HTML.</div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn" id="refresh-archive">Refresh</button>
@@ -444,57 +422,6 @@
           </div>
         </div>
 
-        <div class="panel" id="admin-panel" style="margin-top:12px; display:none;">
-          <div class="item-top">
-            <div>
-              <p class="item-title">Admin: upload minutes (PDF)</p>
-              <div class="item-meta">
-                Only shown when you open the site with <code class="inline">?admin=1</code>. Upload still requires the admin token.
-              </div>
-            </div>
-            <span class="pill" id="admin-status">Not signed in</span>
-          </div>
-
-          <div class="form-grid">
-            <div>
-              <label for="admin-token">Admin token</label>
-              <input id="admin-token" type="password" placeholder="Paste token, press ‘Save token’" />
-              <div class="actions" style="margin-top:10px;">
-                <button class="btn btn-primary" id="save-token">Save token</button>
-                <button class="btn" id="clear-token">Clear token</button>
-              </div>
-              <div class="sub" style="margin-top:8px;">Token is saved only for this browser session.</div>
-            </div>
-
-            <div>
-              <label for="upload-meeting">Meeting</label>
-              <select id="upload-meeting"></select>
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <div>
-              <label for="upload-title">Title (optional)</label>
-              <input id="upload-title" type="text" placeholder="e.g. Minutes, decisions, actions" />
-            </div>
-            <div>
-              <label for="upload-pdf">PDF</label>
-              <input id="upload-pdf" type="file" accept="application/pdf" />
-            </div>
-          </div>
-
-          <div style="margin-top:12px;">
-            <label for="upload-overview">Overview / summary</label>
-            <textarea id="upload-overview" placeholder="Short summary, action points, owners, deadlines…"></textarea>
-          </div>
-
-          <div class="actions" style="margin-top:12px;">
-            <button class="btn btn-primary" id="upload-note">Upload to archive</button>
-          </div>
-
-          <div class="sub" id="upload-hint" style="margin-top:10px;"></div>
-        </div>
-
         <div class="list" id="archive-list" style="margin-top:12px;"></div>
       </section>
     </div>
@@ -503,15 +430,35 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // Meetings (UTC). Edit meetLink values as needed.
+    // ---------------- Meetings (UTC) ----------------
+    // Edit meetLink, times, titles here.
     const meetings = [
       { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
       { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
       { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"" }
     ];
 
-    const pad2 = (n) => String(n).padStart(2, "0");
+    // ---------------- Notes (frontend-only archive) ----------------
+    // To add notes: add another object to this array.
+    // pdfUrl is optional. If you host a PDF in your repo (e.g. /minutes/2026-02-27.pdf), put the path here.
+    const notes = [
+      {
+        id: "n-2026-02-27",
+        meetingId: "m1",
+        title: "Minutes – 27 Feb (Pod K Kick-off)",
+        createdAt: "2026-02-27T18:00:00Z",
+        overview:
+          "Oliver (EPM) introduced himself, highlighting a background in project management and law. " +
+          "Harsh and Ivan were introduced as technical leads with software engineering backgrounds and strong familiarity with the task workflow, and confirmed availability for technical questions. " +
+          "The group discussed the recent contract payment changes announced by Max, including how the structure becomes more favourable once the first two tasks are completed. " +
+          "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly). " +
+          "Oliver closed by thanking everyone and confirming that future office hours will focus on specific areas in more depth.",
+        pdfUrl: ""  // e.g. "/minutes/2026-02-27.pdf"
+      }
+    ];
 
+    // ---------------- Helpers ----------------
+    const pad2 = (n) => String(n).padStart(2, "0");
     function escapeHtml(str) {
       return String(str)
         .replaceAll("&", "&amp;")
@@ -547,7 +494,6 @@
       return { days, hours, mins, secs };
     }
 
-    // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
       return (
@@ -571,7 +517,7 @@
       return `${base}&${params.toString()}`;
     }
 
-    // Toast
+    // ---------------- Toast ----------------
     let toastTimer = null;
     function toast(msg) {
       const el = document.getElementById("toast");
@@ -581,7 +527,7 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
-    // Tabs
+    // ---------------- Tabs ----------------
     const tabDashboard = document.getElementById("tab-dashboard");
     const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
@@ -598,6 +544,7 @@
     tabDashboard.addEventListener("click", () => show("dashboard"));
     tabArchive.addEventListener("click", () => show("archive"));
 
+    // ---------------- Selects ----------------
     function populateMeetingSelect(selectEl, includeAll = false) {
       selectEl.innerHTML = "";
       if (includeAll) {
@@ -629,7 +576,7 @@
       return "badge";
     }
 
-    // FULL cardHtml with disabled buttons
+    // ---------------- Dashboard cards ----------------
     function cardHtml(m, idx, nextIdx) {
       const now = Date.now();
       const start = new Date(m.startUtc).getTime();
@@ -639,10 +586,6 @@
       const countdownBlock = passed
         ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
         : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
-
-      const notesBtn = passed
-        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
-        : "";
 
       const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
       const gcal = hasCalendar ? makeGoogleCalendarUrl(m) : "";
@@ -654,6 +597,10 @@
       const meetBtn = hasMeetLink
         ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
         : `<span class="btn disabled" aria-disabled="true" title="Meeting link not set">Open meeting link</span>`;
+
+      const notesBtn = passed
+        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
+        : "";
 
       return `
         <article class="card ${idx === nextIdx ? "next" : ""}">
@@ -690,12 +637,12 @@
       cardsEl.innerHTML = meetings.map((m, i) => cardHtml(m, i, nextIdx)).join("");
 
       cardsEl.querySelectorAll("[data-view-notes]").forEach(btn => {
-        btn.addEventListener("click", async () => {
+        btn.addEventListener("click", () => {
           const meetingId = btn.getAttribute("data-view-notes");
           document.getElementById("filter-meeting").value = meetingId || "";
           rememberFilter(meetingId || "");
           show("archive");
-          await loadArchive(meetingId || "");
+          loadArchive(meetingId || "");
           toast("Showing notes for selected meeting.");
         });
       });
@@ -722,160 +669,120 @@
       });
     }
 
-    // Archive API
-    async function fetchNotes(meetingId = "") {
-      const url = meetingId ? `/api/notes?meetingId=${encodeURIComponent(meetingId)}` : `/api/notes`;
-      const res = await fetch(url, { method: "GET" });
-      if (!res.ok) throw new Error("Failed to fetch notes");
-      const data = await res.json();
-      return data.notes || [];
-    }
-
-    function formatWhen(ts) {
-      const d = new Date(ts);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
-      return `${date}, ${time}`;
-    }
-
+    // ---------------- Archive (frontend-only) ----------------
     function meetingLabel(meetingId) {
       const m = meetings.find(x => x.id === meetingId);
       if (!m) return "Unknown meeting";
       return `${m.title} — ${formatUtcLabel(m.startUtc)}`;
     }
 
-    async function loadArchive(meetingId = "") {
+    function formatWhen(isoZ) {
+      if (!isoZ) return "–";
+      const d = new Date(isoZ);
+      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
+      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
+      return `${date}, ${time}`;
+    }
+
+    function loadArchive(meetingId = "") {
       const list = document.getElementById("archive-list");
-      list.innerHTML = `<div class="item"><p class="item-title">Loading…</p><div class="item-meta">Fetching shared archive.</div></div>`;
 
-      try {
-        const notes = await fetchNotes(meetingId);
+      const filtered = notes
+        .filter(n => !meetingId || n.meetingId === meetingId)
+        .sort((a,b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
-        if (!notes.length) {
-          list.innerHTML = `<div class="item"><p class="item-title">No notes found.</p><div class="item-meta">If minutes have not been uploaded yet, they will appear here once available.</div></div>`;
-          return;
-        }
+      if (!filtered.length) {
+        list.innerHTML = `<div class="item"><p class="item-title">No notes found.</p><div class="item-meta">Add an entry to the <span class="pill">notes</span> array in the HTML.</div></div>`;
+        return;
+      }
 
-        list.innerHTML = notes.map(n => {
-          const title = (n.title && String(n.title).trim()) ? String(n.title).trim() : "Meeting minutes";
-          const overview = (n.overview && String(n.overview).trim()) ? String(n.overview).trim() : "–";
-          const createdAt = n.createdAt ? formatWhen(n.createdAt) : "–";
-          const pdfName = n.pdfName ? String(n.pdfName) : "minutes.pdf";
+      const previewLen = 220;
 
-          return `
-            <div class="item">
-              <div class="item-top">
-                <div>
-                  <p class="item-title">${escapeHtml(title)}</p>
-                  <div class="item-meta">
-                    <div>Meeting: ${escapeHtml(meetingLabel(n.meetingId))}</div>
-                    <div>Uploaded: ${escapeHtml(createdAt)}</div>
-                    <div>File: ${escapeHtml(pdfName)}</div>
-                  </div>
-                </div>
-                <span class="pill">${escapeHtml(n.meetingId || "")}</span>
-              </div>
+      list.innerHTML = filtered.map(n => {
+        const title = (n.title && String(n.title).trim()) ? String(n.title).trim() : "Meeting minutes";
+        const overview = (n.overview && String(n.overview).trim()) ? String(n.overview).trim() : "–";
+        const createdAt = formatWhen(n.createdAt);
+        const safeFull = escapeHtml(overview);
+        const isLong = safeFull.length > previewLen;
+        const safePreview = isLong ? safeFull.slice(0, previewLen) + "…" : safeFull;
 
-              <div class="item-meta" style="margin-top:10px;">${escapeHtml(overview)}</div>
+        const pdfBtn = (n.pdfUrl && String(n.pdfUrl).trim())
+          ? `<a class="btn btn-primary" href="${escapeHtml(n.pdfUrl)}" target="_blank" rel="noopener noreferrer">Open PDF</a>`
+          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No PDF attached">Open PDF</span>`;
 
-              <div class="item-actions">
-                <a class="btn btn-primary" href="/api/notes-download?id=${encodeURIComponent(n.id)}" target="_blank" rel="noopener noreferrer">Open PDF</a>
-                <a class="btn" href="/api/notes-download?id=${encodeURIComponent(n.id)}" download>Download PDF</a>
-              </div>
-            </div>
-          `;
-        }).join("");
-      } catch (e) {
-        list.innerHTML = `
+        return `
           <div class="item">
-            <p class="item-title">Archive unavailable</p>
-            <div class="item-meta">
-              Could not reach <code class="inline">/api/notes</code>. If you have not deployed the backend Functions yet, this is expected.
+            <div class="item-top">
+              <div>
+                <p class="item-title">${escapeHtml(title)}</p>
+                <div class="item-meta">
+                  <div>Meeting: ${escapeHtml(meetingLabel(n.meetingId))}</div>
+                  <div>Added: ${escapeHtml(createdAt)}</div>
+                </div>
+              </div>
+              <span class="pill">${escapeHtml(n.meetingId || "")}</span>
+            </div>
+
+            <div class="item-meta" style="margin-top:10px;">
+              <span data-ov-text="${escapeHtml(n.id)}">${safePreview}</span>
+              ${isLong ? `
+                <button class="toggle-link" type="button"
+                  data-ov-toggle="${escapeHtml(n.id)}"
+                  data-ov-full="${encodeURIComponent(safeFull)}"
+                  data-ov-preview="${encodeURIComponent(safePreview)}">Show more</button>
+              ` : ``}
+            </div>
+
+            <div class="item-actions">
+              ${pdfBtn}
             </div>
           </div>
         `;
-      }
+      }).join("");
     }
+
+    // Toggle long text
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-ov-toggle]");
+      if (!btn) return;
+
+      const id = btn.getAttribute("data-ov-toggle");
+      const textEl = document.querySelector(`[data-ov-text="${CSS.escape(id)}"]`);
+      if (!textEl) return;
+
+      const full = decodeURIComponent(btn.getAttribute("data-ov-full"));
+      const preview = decodeURIComponent(btn.getAttribute("data-ov-preview"));
+      const isExpanded = btn.textContent.trim().toLowerCase() === "show less";
+
+      if (isExpanded) {
+        textEl.innerHTML = preview;
+        btn.textContent = "Show more";
+      } else {
+        textEl.innerHTML = full;
+        btn.textContent = "Show less";
+      }
+    });
 
     // Filter persistence
     const FILTER_KEY = "imperium_archive_filter_v1";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
-    // Admin upload
-    const TOKEN_KEY = "imperium_admin_token_v1";
-    function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }
-    function setToken(t) { if (t) sessionStorage.setItem(TOKEN_KEY, t); else sessionStorage.removeItem(TOKEN_KEY); updateAdminStatus(); }
-    function updateAdminStatus() {
-      const status = document.getElementById("admin-status");
-      if (!status) return;
-      status.textContent = getToken() ? "Token saved (this session)" : "Not signed in";
-    }
-
-    async function uploadNote() {
-      const token = getToken();
-      const hint = document.getElementById("upload-hint");
-      hint.textContent = "";
-
-      if (!token) { toast("Add admin token first."); return; }
-
-      const meetingId = document.getElementById("upload-meeting").value;
-      const title = document.getElementById("upload-title").value || "";
-      const overview = document.getElementById("upload-overview").value || "";
-      const fileInput = document.getElementById("upload-pdf");
-      const file = fileInput.files && fileInput.files[0];
-
-      if (!meetingId) { toast("Choose a meeting."); return; }
-      if (!(file instanceof File)) { toast("Select a PDF."); return; }
-      if (file.type !== "application/pdf") { toast("PDF only."); return; }
-      if (!overview.trim()) { toast("Add a short overview."); return; }
-
-      const fd = new FormData();
-      fd.append("meetingId", meetingId);
-      fd.append("title", title.trim());
-      fd.append("overview", overview.trim());
-      fd.append("pdf", file);
-
-      hint.textContent = "Uploading…";
-
-      const res = await fetch("/api/notes", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: fd
-      });
-
-      if (!res.ok) {
-        hint.textContent = "Upload failed. Check token and backend logs.";
-        toast("Upload failed.");
-        return;
-      }
-
-      document.getElementById("upload-title").value = "";
-      document.getElementById("upload-overview").value = "";
-      fileInput.value = "";
-      hint.textContent = "Uploaded successfully.";
-
-      toast("Uploaded.");
-      await loadArchive(document.getElementById("filter-meeting").value || "");
-    }
-
-    async function applyFilter() {
+    // Filter actions
+    function applyFilter() {
       const meetingId = document.getElementById("filter-meeting").value || "";
       rememberFilter(meetingId);
-      await loadArchive(meetingId);
+      loadArchive(meetingId);
     }
-
-    async function clearFilter() {
+    function clearFilter() {
       document.getElementById("filter-meeting").value = "";
       rememberFilter("");
-      await loadArchive("");
+      loadArchive("");
     }
 
+    // ---------------- Init ----------------
     (function init(){
       const url = new URL(window.location.href);
-      const isAdminView = url.searchParams.get("admin") === "1";
-      const adminPanel = document.getElementById("admin-panel");
-      if (isAdminView && adminPanel) adminPanel.style.display = "block";
 
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
       document.getElementById("tz-line").textContent = `Your system timezone: ${tz}. Local times update automatically.`;
@@ -889,7 +796,6 @@
       setInterval(tickNow, 1000);
 
       populateMeetingSelect(document.getElementById("filter-meeting"), true);
-      populateMeetingSelect(document.getElementById("upload-meeting"), false);
 
       const remembered = recallFilter();
       if (remembered) document.getElementById("filter-meeting").value = remembered;
@@ -904,24 +810,7 @@
       document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
       document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
 
-      updateAdminStatus();
-
-      const saveTokenBtn = document.getElementById("save-token");
-      const clearTokenBtn = document.getElementById("clear-token");
-      const uploadBtn = document.getElementById("upload-note");
-
-      if (saveTokenBtn) {
-        saveTokenBtn.addEventListener("click", () => {
-          const t = document.getElementById("admin-token").value.trim();
-          if (!t) { toast("Token is empty."); return; }
-          setToken(t);
-          document.getElementById("admin-token").value = "";
-          toast("Token saved for this session.");
-        });
-      }
-      if (clearTokenBtn) clearTokenBtn.addEventListener("click", () => { setToken(""); toast("Token cleared."); });
-      if (uploadBtn) uploadBtn.addEventListener("click", () => uploadNote());
-
+      // Deep link support: ?tab=archive&meetingId=m1
       const tab = url.searchParams.get("tab");
       const meetingId = url.searchParams.get("meetingId") || "";
       if (tab === "archive") {
