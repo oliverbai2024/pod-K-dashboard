@@ -321,11 +321,21 @@
       font-weight: 500;
       color: var(--ink);
     }
+
+    /* Bullet notes (compact by default) */
+    .bullets{
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .bullets li{ margin: 0; }
+
     .toggle-link{
       border: none;
       background: none;
       padding: 0;
-      margin-left: 8px;
+      margin-top: 8px;
       cursor: pointer;
       text-decoration: underline;
       font-size: 12px;
@@ -431,7 +441,6 @@
 
   <script>
     // ---------------- Meetings (UTC) ----------------
-    // Edit meetLink, times, titles here.
     const meetings = [
       { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
       { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
@@ -439,21 +448,22 @@
     ];
 
     // ---------------- Notes (frontend-only archive) ----------------
-    // To add notes: add another object to this array.
-    // pdfUrl is optional. If you host a PDF in your repo (e.g. /minutes/2026-02-27.pdf), put the path here.
+    // Add new minutes by adding an object here.
+    // pdfUrl optional (e.g. "/minutes/2026-02-27.pdf" if you commit PDFs to your repo).
     const notes = [
       {
         id: "n-2026-02-27",
         meetingId: "m1",
         title: "Minutes – 27 Feb (Pod K Kick-off)",
         createdAt: "2026-02-27T18:00:00Z",
-        overview:
-          "Oliver (EPM) introduced himself, highlighting a background in project management and law. " +
-          "Harsh and Ivan were introduced as technical leads with software engineering backgrounds and strong familiarity with the task workflow, and confirmed availability for technical questions. " +
-          "The group discussed the recent contract payment changes announced by Max, including how the structure becomes more favourable once the first two tasks are completed. " +
-          "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly). " +
-          "Oliver closed by thanking everyone and confirming that future office hours will focus on specific areas in more depth.",
-        pdfUrl: ""  // e.g. "/minutes/2026-02-27.pdf"
+        bullets: [
+          "Oliver (EPM) introduced himself, highlighting a background in project management and law.",
+          "Harsh and Ivan were introduced as technical leads with software engineering backgrounds and strong familiarity with the task workflow; they confirmed availability for technical questions.",
+          "The group discussed the recent contract payment changes announced by Max, including how the structure becomes more favourable once the first two tasks are completed.",
+          "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly).",
+          "Oliver closed by thanking everyone and confirmed that future office hours will focus on specific areas in more depth."
+        ],
+        pdfUrl: ""
       }
     ];
 
@@ -696,19 +706,33 @@
         return;
       }
 
-      const previewLen = 220;
+      const maxBulletsDefault = 2;
 
       list.innerHTML = filtered.map(n => {
         const title = (n.title && String(n.title).trim()) ? String(n.title).trim() : "Meeting minutes";
-        const overview = (n.overview && String(n.overview).trim()) ? String(n.overview).trim() : "–";
         const createdAt = formatWhen(n.createdAt);
-        const safeFull = escapeHtml(overview);
-        const isLong = safeFull.length > previewLen;
-        const safePreview = isLong ? safeFull.slice(0, previewLen) + "…" : safeFull;
+
+        const bullets = Array.isArray(n.bullets)
+          ? n.bullets.filter(Boolean).map(x => String(x).trim()).filter(Boolean)
+          : [];
+
+        const visible = bullets.slice(0, maxBulletsDefault).map(b => `<li>${escapeHtml(b)}</li>`).join("");
+        const hidden = bullets.slice(maxBulletsDefault).map(b => `<li>${escapeHtml(b)}</li>`).join("");
+        const hasMore = bullets.length > maxBulletsDefault;
 
         const pdfBtn = (n.pdfUrl && String(n.pdfUrl).trim())
           ? `<a class="btn btn-primary" href="${escapeHtml(n.pdfUrl)}" target="_blank" rel="noopener noreferrer">Open PDF</a>`
           : `<span class="btn btn-primary disabled" aria-disabled="true" title="No PDF attached">Open PDF</span>`;
+
+        const bulletsHtml = bullets.length
+          ? `
+            <ul class="bullets">
+              ${visible}
+              ${hasMore ? `<span data-bullets-hidden="${escapeHtml(n.id)}" style="display:none;">${hidden}</span>` : ``}
+            </ul>
+            ${hasMore ? `<button class="toggle-link" type="button" data-bullets-toggle="${escapeHtml(n.id)}">Show more</button>` : ``}
+          `
+          : `<div class="item-meta" style="margin-top:10px;">–</div>`;
 
         return `
           <div class="item">
@@ -724,13 +748,7 @@
             </div>
 
             <div class="item-meta" style="margin-top:10px;">
-              <span data-ov-text="${escapeHtml(n.id)}">${safePreview}</span>
-              ${isLong ? `
-                <button class="toggle-link" type="button"
-                  data-ov-toggle="${escapeHtml(n.id)}"
-                  data-ov-full="${encodeURIComponent(safeFull)}"
-                  data-ov-preview="${encodeURIComponent(safePreview)}">Show more</button>
-              ` : ``}
+              ${bulletsHtml}
             </div>
 
             <div class="item-actions">
@@ -741,26 +759,18 @@
       }).join("");
     }
 
-    // Toggle long text
+    // Toggle bullet expansion
     document.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-ov-toggle]");
+      const btn = e.target.closest("[data-bullets-toggle]");
       if (!btn) return;
 
-      const id = btn.getAttribute("data-ov-toggle");
-      const textEl = document.querySelector(`[data-ov-text="${CSS.escape(id)}"]`);
-      if (!textEl) return;
+      const id = btn.getAttribute("data-bullets-toggle");
+      const hidden = document.querySelector(`[data-bullets-hidden="${CSS.escape(id)}"]`);
+      if (!hidden) return;
 
-      const full = decodeURIComponent(btn.getAttribute("data-ov-full"));
-      const preview = decodeURIComponent(btn.getAttribute("data-ov-preview"));
-      const isExpanded = btn.textContent.trim().toLowerCase() === "show less";
-
-      if (isExpanded) {
-        textEl.innerHTML = preview;
-        btn.textContent = "Show more";
-      } else {
-        textEl.innerHTML = full;
-        btn.textContent = "Show less";
-      }
+      const isOpen = hidden.style.display !== "none";
+      hidden.style.display = isOpen ? "none" : "inline";
+      btn.textContent = isOpen ? "Show more" : "Show less";
     });
 
     // Filter persistence
