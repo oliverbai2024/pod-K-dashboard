@@ -434,7 +434,7 @@
     ];
 
     // ---------------- Notes (frontend-only) ----------------
-    // IMPORTANT: pdfUrl must be a path like "/minutes/filename.pdf"
+    // pdfUrl must be a path like "/minutes/<filename>.pdf"
     const notes = [
       {
         id: "n-2026-02-27",
@@ -448,8 +448,23 @@
           "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly).",
           "Oliver closed by thanking everyone and confirmed that future office hours will focus on specific areas in more depth."
         ],
-        // Your uploaded file name (spaces/brackets are fine; we encode it in the button link):
         pdfUrl: "/minutes/Project Imperium - Pod K Minutes (27th).pdf"
+      },
+      {
+        id: "n-2026-03-02",
+        meetingId: "m2",
+        title: "Minutes – 2 Mar (Process updates and rubric/requirements guidance)",
+        createdAt: "2026-03-02T18:00:00Z",
+        bullets: [
+          "The session covered recent process updates and technical guidance on drafting rubrics and requirement.json files for task PRs.",
+          "Oliver shared housekeeping items: session transcription, use of the Imperium custom LLM (ImperiumHelpBot) for 24/7 support, and plans to expand QA capacity from ~15 to ~60 reviewers to reach ~400 reviews/day and reduce turnaround times.",
+          "Oliver offered to share the onboarding payment documentation link, asked participants to flag payment delays beyond 72 hours, and posted a support form for contract or payment issues.",
+          "Harsh led a technical walkthrough using reviewed PR examples to highlight common mistakes and best practices.",
+          "Best practices included: keeping requirements strictly testable and reflected in both golden and test patches; splitting stacked functional criteria into separate, test-aligned points; keeping functional and robustness criteria distinct; and avoiding implementation-specific language to prevent coupling to particular solutions.",
+          "Participants were invited to follow up with further questions after the session.",
+          "The meeting ended earlier than planned due to technical issues; remaining topics will be covered in a future session."
+        ],
+        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (2nd).pdf"
       }
     ];
 
@@ -463,12 +478,9 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
-
-    // Encode path safely for href (handles spaces and brackets)
     function safeHref(path) {
       if (!path) return "";
-      // encodeURI keeps slashes intact but encodes spaces etc.
-      return encodeURI(path);
+      return encodeURI(path); // encodes spaces/brackets safely, keeps slashes
     }
 
     function formatUtcLabel(isoZ) {
