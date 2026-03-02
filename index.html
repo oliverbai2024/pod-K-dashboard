@@ -406,7 +406,7 @@
         <div class="header">
           <div>
             <h1>Meeting Notes Archive</h1>
-            <div class="sub">Shared archive (frontend-only). To add notes, edit the <span class="pill">notes</span> array in the HTML.</div>
+            <div class="sub">Summary and key outcomes from previous meetings.</div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn" id="refresh-archive">Refresh</button>
@@ -744,7 +744,17 @@
                   <div>Added: ${escapeHtml(createdAt)}</div>
                 </div>
               </div>
-              <span class="pill">${escapeHtml(n.meetingId || "")}</span>
+              return `
+  <div class="item">
+    <div class="item-top">
+      <div>
+        ...
+      </div>
+      <!-- remove the pill here -->
+    </div>
+    ...
+  </div>
+`;
             </div>
 
             <div class="item-meta" style="margin-top:10px;">
