@@ -36,7 +36,6 @@
     }
     .wrap{ max-width: 1040px; margin: 0 auto; padding: 18px 16px 56px; }
 
-    /* Top bar */
     .topbar{
       position: sticky;
       top: 0;
@@ -90,7 +89,6 @@
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
 
-    /* Views */
     .views{ position: relative; margin-top: 16px; }
     .view{
       background: var(--panel);
@@ -126,7 +124,6 @@
       line-height: 1.4;
       font-weight: 400;
     }
-
     .divider{
       height:1px;
       background: var(--border);
@@ -134,7 +131,6 @@
       margin: 12px 0;
     }
 
-    /* Cards */
     .grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -177,16 +173,8 @@
       background: rgba(0,0,0,.02);
       color: var(--ink);
     }
-    .badge-next{
-      background: var(--next-bg);
-      border-color: var(--next-br);
-      color: var(--next-tx);
-    }
-    .badge-pass{
-      background: var(--pass-bg);
-      border-color: var(--pass-br);
-      color: var(--pass-tx);
-    }
+    .badge-next{ background: var(--next-bg); border-color: var(--next-br); color: var(--next-tx); }
+    .badge-pass{ background: var(--pass-bg); border-color: var(--pass-br); color: var(--pass-tx); }
 
     .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
@@ -241,7 +229,6 @@
       border-color: #2f2f33;
       font-weight: 600;
     }
-
     .btn.disabled,
     .btn[aria-disabled="true"]{
       opacity: .45;
@@ -251,7 +238,6 @@
       transform: none;
     }
 
-    /* Archive */
     .panel{
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -325,7 +311,6 @@
       flex-wrap: wrap;
     }
 
-    /* Bullet notes */
     .bullets{
       margin: 8px 0 0 0;
       padding-left: 18px;
@@ -346,7 +331,6 @@
       font-weight: 500;
     }
 
-    /* Toast */
     .toast{
       position: fixed;
       bottom: 16px;
@@ -443,15 +427,14 @@
 
   <script>
     // ---------------- Meetings (UTC) ----------------
-    // Edit meetLink, times, titles here.
     const meetings = [
       { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
       { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
       { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"" }
     ];
 
-    // ---------------- Notes (frontend-only archive) ----------------
-    // pdfUrl optional: store PDFs in your repo (e.g. /minutes/2026-02-27.pdf)
+    // ---------------- Notes (frontend-only) ----------------
+    // IMPORTANT: pdfUrl must be a path like "/minutes/filename.pdf"
     const notes = [
       {
         id: "n-2026-02-27",
@@ -465,7 +448,8 @@
           "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly).",
           "Oliver closed by thanking everyone and confirmed that future office hours will focus on specific areas in more depth."
         ],
-        pdfUrl: /minutes/Project Imperium - Pod K Minutes (27th).pdf""
+        // Your uploaded file name (spaces/brackets are fine; we encode it in the button link):
+        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (27th).pdf"
       }
     ];
 
@@ -478,6 +462,13 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    // Encode path safely for href (handles spaces and brackets)
+    function safeHref(path) {
+      if (!path) return "";
+      // encodeURI keeps slashes intact but encodes spaces etc.
+      return encodeURI(path);
     }
 
     function formatUtcLabel(isoZ) {
@@ -506,7 +497,6 @@
       return { days, hours, mins, secs };
     }
 
-    // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
       return (
@@ -682,7 +672,7 @@
       });
     }
 
-    // Archive (frontend-only)
+    // Archive
     function meetingLabel(meetingId) {
       const m = meetings.find(x => x.id === meetingId);
       if (!m) return "Unknown meeting";
@@ -728,8 +718,11 @@
         const hidden = bullets.slice(maxBulletsDefault).map(b => `<li>${escapeHtml(b)}</li>`).join("");
         const hasMore = bullets.length > maxBulletsDefault;
 
-        const pdfBtn = (n.pdfUrl && String(n.pdfUrl).trim())
-          ? `<a class="btn btn-primary" href="${escapeHtml(n.pdfUrl)}" target="_blank" rel="noopener noreferrer">Open minutes (PDF)</a>`
+        const hasPdf = !!(n.pdfUrl && String(n.pdfUrl).trim());
+        const pdfLink = hasPdf ? safeHref(String(n.pdfUrl).trim()) : "";
+
+        const pdfBtn = hasPdf
+          ? `<a class="btn btn-primary" href="${escapeHtml(pdfLink)}" target="_blank" rel="noopener noreferrer">Open minutes (PDF)</a>`
           : `<span class="btn btn-primary disabled" aria-disabled="true" title="No PDF attached">Open minutes (PDF)</span>`;
 
         return `
@@ -742,7 +735,6 @@
                   <div>Added: ${escapeHtml(createdAt)}</div>
                 </div>
               </div>
-              <!-- removed meetingId pill here -->
             </div>
 
             <div class="item-meta" style="margin-top:10px;">
@@ -782,7 +774,6 @@
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
-    // Filter actions
     function applyFilter() {
       const meetingId = document.getElementById("filter-meeting").value || "";
       rememberFilter(meetingId);
