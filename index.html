@@ -36,6 +36,7 @@
     }
     .wrap{ max-width: 1040px; margin: 0 auto; padding: 18px 16px 56px; }
 
+    /* Top bar */
     .topbar{
       position: sticky;
       top: 0;
@@ -89,6 +90,7 @@
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
 
+    /* Views */
     .views{ position: relative; margin-top: 16px; }
     .view{
       background: var(--panel);
@@ -124,6 +126,7 @@
       line-height: 1.4;
       font-weight: 400;
     }
+
     .divider{
       height:1px;
       background: var(--border);
@@ -131,6 +134,7 @@
       margin: 12px 0;
     }
 
+    /* Cards */
     .grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -173,8 +177,16 @@
       background: rgba(0,0,0,.02);
       color: var(--ink);
     }
-    .badge-next{ background: var(--next-bg); border-color: var(--next-br); color: var(--next-tx); }
-    .badge-pass{ background: var(--pass-bg); border-color: var(--pass-br); color: var(--pass-tx); }
+    .badge-next{
+      background: var(--next-bg);
+      border-color: var(--next-br);
+      color: var(--next-tx);
+    }
+    .badge-pass{
+      background: var(--pass-bg);
+      border-color: var(--pass-br);
+      color: var(--pass-tx);
+    }
 
     .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
@@ -229,6 +241,7 @@
       border-color: #2f2f33;
       font-weight: 600;
     }
+
     .btn.disabled,
     .btn[aria-disabled="true"]{
       opacity: .45;
@@ -238,6 +251,7 @@
       transform: none;
     }
 
+    /* Archive */
     .panel{
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -310,21 +324,10 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.02);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--ink);
-    }
 
-    /* Bullet notes (compact by default) */
+    /* Bullet notes */
     .bullets{
-      margin: 0;
+      margin: 8px 0 0 0;
       padding-left: 18px;
       display: grid;
       gap: 6px;
@@ -343,6 +346,7 @@
       font-weight: 500;
     }
 
+    /* Toast */
     .toast{
       position: fixed;
       bottom: 16px;
@@ -386,14 +390,13 @@
 
   <div class="wrap">
     <div class="views">
-      <!-- Dashboard -->
       <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="header">
           <div>
             <h1>Meeting Dashboard</h1>
             <div class="sub" id="tz-line"></div>
           </div>
-          <div class="pill" id="now-pill">–</div>
+          <div class="badge" id="now-pill">–</div>
         </div>
 
         <div class="divider"></div>
@@ -401,7 +404,6 @@
         <div class="grid" id="cards"></div>
       </section>
 
-      <!-- Archive -->
       <section class="view hidden" id="view-archive" role="tabpanel" aria-labelledby="tab-archive">
         <div class="header">
           <div>
@@ -420,7 +422,7 @@
             <div>
               <label for="filter-meeting">Filter by meeting</label>
               <select id="filter-meeting"></select>
-              <div class="sub" style="margin-top:8px;">Tip: the dashboard ‘View notes’ button sets this filter automatically.</div>
+              <div class="sub" style="margin-top:8px;">Tip: the dashboard ‘View notes’ button will jump you here for the right meeting.</div>
             </div>
             <div>
               <label>&nbsp;</label>
@@ -441,6 +443,7 @@
 
   <script>
     // ---------------- Meetings (UTC) ----------------
+    // Edit meetLink, times, titles here.
     const meetings = [
       { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
       { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
@@ -448,8 +451,7 @@
     ];
 
     // ---------------- Notes (frontend-only archive) ----------------
-    // Add new minutes by adding an object here.
-    // pdfUrl optional (e.g. "/minutes/2026-02-27.pdf" if you commit PDFs to your repo).
+    // pdfUrl optional: store PDFs in your repo (e.g. /minutes/2026-02-27.pdf)
     const notes = [
       {
         id: "n-2026-02-27",
@@ -504,6 +506,7 @@
       return { days, hours, mins, secs };
     }
 
+    // Google Calendar expects UTC in YYYYMMDDTHHMMSSZ
     function toGCalUtc(isoZ) {
       const d = new Date(isoZ);
       return (
@@ -527,7 +530,7 @@
       return `${base}&${params.toString()}`;
     }
 
-    // ---------------- Toast ----------------
+    // Toast
     let toastTimer = null;
     function toast(msg) {
       const el = document.getElementById("toast");
@@ -537,7 +540,7 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
-    // ---------------- Tabs ----------------
+    // Tabs
     const tabDashboard = document.getElementById("tab-dashboard");
     const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
@@ -550,11 +553,10 @@
       viewDashboard.classList.toggle("hidden", !isDash);
       viewArchive.classList.toggle("hidden", isDash);
     }
-
     tabDashboard.addEventListener("click", () => show("dashboard"));
     tabArchive.addEventListener("click", () => show("archive"));
 
-    // ---------------- Selects ----------------
+    // Select options
     function populateMeetingSelect(selectEl, includeAll = false) {
       selectEl.innerHTML = "";
       if (includeAll) {
@@ -586,16 +588,21 @@
       return "badge";
     }
 
-    // ---------------- Dashboard cards ----------------
+    // Dashboard cards
     function cardHtml(m, idx, nextIdx) {
       const now = Date.now();
       const start = new Date(m.startUtc).getTime();
       const passed = now >= start;
 
       const badge = (idx === nextIdx && !passed) ? "Next up" : (passed ? "Passed" : "Upcoming");
+
       const countdownBlock = passed
         ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
         : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+
+      const notesBtn = passed
+        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
+        : "";
 
       const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
       const gcal = hasCalendar ? makeGoogleCalendarUrl(m) : "";
@@ -607,10 +614,6 @@
       const meetBtn = hasMeetLink
         ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
         : `<span class="btn disabled" aria-disabled="true" title="Meeting link not set">Open meeting link</span>`;
-
-      const notesBtn = passed
-        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
-        : "";
 
       return `
         <article class="card ${idx === nextIdx ? "next" : ""}">
@@ -679,7 +682,7 @@
       });
     }
 
-    // ---------------- Archive (frontend-only) ----------------
+    // Archive (frontend-only)
     function meetingLabel(meetingId) {
       const m = meetings.find(x => x.id === meetingId);
       if (!m) return "Unknown meeting";
@@ -702,7 +705,12 @@
         .sort((a,b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
       if (!filtered.length) {
-        list.innerHTML = `<div class="item"><p class="item-title">No notes found.</p><div class="item-meta">Add an entry to the <span class="pill">notes</span> array in the HTML.</div></div>`;
+        list.innerHTML = `
+          <div class="item">
+            <p class="item-title">No notes yet.</p>
+            <div class="item-meta">Minutes will appear here once added.</div>
+          </div>
+        `;
         return;
       }
 
@@ -721,18 +729,8 @@
         const hasMore = bullets.length > maxBulletsDefault;
 
         const pdfBtn = (n.pdfUrl && String(n.pdfUrl).trim())
-          ? `<a class="btn btn-primary" href="${escapeHtml(n.pdfUrl)}" target="_blank" rel="noopener noreferrer">Open PDF</a>`
-          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No PDF attached">Open PDF</span>`;
-
-        const bulletsHtml = bullets.length
-          ? `
-            <ul class="bullets">
-              ${visible}
-              ${hasMore ? `<span data-bullets-hidden="${escapeHtml(n.id)}" style="display:none;">${hidden}</span>` : ``}
-            </ul>
-            ${hasMore ? `<button class="toggle-link" type="button" data-bullets-toggle="${escapeHtml(n.id)}">Show more</button>` : ``}
-          `
-          : `<div class="item-meta" style="margin-top:10px;">–</div>`;
+          ? `<a class="btn btn-primary" href="${escapeHtml(n.pdfUrl)}" target="_blank" rel="noopener noreferrer">Open minutes (PDF)</a>`
+          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No PDF attached">Open minutes (PDF)</span>`;
 
         return `
           <div class="item">
@@ -744,21 +742,17 @@
                   <div>Added: ${escapeHtml(createdAt)}</div>
                 </div>
               </div>
-              return `
-  <div class="item">
-    <div class="item-top">
-      <div>
-        ...
-      </div>
-      <!-- remove the pill here -->
-    </div>
-    ...
-  </div>
-`;
+              <!-- removed meetingId pill here -->
             </div>
 
             <div class="item-meta" style="margin-top:10px;">
-              ${bulletsHtml}
+              ${bullets.length ? `
+                <ul class="bullets">
+                  ${visible}
+                  ${hasMore ? `<span data-bullets-hidden="${escapeHtml(n.id)}" style="display:none;">${hidden}</span>` : ``}
+                </ul>
+                ${hasMore ? `<button class="toggle-link" type="button" data-bullets-toggle="${escapeHtml(n.id)}">Show more</button>` : ``}
+              ` : `–`}
             </div>
 
             <div class="item-actions">
@@ -800,7 +794,7 @@
       loadArchive("");
     }
 
-    // ---------------- Init ----------------
+    // Init
     (function init(){
       const url = new URL(window.location.href);
 
