@@ -62,12 +62,11 @@
       --readable-letter: 0px;
       --readable-word: 0px;
 
-      /* Font weights (keep consistent) */
+      /* Font weights */
       --w-regular: 400;
       --w-medium: 500;
       --w-semibold: 600;
       --w-bold: 700;
-      --w-xbold: 800;
     }
 
     /* Dark mode overrides */
@@ -82,7 +81,6 @@
       --shadow-soft: 0 14px 30px rgba(0,0,0,.40);
       --focus: rgba(255,255,255,.08);
 
-      /* Status colours (default palette in dark) */
       --next-bg: rgba(66, 180, 120, .16);
       --next-br: rgba(66, 180, 120, .34);
       --next-tx: rgba(140, 235, 195, 1);
@@ -97,7 +95,6 @@
       --glass: rgba(15,17,21,.74);
       --glass-border: rgba(255,255,255,.12);
 
-      /* Buttons */
       --btn-bg: rgba(255,255,255,.05);
       --btn-ink: var(--ink);
       --btn-br: var(--border);
@@ -105,7 +102,6 @@
       --btn-primary-ink: #0f1115;
       --btn-primary-br: #ffffff;
 
-      /* Bottom controls */
       --dock-bg: rgba(20,24,36,.92);
       --dock-border: rgba(255,255,255,.16);
       --dock-shadow: 0 22px 60px rgba(0,0,0,.70);
@@ -132,8 +128,7 @@
       --pass-tx: rgba(255, 214, 168, 1);
     }
 
-    /* Readability mode: do NOT scale the whole UI.
-       Only improve spacing + slightly increase small text. */
+    /* Readability mode (no global zoom): spacing + clarity only */
     body.readable{
       --small-font: 13px;
       --body-line: 1.45;
@@ -151,11 +146,30 @@
       background: var(--bg);
       min-height:100vh;
       font-weight: var(--w-regular);
-      font-size: var(--base-font); /* stays constant */
+      font-size: var(--base-font);
       line-height: var(--body-line);
       letter-spacing: var(--readable-letter);
       word-spacing: var(--readable-word);
       transition: background-color var(--trans), color var(--trans);
+      /* Improves readability of numbers everywhere without changing size */
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Readability mode: reduce motion + visual noise (only when on) */
+    body.readable .card,
+    body.readable .item,
+    body.readable .view{
+      box-shadow: none;
+    }
+    body.readable .row,
+    body.readable .count{
+      background: transparent;
+    }
+    body.readable .tab:hover,
+    body.readable .btn:hover,
+    body.readable .pill button:hover{
+      transform: none;
+      box-shadow: none;
     }
 
     .wrap{
@@ -269,6 +283,12 @@
       letter-spacing: 0;
       word-spacing: 0;
     }
+
+    /* Readability mode: a bit more breathing room in long text areas only */
+    body.readable .sub{ line-height: 1.55; }
+    body.readable .bullets{ gap: 9px; line-height: 1.6; }
+    body.readable .item-meta{ line-height: 1.55; }
+
     .divider{
       height:1px;
       background: var(--border);
@@ -296,8 +316,21 @@
     .card.next{
       border-color: rgba(47,47,51,.22);
       box-shadow: var(--shadow);
+      /* Extra non-colour cue: stripe for quick scanning (always on, subtle) */
+      position: relative;
+      overflow: hidden;
+    }
+    .card.next::before{
+      content:"";
+      position:absolute;
+      left:0; top:0; bottom:0;
+      width: 6px;
+      background: var(--next-br);
     }
     body.dark .card.next{ border-color: rgba(255,255,255,.22); }
+
+    /* Readability mode: reduce stripe thickness */
+    body.readable .card.next::before{ width: 4px; }
 
     .card-top{
       display:flex;
@@ -413,6 +446,7 @@
       letter-spacing: 0;
       word-spacing: 0;
       line-height: 1.1;
+      min-height: 38px; /* better hit area */
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     body.dark .btn:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
@@ -525,7 +559,7 @@
     }
 
     .bullets{
-      margin: 8px 0 0 0;
+      margin: 10px 0 0 0;
       padding-left: 18px;
       display: grid;
       gap: 6px;
@@ -536,21 +570,28 @@
     }
     .bullets li{ margin: 0; }
 
+    /* Show more: make it a proper button (better discoverability) */
     .toggle-link{
-      border: none;
-      background: none;
-      padding: 0;
-      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.01);
       cursor: pointer;
-      text-decoration: underline;
       font-size: var(--small-font);
       color: var(--ink);
       font-weight: var(--w-medium);
-      transition: color var(--trans), opacity var(--trans);
-      letter-spacing: 0;
-      word-spacing: 0;
+      transition: background-color var(--trans), border-color var(--trans), color var(--trans), transform .16s ease, box-shadow .16s ease;
+      margin-top: 10px;
+      min-height: 36px;
+      text-decoration: none;
     }
-    .toggle-link:hover{ opacity: .8; }
+    body.dark .toggle-link{ background: rgba(255,255,255,.05); }
+    .toggle-link:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
+    body.dark .toggle-link:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
+    body.readable .toggle-link:hover{ transform: none; box-shadow: none; }
 
     .toast{
       position: fixed;
@@ -652,7 +693,7 @@
 
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; }
-      .tab:hover, .btn:hover, .pill button:hover{ transform:none !important; }
+      .tab:hover, .btn:hover, .pill button:hover, .toggle-link:hover{ transform:none !important; }
     }
   </style>
 </head>
@@ -739,9 +780,9 @@
 
   <script>
     // ---------------- Preferences persistence ----------------
-    const THEME_KEY = "imperium_theme_v3";
-    const READABLE_KEY = "imperium_readable_v2";
-    const CB_KEY = "imperium_cb_v2";
+    const THEME_KEY = "imperium_theme_v4";
+    const READABLE_KEY = "imperium_readable_v3";
+    const CB_KEY = "imperium_cb_v3";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
