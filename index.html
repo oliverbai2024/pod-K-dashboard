@@ -31,6 +31,15 @@
       --glass: rgba(255,255,255,.88);
       --glass-border: rgba(47,47,51,.14);
 
+      /* Buttons */
+      --btn-bg: rgba(0,0,0,.01);
+      --btn-ink: var(--ink);
+      --btn-br: var(--border);
+      --btn-primary-bg: var(--tab-on);
+      --btn-primary-ink: var(--tab-on-ink);
+      --btn-primary-br: var(--tab-on);
+
+      /* Bottom toggle */
       --toggle-bg: rgba(255,255,255,.92);
       --toggle-border: rgba(47,47,51,.16);
       --toggle-shadow: 0 18px 50px rgba(0,0,0,.14);
@@ -65,6 +74,15 @@
       --glass: rgba(15,17,21,.74);
       --glass-border: rgba(255,255,255,.12);
 
+      /* Buttons */
+      --btn-bg: rgba(255,255,255,.04);
+      --btn-ink: var(--ink);
+      --btn-br: var(--border);
+      --btn-primary-bg: #ffffff;
+      --btn-primary-ink: #0f1115;
+      --btn-primary-br: #ffffff;
+
+      /* Bottom toggle */
       --toggle-bg: rgba(20,24,36,.92);
       --toggle-border: rgba(255,255,255,.16);
       --toggle-shadow: 0 22px 60px rgba(0,0,0,.70);
@@ -286,21 +304,20 @@
       will-change: transform;
       cursor: pointer;
       user-select:none;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.01);
-      color: var(--ink);
+      border: 1px solid var(--btn-br);
+      background: var(--btn-bg);
+      color: var(--btn-ink);
     }
-    body.dark .btn{ background: rgba(255,255,255,.04); }
-
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     body.dark .btn:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
 
     .btn-primary{
-      background: var(--tab-on);
-      color: var(--tab-on-ink);
-      border-color: var(--tab-on);
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-ink);
+      border-color: var(--btn-primary-br);
       font-weight: 600;
     }
+
     .btn.disabled,
     .btn[aria-disabled="true"]{
       opacity: .45;
@@ -416,13 +433,13 @@
 
     .toast{
       position: fixed;
-      bottom: 16px;
+      bottom: 76px; /* sit above the theme toggle */
       left: 50%;
       transform: translateX(-50%) translateY(18px);
       opacity: 0;
       pointer-events: none;
       transition: opacity .18s ease, transform .18s ease, background-color var(--trans), color var(--trans);
-      z-index: 100;
+      z-index: 220;
       background: var(--tab-on);
       color: var(--tab-on-ink);
       border-radius: 999px;
@@ -436,7 +453,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Bottom mode toggle */
+    /* Bottom mode toggle (Light | Dark) */
     .mode-toggle{
       position: fixed;
       left: 50%;
@@ -453,54 +470,50 @@
       gap: 10px;
       backdrop-filter: blur(12px);
       transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
+      user-select:none;
     }
-    .mode-label{
+    .mode-toggle .hint{
       font-size: 12px;
       color: var(--muted);
-      user-select:none;
       transition: color var(--trans);
+      white-space: nowrap;
     }
-    .switch{
-      width: 52px;
-      height: 30px;
-      border-radius: 999px;
+
+    .seg{
+      display:flex;
+      gap: 6px;
+      padding: 4px;
       border: 1px solid var(--toggle-border);
       background: var(--toggle-track);
-      position: relative;
-      cursor: pointer;
+      border-radius: 999px;
       transition: background-color var(--trans), border-color var(--trans);
     }
-    .thumb{
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: var(--toggle-thumb);
-      position: absolute;
-      top: 50%;
-      left: 3px;
-      transform: translateY(-50%);
-      transition: transform var(--trans), background-color var(--trans);
-      will-change: transform;
-    }
-    body.dark .thumb{ transform: translateY(-50%) translateX(22px); }
-
-    .mode-icon{
-      width: 18px; height: 18px;
-      display:grid; place-items:center;
+    .seg button{
+      appearance:none;
+      border:0;
+      background: transparent;
       color: var(--muted);
-      transition: color var(--trans), opacity var(--trans);
-      user-select:none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color var(--trans), color var(--trans), transform .16s ease;
     }
-    .mode-icon.on{ color: var(--ink); }
+    .seg button:hover{ transform: translateY(-1px); }
+    .seg button[aria-pressed="true"]{
+      background: var(--tab-on);
+      color: var(--tab-on-ink);
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+    }
 
-    /* Ensure bottom toggle doesn't cover content on short viewports */
     @media (max-width: 520px){
       .mode-toggle{ width: calc(100% - 24px); justify-content:space-between; }
     }
 
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; }
-      .tab:hover, .btn:hover{ transform:none !important; }
+      .tab:hover, .btn:hover, .seg button:hover{ transform:none !important; }
     }
   </style>
 </head>
@@ -568,14 +581,13 @@
     </div>
   </div>
 
-  <!-- Bottom light/dark toggle -->
-  <div class="mode-toggle" role="group" aria-label="Theme toggle">
-    <div class="mode-icon" id="icon-sun" aria-hidden="true">☀️</div>
-    <div class="mode-label" id="mode-label">Light</div>
-    <button class="switch" id="theme-switch" type="button" aria-label="Toggle dark mode" aria-pressed="false">
-      <span class="thumb" aria-hidden="true"></span>
-    </button>
-    <div class="mode-icon" id="icon-moon" aria-hidden="true">🌙</div>
+  <!-- Bottom light/dark segmented toggle -->
+  <div class="mode-toggle" role="group" aria-label="Theme">
+    <div class="hint">Theme</div>
+    <div class="seg" aria-label="Theme options">
+      <button type="button" id="theme-light" aria-pressed="true">Light</button>
+      <button type="button" id="theme-dark" aria-pressed="false">Dark</button>
+    </div>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -588,16 +600,10 @@
       const isDark = theme === "dark";
       document.body.classList.toggle("dark", isDark);
 
-      const btn = document.getElementById("theme-switch");
-      btn.setAttribute("aria-pressed", String(isDark));
-
-      const label = document.getElementById("mode-label");
-      label.textContent = isDark ? "Dark" : "Light";
-
-      const sun = document.getElementById("icon-sun");
-      const moon = document.getElementById("icon-moon");
-      sun.classList.toggle("on", !isDark);
-      moon.classList.toggle("on", isDark);
+      const lightBtn = document.getElementById("theme-light");
+      const darkBtn = document.getElementById("theme-dark");
+      lightBtn.setAttribute("aria-pressed", String(!isDark));
+      darkBtn.setAttribute("aria-pressed", String(isDark));
 
       try { localStorage.setItem(THEME_KEY, theme); } catch {}
     }
@@ -614,10 +620,8 @@
     document.addEventListener("DOMContentLoaded", () => {
       applyTheme(getPreferredTheme());
 
-      document.getElementById("theme-switch").addEventListener("click", () => {
-        const next = document.body.classList.contains("dark") ? "light" : "dark";
-        applyTheme(next);
-      });
+      document.getElementById("theme-light").addEventListener("click", () => applyTheme("light"));
+      document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark"));
     });
 
     // ---------------- Meetings (UTC) ----------------
@@ -673,7 +677,7 @@
     }
     function safeHref(path) {
       if (!path) return "";
-      return encodeURI(path); // encodes spaces/brackets safely; keeps slashes
+      return encodeURI(path);
     }
 
     function formatUtcLabel(isoZ) {
@@ -796,7 +800,7 @@
         : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
 
       const notesBtn = passed
-        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}">View notes</button>`
+        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}" type="button">View notes</button>`
         : "";
 
       const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
