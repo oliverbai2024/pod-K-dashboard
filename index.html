@@ -7,16 +7,20 @@
 
   <style>
     :root{
+      /* Base (Light) */
       --bg:#ffffff;
       --ink:#2f2f33;
       --muted:rgba(47,47,51,.68);
       --border:rgba(47,47,51,.14);
       --panel:#ffffff;
+
       --shadow: 0 12px 30px rgba(0,0,0,.08);
       --shadow-soft: 0 10px 22px rgba(0,0,0,.05);
+
       --radius: 16px;
       --focus: rgba(47,47,51,.12);
 
+      /* Status colours (default palette) */
       --next-bg: rgba(66, 180, 120, .18);
       --next-br: rgba(66, 180, 120, .38);
       --next-tx: rgba(24, 110, 70, 1);
@@ -25,9 +29,11 @@
       --pass-br: rgba(245, 106, 106, .36);
       --pass-tx: rgba(150, 40, 40, 1);
 
+      /* Tabs + primary */
       --tab-on:#2f2f33;
       --tab-on-ink:#ffffff;
 
+      /* Top bar glass */
       --glass: rgba(255,255,255,.88);
       --glass-border: rgba(47,47,51,.14);
 
@@ -39,27 +45,35 @@
       --btn-primary-ink: var(--tab-on-ink);
       --btn-primary-br: var(--tab-on);
 
-      /* Bottom toggle */
-      --toggle-bg: rgba(255,255,255,.92);
-      --toggle-border: rgba(47,47,51,.16);
-      --toggle-shadow: 0 18px 50px rgba(0,0,0,.14);
-      --toggle-track: rgba(0,0,0,.06);
-      --toggle-thumb: #2f2f33;
+      /* Bottom controls */
+      --dock-bg: rgba(255,255,255,.92);
+      --dock-border: rgba(47,47,51,.16);
+      --dock-shadow: 0 18px 50px rgba(0,0,0,.14);
+      --dock-track: rgba(0,0,0,.06);
 
       --trans: 220ms ease;
+
+      /* Typography (defaults) */
+      --base-font: 16px;
+      --small-font: 12px;
+      --body-line: 1.35;
+      --readable-letter: 0px;
+      --readable-word: 0px;
     }
 
     /* Dark mode overrides */
     body.dark{
       --bg:#0f1115;
       --ink:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --border:rgba(255,255,255,.14);
+      --muted:rgba(255,255,255,.64);
+      --border:rgba(255,255,255,.16);
       --panel:#141824;
+
       --shadow: 0 18px 48px rgba(0,0,0,.55);
       --shadow-soft: 0 14px 30px rgba(0,0,0,.40);
       --focus: rgba(255,255,255,.08);
 
+      /* Status colours (default palette in dark) */
       --next-bg: rgba(66, 180, 120, .16);
       --next-br: rgba(66, 180, 120, .34);
       --next-tx: rgba(140, 235, 195, 1);
@@ -75,19 +89,48 @@
       --glass-border: rgba(255,255,255,.12);
 
       /* Buttons */
-      --btn-bg: rgba(255,255,255,.04);
+      --btn-bg: rgba(255,255,255,.05);
       --btn-ink: var(--ink);
       --btn-br: var(--border);
       --btn-primary-bg: #ffffff;
       --btn-primary-ink: #0f1115;
       --btn-primary-br: #ffffff;
 
-      /* Bottom toggle */
-      --toggle-bg: rgba(20,24,36,.92);
-      --toggle-border: rgba(255,255,255,.16);
-      --toggle-shadow: 0 22px 60px rgba(0,0,0,.70);
-      --toggle-track: rgba(255,255,255,.08);
-      --toggle-thumb: #ffffff;
+      /* Bottom controls */
+      --dock-bg: rgba(20,24,36,.92);
+      --dock-border: rgba(255,255,255,.16);
+      --dock-shadow: 0 22px 60px rgba(0,0,0,.70);
+      --dock-track: rgba(255,255,255,.08);
+    }
+
+    /* Colour-blind friendly palette (keeps text labels too) */
+    body.cb{
+      /* Prefer blue/orange rather than green/red */
+      --next-bg: rgba(72, 122, 255, .18);
+      --next-br: rgba(72, 122, 255, .42);
+      --next-tx: rgba(40, 78, 190, 1);
+
+      --pass-bg: rgba(255, 168, 76, .18);
+      --pass-br: rgba(255, 168, 76, .42);
+      --pass-tx: rgba(150, 92, 18, 1);
+    }
+    body.dark.cb{
+      --next-bg: rgba(72, 122, 255, .16);
+      --next-br: rgba(72, 122, 255, .38);
+      --next-tx: rgba(170, 195, 255, 1);
+
+      --pass-bg: rgba(255, 168, 76, .14);
+      --pass-br: rgba(255, 168, 76, .34);
+      --pass-tx: rgba(255, 214, 168, 1);
+    }
+
+    /* Dyslexia-friendly / readability mode */
+    body.readable{
+      --base-font: 18px;
+      --small-font: 14px;
+      --body-line: 1.5;
+      --readable-letter: .2px;
+      --readable-word: .6px;
     }
 
     *{ box-sizing:border-box; }
@@ -100,9 +143,18 @@
       background: var(--bg);
       min-height:100vh;
       font-weight: 400;
+      font-size: var(--base-font);
+      line-height: var(--body-line);
+      letter-spacing: var(--readable-letter);
+      word-spacing: var(--readable-word);
       transition: background-color var(--trans), color var(--trans);
     }
-    .wrap{ max-width: 1040px; margin: 0 auto; padding: 18px 16px 96px; }
+
+    .wrap{
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 18px 16px 118px; /* space for bottom dock */
+    }
 
     .topbar{
       position: sticky;
@@ -153,6 +205,7 @@
       transition: transform .16s ease, background-color var(--trans), color var(--trans), box-shadow .16s ease;
       will-change: transform;
       white-space: nowrap;
+      font-size: calc(var(--base-font) - 2px);
     }
     .tab:hover{ transform: translateY(-1px); }
     .tab[aria-selected="true"]{
@@ -188,14 +241,23 @@
       flex-wrap: wrap;
       margin-bottom: 12px;
     }
-    h1{ font-size: 20px; margin: 0; font-weight: 700; }
+    h1{
+      font-size: calc(var(--base-font) + 4px);
+      margin: 0;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: .2px;
+      word-spacing: 0;
+    }
     .sub{
       margin-top: 6px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: calc(var(--base-font) - 2px);
       line-height: 1.4;
       font-weight: 400;
       transition: color var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
     }
     .divider{
       height:1px;
@@ -236,20 +298,26 @@
     }
     .title{
       font-weight: 700;
-      font-size: 15px;
+      font-size: calc(var(--base-font) - 1px);
       margin: 0;
+      line-height: 1.25;
+      letter-spacing: .1px;
+      word-spacing: 0;
     }
 
     .badge{
-      font-size: 12px;
+      font-size: calc(var(--small-font));
       border: 1px solid var(--border);
       padding: 6px 10px;
       border-radius: 999px;
-      font-weight: 600;
+      font-weight: 700;
       white-space: nowrap;
       background: rgba(0,0,0,.02);
       color: var(--ink);
       transition: background-color var(--trans), border-color var(--trans), color var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
+      line-height: 1.1;
     }
     body.dark .badge{ background: rgba(255,255,255,.04); }
 
@@ -263,13 +331,24 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       background: rgba(0,0,0,.015);
-      font-weight: 400;
       transition: background-color var(--trans), border-color var(--trans);
     }
     body.dark .row{ background: rgba(255,255,255,.04); }
 
-    .label{ font-size: 12px; color: var(--muted); font-weight: 400; transition: color var(--trans); }
-    .value{ font-size: 13px; font-weight: 500; }
+    .label{
+      font-size: var(--small-font);
+      color: var(--muted);
+      font-weight: 400;
+      transition: color var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
+    }
+    .value{
+      font-size: calc(var(--base-font) - 2px);
+      font-weight: 600;
+      letter-spacing: 0;
+      word-spacing: 0;
+    }
 
     .count{
       margin-top: 10px;
@@ -281,8 +360,21 @@
     }
     body.dark .count{ background: rgba(255,255,255,.04); }
 
-    .count .k{ font-size: 12px; color: var(--muted); font-weight: 400; transition: color var(--trans); }
-    .count .v{ margin-top: 6px; font-size: 14px; font-weight: 700; letter-spacing: .2px; }
+    .count .k{
+      font-size: var(--small-font);
+      color: var(--muted);
+      font-weight: 400;
+      transition: color var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
+    }
+    .count .v{
+      margin-top: 6px;
+      font-size: calc(var(--base-font) - 1px);
+      font-weight: 800;
+      letter-spacing: .2px;
+      word-spacing: 0;
+    }
 
     .actions{
       display:flex;
@@ -290,6 +382,7 @@
       margin-top: 12px;
       flex-wrap: wrap;
     }
+
     .btn{
       display:inline-flex;
       align-items:center;
@@ -298,8 +391,8 @@
       text-decoration:none;
       border-radius: 12px;
       padding: 10px 12px;
-      font-weight: 500;
-      font-size: 13px;
+      font-weight: 600;
+      font-size: calc(var(--base-font) - 3px);
       transition: transform .16s ease, box-shadow .16s ease, background-color var(--trans), border-color var(--trans), color var(--trans);
       will-change: transform;
       cursor: pointer;
@@ -307,6 +400,9 @@
       border: 1px solid var(--btn-br);
       background: var(--btn-bg);
       color: var(--btn-ink);
+      letter-spacing: 0;
+      word-spacing: 0;
+      line-height: 1.1;
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     body.dark .btn:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
@@ -315,7 +411,7 @@
       background: var(--btn-primary-bg);
       color: var(--btn-primary-ink);
       border-color: var(--btn-primary-br);
-      font-weight: 600;
+      font-weight: 800;
     }
 
     .btn.disabled,
@@ -345,11 +441,13 @@
 
     label{
       display:block;
-      font-size: 12px;
+      font-size: var(--small-font);
       color: var(--muted);
       font-weight: 400;
       margin-bottom: 6px;
       transition: color var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
     }
     select{
       width: 100%;
@@ -357,14 +455,16 @@
       border-radius: 14px;
       border: 1px solid var(--border);
       outline: none;
-      font-size: 14px;
+      font-size: calc(var(--base-font) - 2px);
       line-height: 1.4;
       background: rgba(0,0,0,.01);
       color: var(--ink);
-      font-weight: 400;
+      font-weight: 500;
       transition: background-color var(--trans), border-color var(--trans), color var(--trans), box-shadow var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
     }
-    body.dark select{ background: rgba(255,255,255,.04); }
+    body.dark select{ background: rgba(255,255,255,.05); }
     select:focus{
       border-color: rgba(47,47,51,.28);
       box-shadow: 0 0 0 6px var(--focus);
@@ -391,16 +491,21 @@
     }
     .item-title{
       font-weight: 700;
-      font-size: 14px;
+      font-size: calc(var(--base-font) - 2px);
       margin: 0;
+      line-height: 1.25;
+      letter-spacing: .1px;
+      word-spacing: 0;
     }
     .item-meta{
-      font-size: 12px;
+      font-size: var(--small-font);
       color: var(--muted);
       margin-top: 6px;
-      line-height: 1.35;
+      line-height: 1.4;
       font-weight: 400;
       transition: color var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
     }
     .item-actions{
       margin-top: 10px;
@@ -414,6 +519,10 @@
       padding-left: 18px;
       display: grid;
       gap: 6px;
+      font-size: calc(var(--base-font) - 2px);
+      line-height: 1.45;
+      letter-spacing: 0;
+      word-spacing: 0;
     }
     .bullets li{ margin: 0; }
 
@@ -421,19 +530,21 @@
       border: none;
       background: none;
       padding: 0;
-      margin-top: 8px;
+      margin-top: 10px;
       cursor: pointer;
       text-decoration: underline;
-      font-size: 12px;
+      font-size: var(--small-font);
       color: var(--ink);
-      font-weight: 500;
+      font-weight: 700;
       transition: color var(--trans), opacity var(--trans);
+      letter-spacing: 0;
+      word-spacing: 0;
     }
     .toggle-link:hover{ opacity: .8; }
 
     .toast{
       position: fixed;
-      bottom: 76px; /* sit above the theme toggle */
+      bottom: 86px; /* above dock */
       left: 50%;
       transform: translateX(-50%) translateY(18px);
       opacity: 0;
@@ -445,75 +556,95 @@
       border-radius: 999px;
       padding: 10px 14px;
       box-shadow: 0 16px 40px rgba(0,0,0,.16);
-      font-weight: 500;
-      font-size: 13px;
+      font-weight: 700;
+      font-size: calc(var(--base-font) - 3px);
+      letter-spacing: 0;
+      word-spacing: 0;
+      line-height: 1.1;
     }
     .toast.show{
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Bottom mode toggle (Light | Dark) */
-    .mode-toggle{
+    /* Bottom dock with toggles */
+    .dock{
       position: fixed;
       left: 50%;
       bottom: 18px;
       transform: translateX(-50%);
       z-index: 200;
-      background: var(--toggle-bg);
-      border: 1px solid var(--toggle-border);
-      box-shadow: var(--toggle-shadow);
+      background: var(--dock-bg);
+      border: 1px solid var(--dock-border);
+      box-shadow: var(--dock-shadow);
       border-radius: 999px;
       padding: 10px 12px;
       display:flex;
       align-items:center;
-      gap: 10px;
+      gap: 12px;
       backdrop-filter: blur(12px);
       transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
       user-select:none;
+      max-width: calc(100% - 24px);
     }
-    .mode-toggle .hint{
-      font-size: 12px;
+
+    .dock .hint{
+      font-size: var(--small-font);
       color: var(--muted);
       transition: color var(--trans);
       white-space: nowrap;
+      letter-spacing: 0;
+      word-spacing: 0;
+      font-weight: 700;
     }
 
-    .seg{
+    .pill{
       display:flex;
       gap: 6px;
       padding: 4px;
-      border: 1px solid var(--toggle-border);
-      background: var(--toggle-track);
+      border: 1px solid var(--dock-border);
+      background: var(--dock-track);
       border-radius: 999px;
       transition: background-color var(--trans), border-color var(--trans);
     }
-    .seg button{
+
+    .pill button{
       appearance:none;
       border:0;
       background: transparent;
       color: var(--muted);
       padding: 8px 12px;
       border-radius: 999px;
-      font-weight: 600;
-      font-size: 12px;
+      font-weight: 800;
+      font-size: var(--small-font);
       cursor: pointer;
-      transition: background-color var(--trans), color var(--trans), transform .16s ease;
+      transition: background-color var(--trans), color var(--trans), transform .16s ease, box-shadow .16s ease;
+      letter-spacing: 0;
+      word-spacing: 0;
+      line-height: 1.1;
+      white-space: nowrap;
     }
-    .seg button:hover{ transform: translateY(-1px); }
-    .seg button[aria-pressed="true"]{
+    .pill button:hover{ transform: translateY(-1px); }
+    .pill button[aria-pressed="true"]{
       background: var(--tab-on);
       color: var(--tab-on-ink);
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
 
-    @media (max-width: 520px){
-      .mode-toggle{ width: calc(100% - 24px); justify-content:space-between; }
+    /* For very small screens, allow wrapping cleanly */
+    @media (max-width: 720px){
+      .dock{
+        border-radius: 18px;
+        padding: 10px;
+        flex-wrap: wrap;
+        justify-content: centre;
+      }
+      .dock .hint{ width: 100%; text-align: centre; }
     }
 
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; }
-      .tab:hover, .btn:hover, .seg button:hover{ transform:none !important; }
+      .tab:hover, .btn:hover, .pill button:hover{ transform:none !important; }
     }
   </style>
 </head>
@@ -553,7 +684,7 @@
             <div class="sub">Summary and key outcomes from previous meetings.</div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn" id="refresh-archive">Refresh</button>
+            <button class="btn" id="refresh-archive" type="button">Refresh</button>
           </div>
         </div>
 
@@ -569,8 +700,8 @@
             <div>
               <label>&nbsp;</label>
               <div class="actions" style="margin-top:0;">
-                <button class="btn btn-primary" id="apply-filter">Apply filter</button>
-                <button class="btn" id="clear-filter">Clear</button>
+                <button class="btn btn-primary" id="apply-filter" type="button">Apply filter</button>
+                <button class="btn" id="clear-filter" type="button">Clear</button>
               </div>
             </div>
           </div>
@@ -581,31 +712,52 @@
     </div>
   </div>
 
-  <!-- Bottom light/dark segmented toggle -->
-  <div class="mode-toggle" role="group" aria-label="Theme">
+  <!-- Bottom dock: Theme + Accessibility -->
+  <div class="dock" role="group" aria-label="Preferences">
     <div class="hint">Theme</div>
-    <div class="seg" aria-label="Theme options">
+    <div class="pill" aria-label="Theme options">
       <button type="button" id="theme-light" aria-pressed="true">Light</button>
       <button type="button" id="theme-dark" aria-pressed="false">Dark</button>
+    </div>
+
+    <div class="hint" style="margin-left:6px;">Accessibility</div>
+    <div class="pill" aria-label="Accessibility options">
+      <button type="button" id="acc-readable" aria-pressed="false">Readability</button>
+      <button type="button" id="acc-cb" aria-pressed="false">Colour-blind</button>
     </div>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ---------------- Theme (light/dark) ----------------
-    const THEME_KEY = "imperium_theme_v1";
+    // ---------------- Preferences persistence ----------------
+    const THEME_KEY = "imperium_theme_v2";
+    const READABLE_KEY = "imperium_readable_v1";
+    const CB_KEY = "imperium_cb_v1";
+
+    function setPressed(id, pressed) {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute("aria-pressed", String(!!pressed));
+    }
 
     function applyTheme(theme) {
       const isDark = theme === "dark";
       document.body.classList.toggle("dark", isDark);
+      setPressed("theme-light", !isDark);
+      setPressed("theme-dark", isDark);
+      try { localStorage.setItem(THEME_KEY, isDark ? "dark" : "light"); } catch {}
+    }
 
-      const lightBtn = document.getElementById("theme-light");
-      const darkBtn = document.getElementById("theme-dark");
-      lightBtn.setAttribute("aria-pressed", String(!isDark));
-      darkBtn.setAttribute("aria-pressed", String(isDark));
+    function applyReadable(on) {
+      document.body.classList.toggle("readable", !!on);
+      setPressed("acc-readable", !!on);
+      try { localStorage.setItem(READABLE_KEY, on ? "1" : "0"); } catch {}
+    }
 
-      try { localStorage.setItem(THEME_KEY, theme); } catch {}
+    function applyCb(on) {
+      document.body.classList.toggle("cb", !!on);
+      setPressed("acc-cb", !!on);
+      try { localStorage.setItem(CB_KEY, on ? "1" : "0"); } catch {}
     }
 
     function getPreferredTheme() {
@@ -617,18 +769,36 @@
       return prefersDark ? "dark" : "light";
     }
 
+    function getPrefBool(key, fallback=false) {
+      try {
+        const v = localStorage.getItem(key);
+        if (v === "1") return true;
+        if (v === "0") return false;
+      } catch {}
+      return fallback;
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       applyTheme(getPreferredTheme());
+      applyReadable(getPrefBool(READABLE_KEY, false));
+      applyCb(getPrefBool(CB_KEY, false));
 
       document.getElementById("theme-light").addEventListener("click", () => applyTheme("light"));
       document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark"));
+
+      document.getElementById("acc-readable").addEventListener("click", () => {
+        applyReadable(!document.body.classList.contains("readable"));
+      });
+      document.getElementById("acc-cb").addEventListener("click", () => {
+        applyCb(!document.body.classList.contains("cb"));
+      });
     });
 
     // ---------------- Meetings (UTC) ----------------
     const meetings = [
       { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
-      { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"" },
-      { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"https://meet.google.com/qag-nebe-jtd" }
+      { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
+      { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"" }
     ];
 
     // ---------------- Notes (frontend-only) ----------------
@@ -787,6 +957,13 @@
       return "badge";
     }
 
+    function statusGlyph(badge) {
+      /* Extra non-colour cue for quick scanning */
+      if (badge === "Next up") return "✓";
+      if (badge === "Passed") return "–";
+      return "•";
+    }
+
     // Dashboard cards
     function cardHtml(m, idx, nextIdx) {
       const now = Date.now();
@@ -818,7 +995,7 @@
         <article class="card ${idx === nextIdx ? "next" : ""}">
           <div class="card-top">
             <p class="title">${escapeHtml(m.title || "Meeting")}</p>
-            <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
+            <span class="${badgeClass(badge)}">${escapeHtml(statusGlyph(badge))} ${escapeHtml(badge)}</span>
           </div>
 
           <div class="times">
