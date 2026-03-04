@@ -56,9 +56,18 @@
       /* Typography (defaults) */
       --base-font: 16px;
       --small-font: 12px;
+
+      /* Readability tweaks (default = off) */
       --body-line: 1.35;
       --readable-letter: 0px;
       --readable-word: 0px;
+
+      /* Font weights (keep consistent) */
+      --w-regular: 400;
+      --w-medium: 500;
+      --w-semibold: 600;
+      --w-bold: 700;
+      --w-xbold: 800;
     }
 
     /* Dark mode overrides */
@@ -103,9 +112,8 @@
       --dock-track: rgba(255,255,255,.08);
     }
 
-    /* Colour-blind friendly palette (keeps text labels too) */
+    /* Colour-blind friendly palette (blue/orange) */
     body.cb{
-      /* Prefer blue/orange rather than green/red */
       --next-bg: rgba(72, 122, 255, .18);
       --next-br: rgba(72, 122, 255, .42);
       --next-tx: rgba(40, 78, 190, 1);
@@ -124,13 +132,13 @@
       --pass-tx: rgba(255, 214, 168, 1);
     }
 
-    /* Dyslexia-friendly / readability mode */
+    /* Readability mode: do NOT scale the whole UI.
+       Only improve spacing + slightly increase small text. */
     body.readable{
-      --base-font: 18px;
-      --small-font: 14px;
-      --body-line: 1.5;
-      --readable-letter: .2px;
-      --readable-word: .6px;
+      --small-font: 13px;
+      --body-line: 1.45;
+      --readable-letter: .15px;
+      --readable-word: .45px;
     }
 
     *{ box-sizing:border-box; }
@@ -142,8 +150,8 @@
       color: var(--ink);
       background: var(--bg);
       min-height:100vh;
-      font-weight: 400;
-      font-size: var(--base-font);
+      font-weight: var(--w-regular);
+      font-size: var(--base-font); /* stays constant */
       line-height: var(--body-line);
       letter-spacing: var(--readable-letter);
       word-spacing: var(--readable-word);
@@ -153,7 +161,7 @@
     .wrap{
       max-width: 1040px;
       margin: 0 auto;
-      padding: 18px 16px 118px; /* space for bottom dock */
+      padding: 18px 16px 118px;
     }
 
     .topbar{
@@ -176,7 +184,7 @@
       flex-wrap: wrap;
     }
     .brand{
-      font-weight: 700;
+      font-weight: var(--w-bold);
       letter-spacing: .2px;
       line-height: 1.2;
       max-width: 70ch;
@@ -201,11 +209,13 @@
       padding: 10px 14px;
       border-radius: 999px;
       cursor:pointer;
-      font-weight: 600;
+      font-weight: var(--w-semibold);
       transition: transform .16s ease, background-color var(--trans), color var(--trans), box-shadow .16s ease;
       will-change: transform;
       white-space: nowrap;
-      font-size: calc(var(--base-font) - 2px);
+      font-size: 14px;
+      letter-spacing: 0;
+      word-spacing: 0;
     }
     .tab:hover{ transform: translateY(-1px); }
     .tab[aria-selected="true"]{
@@ -242,9 +252,9 @@
       margin-bottom: 12px;
     }
     h1{
-      font-size: calc(var(--base-font) + 4px);
+      font-size: 20px;
       margin: 0;
-      font-weight: 700;
+      font-weight: var(--w-bold);
       line-height: 1.2;
       letter-spacing: .2px;
       word-spacing: 0;
@@ -252,9 +262,9 @@
     .sub{
       margin-top: 6px;
       color: var(--muted);
-      font-size: calc(var(--base-font) - 2px);
+      font-size: 14px;
       line-height: 1.4;
-      font-weight: 400;
+      font-weight: var(--w-regular);
       transition: color var(--trans);
       letter-spacing: 0;
       word-spacing: 0;
@@ -297,8 +307,8 @@
       margin-bottom: 8px;
     }
     .title{
-      font-weight: 700;
-      font-size: calc(var(--base-font) - 1px);
+      font-weight: var(--w-bold);
+      font-size: 15px;
       margin: 0;
       line-height: 1.25;
       letter-spacing: .1px;
@@ -306,11 +316,11 @@
     }
 
     .badge{
-      font-size: calc(var(--small-font));
+      font-size: var(--small-font);
       border: 1px solid var(--border);
       padding: 6px 10px;
       border-radius: 999px;
-      font-weight: 700;
+      font-weight: var(--w-semibold);
       white-space: nowrap;
       background: rgba(0,0,0,.02);
       color: var(--ink);
@@ -338,14 +348,14 @@
     .label{
       font-size: var(--small-font);
       color: var(--muted);
-      font-weight: 400;
+      font-weight: var(--w-regular);
       transition: color var(--trans);
       letter-spacing: 0;
       word-spacing: 0;
     }
     .value{
-      font-size: calc(var(--base-font) - 2px);
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: var(--w-medium);
       letter-spacing: 0;
       word-spacing: 0;
     }
@@ -363,15 +373,15 @@
     .count .k{
       font-size: var(--small-font);
       color: var(--muted);
-      font-weight: 400;
+      font-weight: var(--w-regular);
       transition: color var(--trans);
       letter-spacing: 0;
       word-spacing: 0;
     }
     .count .v{
       margin-top: 6px;
-      font-size: calc(var(--base-font) - 1px);
-      font-weight: 800;
+      font-size: 14px;
+      font-weight: var(--w-bold);
       letter-spacing: .2px;
       word-spacing: 0;
     }
@@ -391,8 +401,8 @@
       text-decoration:none;
       border-radius: 12px;
       padding: 10px 12px;
-      font-weight: 600;
-      font-size: calc(var(--base-font) - 3px);
+      font-weight: var(--w-medium);
+      font-size: 13px;
       transition: transform .16s ease, box-shadow .16s ease, background-color var(--trans), border-color var(--trans), color var(--trans);
       will-change: transform;
       cursor: pointer;
@@ -411,7 +421,7 @@
       background: var(--btn-primary-bg);
       color: var(--btn-primary-ink);
       border-color: var(--btn-primary-br);
-      font-weight: 800;
+      font-weight: var(--w-semibold);
     }
 
     .btn.disabled,
@@ -443,7 +453,7 @@
       display:block;
       font-size: var(--small-font);
       color: var(--muted);
-      font-weight: 400;
+      font-weight: var(--w-regular);
       margin-bottom: 6px;
       transition: color var(--trans);
       letter-spacing: 0;
@@ -455,11 +465,11 @@
       border-radius: 14px;
       border: 1px solid var(--border);
       outline: none;
-      font-size: calc(var(--base-font) - 2px);
+      font-size: 14px;
       line-height: 1.4;
       background: rgba(0,0,0,.01);
       color: var(--ink);
-      font-weight: 500;
+      font-weight: var(--w-regular);
       transition: background-color var(--trans), border-color var(--trans), color var(--trans), box-shadow var(--trans);
       letter-spacing: 0;
       word-spacing: 0;
@@ -490,8 +500,8 @@
       flex-wrap: wrap;
     }
     .item-title{
-      font-weight: 700;
-      font-size: calc(var(--base-font) - 2px);
+      font-weight: var(--w-bold);
+      font-size: 14px;
       margin: 0;
       line-height: 1.25;
       letter-spacing: .1px;
@@ -502,7 +512,7 @@
       color: var(--muted);
       margin-top: 6px;
       line-height: 1.4;
-      font-weight: 400;
+      font-weight: var(--w-regular);
       transition: color var(--trans);
       letter-spacing: 0;
       word-spacing: 0;
@@ -519,7 +529,7 @@
       padding-left: 18px;
       display: grid;
       gap: 6px;
-      font-size: calc(var(--base-font) - 2px);
+      font-size: 14px;
       line-height: 1.45;
       letter-spacing: 0;
       word-spacing: 0;
@@ -535,7 +545,7 @@
       text-decoration: underline;
       font-size: var(--small-font);
       color: var(--ink);
-      font-weight: 700;
+      font-weight: var(--w-medium);
       transition: color var(--trans), opacity var(--trans);
       letter-spacing: 0;
       word-spacing: 0;
@@ -544,7 +554,7 @@
 
     .toast{
       position: fixed;
-      bottom: 86px; /* above dock */
+      bottom: 86px;
       left: 50%;
       transform: translateX(-50%) translateY(18px);
       opacity: 0;
@@ -556,8 +566,8 @@
       border-radius: 999px;
       padding: 10px 14px;
       box-shadow: 0 16px 40px rgba(0,0,0,.16);
-      font-weight: 700;
-      font-size: calc(var(--base-font) - 3px);
+      font-weight: var(--w-medium);
+      font-size: 13px;
       letter-spacing: 0;
       word-spacing: 0;
       line-height: 1.1;
@@ -567,7 +577,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Bottom dock with toggles */
+    /* Bottom dock */
     .dock{
       position: fixed;
       left: 50%;
@@ -589,13 +599,13 @@
     }
 
     .dock .hint{
-      font-size: var(--small-font);
+      font-size: 12px;
       color: var(--muted);
       transition: color var(--trans);
       white-space: nowrap;
       letter-spacing: 0;
       word-spacing: 0;
-      font-weight: 700;
+      font-weight: var(--w-medium);
     }
 
     .pill{
@@ -615,8 +625,8 @@
       color: var(--muted);
       padding: 8px 12px;
       border-radius: 999px;
-      font-weight: 800;
-      font-size: var(--small-font);
+      font-weight: var(--w-semibold);
+      font-size: 12px;
       cursor: pointer;
       transition: background-color var(--trans), color var(--trans), transform .16s ease, box-shadow .16s ease;
       letter-spacing: 0;
@@ -631,15 +641,13 @@
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
 
-    /* For very small screens, allow wrapping cleanly */
     @media (max-width: 720px){
       .dock{
         border-radius: 18px;
         padding: 10px;
         flex-wrap: wrap;
-        justify-content: centre;
       }
-      .dock .hint{ width: 100%; text-align: centre; }
+      .dock .hint{ width: 100%; text-align: center; }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -731,9 +739,9 @@
 
   <script>
     // ---------------- Preferences persistence ----------------
-    const THEME_KEY = "imperium_theme_v2";
-    const READABLE_KEY = "imperium_readable_v1";
-    const CB_KEY = "imperium_cb_v1";
+    const THEME_KEY = "imperium_theme_v3";
+    const READABLE_KEY = "imperium_readable_v2";
+    const CB_KEY = "imperium_cb_v2";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -956,9 +964,7 @@
       if (badge === "Passed") return "badge badge-pass";
       return "badge";
     }
-
     function statusGlyph(badge) {
-      /* Extra non-colour cue for quick scanning */
       if (badge === "Next up") return "✓";
       if (badge === "Passed") return "–";
       return "•";
