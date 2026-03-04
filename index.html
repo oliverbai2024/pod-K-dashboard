@@ -7,7 +7,6 @@
 
   <style>
     :root{
-      /* Base (Light) */
       --bg:#ffffff;
       --ink:#2f2f33;
       --muted:rgba(47,47,51,.68);
@@ -20,7 +19,6 @@
       --radius: 16px;
       --focus: rgba(47,47,51,.12);
 
-      /* Status colours (default palette) */
       --next-bg: rgba(66, 180, 120, .18);
       --next-br: rgba(66, 180, 120, .38);
       --next-tx: rgba(24, 110, 70, 1);
@@ -29,15 +27,12 @@
       --pass-br: rgba(245, 106, 106, .36);
       --pass-tx: rgba(150, 40, 40, 1);
 
-      /* Tabs + primary */
       --tab-on:#2f2f33;
       --tab-on-ink:#ffffff;
 
-      /* Top bar glass */
       --glass: rgba(255,255,255,.88);
       --glass-border: rgba(47,47,51,.14);
 
-      /* Buttons */
       --btn-bg: rgba(0,0,0,.01);
       --btn-ink: var(--ink);
       --btn-br: var(--border);
@@ -45,7 +40,6 @@
       --btn-primary-ink: var(--tab-on-ink);
       --btn-primary-br: var(--tab-on);
 
-      /* Bottom controls */
       --dock-bg: rgba(255,255,255,.92);
       --dock-border: rgba(47,47,51,.16);
       --dock-shadow: 0 18px 50px rgba(0,0,0,.14);
@@ -53,23 +47,19 @@
 
       --trans: 220ms ease;
 
-      /* Typography (defaults) */
       --base-font: 16px;
       --small-font: 12px;
 
-      /* Readability tweaks (default = off) */
       --body-line: 1.35;
       --readable-letter: 0px;
       --readable-word: 0px;
 
-      /* Font weights */
       --w-regular: 400;
       --w-medium: 500;
       --w-semibold: 600;
       --w-bold: 700;
     }
 
-    /* Dark mode overrides */
     body.dark{
       --bg:#0f1115;
       --ink:rgba(255,255,255,.92);
@@ -108,7 +98,6 @@
       --dock-track: rgba(255,255,255,.08);
     }
 
-    /* Colour-blind friendly palette (blue/orange) */
     body.cb{
       --next-bg: rgba(72, 122, 255, .18);
       --next-br: rgba(72, 122, 255, .42);
@@ -128,7 +117,6 @@
       --pass-tx: rgba(255, 214, 168, 1);
     }
 
-    /* Readability mode (no global zoom): spacing + clarity only */
     body.readable{
       --small-font: 13px;
       --body-line: 1.45;
@@ -151,11 +139,9 @@
       letter-spacing: var(--readable-letter);
       word-spacing: var(--readable-word);
       transition: background-color var(--trans), color var(--trans);
-      /* Improves readability of numbers everywhere without changing size */
       font-variant-numeric: tabular-nums;
     }
 
-    /* Readability mode: reduce motion + visual noise (only when on) */
     body.readable .card,
     body.readable .item,
     body.readable .view{
@@ -167,7 +153,8 @@
     }
     body.readable .tab:hover,
     body.readable .btn:hover,
-    body.readable .pill button:hover{
+    body.readable .pill button:hover,
+    body.readable .toggle-link:hover{
       transform: none;
       box-shadow: none;
     }
@@ -284,7 +271,6 @@
       word-spacing: 0;
     }
 
-    /* Readability mode: a bit more breathing room in long text areas only */
     body.readable .sub{ line-height: 1.55; }
     body.readable .bullets{ gap: 9px; line-height: 1.6; }
     body.readable .item-meta{ line-height: 1.55; }
@@ -316,7 +302,6 @@
     .card.next{
       border-color: rgba(47,47,51,.22);
       box-shadow: var(--shadow);
-      /* Extra non-colour cue: stripe for quick scanning (always on, subtle) */
       position: relative;
       overflow: hidden;
     }
@@ -327,10 +312,8 @@
       width: 6px;
       background: var(--next-br);
     }
-    body.dark .card.next{ border-color: rgba(255,255,255,.22); }
-
-    /* Readability mode: reduce stripe thickness */
     body.readable .card.next::before{ width: 4px; }
+    body.dark .card.next{ border-color: rgba(255,255,255,.22); }
 
     .card-top{
       display:flex;
@@ -446,7 +429,7 @@
       letter-spacing: 0;
       word-spacing: 0;
       line-height: 1.1;
-      min-height: 38px; /* better hit area */
+      min-height: 38px;
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     body.dark .btn:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
@@ -570,7 +553,6 @@
     }
     .bullets li{ margin: 0; }
 
-    /* Show more: make it a proper button (better discoverability) */
     .toggle-link{
       display: inline-flex;
       align-items: center;
@@ -591,7 +573,6 @@
     body.dark .toggle-link{ background: rgba(255,255,255,.05); }
     .toggle-link:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
     body.dark .toggle-link:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
-    body.readable .toggle-link:hover{ transform: none; box-shadow: none; }
 
     .toast{
       position: fixed;
@@ -618,7 +599,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Bottom dock */
     .dock{
       position: fixed;
       left: 50%;
@@ -761,7 +741,6 @@
     </div>
   </div>
 
-  <!-- Bottom dock: Theme + Accessibility -->
   <div class="dock" role="group" aria-label="Preferences">
     <div class="hint">Theme</div>
     <div class="pill" aria-label="Theme options">
@@ -779,7 +758,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ---------------- Preferences persistence ----------------
     const THEME_KEY = "imperium_theme_v4";
     const READABLE_KEY = "imperium_readable_v3";
     const CB_KEY = "imperium_cb_v3";
@@ -834,23 +812,16 @@
 
       document.getElementById("theme-light").addEventListener("click", () => applyTheme("light"));
       document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark"));
-
-      document.getElementById("acc-readable").addEventListener("click", () => {
-        applyReadable(!document.body.classList.contains("readable"));
-      });
-      document.getElementById("acc-cb").addEventListener("click", () => {
-        applyCb(!document.body.classList.contains("cb"));
-      });
+      document.getElementById("acc-readable").addEventListener("click", () => applyReadable(!document.body.classList.contains("readable")));
+      document.getElementById("acc-cb").addEventListener("click", () => applyCb(!document.body.classList.contains("cb")));
     });
 
-    // ---------------- Meetings (UTC) ----------------
     const meetings = [
       { id:"m1", title:"Meeting – 27 Feb", startUtc:"2026-02-27T17:00:00Z", endUtc:"2026-02-27T17:30:00Z", meetLink:"" },
       { id:"m2", title:"Meeting – 2 Mar",  startUtc:"2026-03-02T16:00:00Z", endUtc:"2026-03-02T16:30:00Z", meetLink:"https://meet.google.com/mbk-awyj-hwd" },
       { id:"m3", title:"Meeting – 4 Mar",  startUtc:"2026-03-04T17:00:00Z", endUtc:"2026-03-04T17:30:00Z", meetLink:"" }
     ];
 
-    // ---------------- Notes (frontend-only) ----------------
     const notes = [
       {
         id: "n-2026-02-27",
@@ -881,10 +852,27 @@
           "The meeting ended earlier than planned due to technical issues; remaining topics will be covered in a future session."
         ],
         pdfUrl: "/minutes/Project Imperium - Pod K Minutes (2nd).pdf"
+      },
+      {
+        id: "n-2026-03-04",
+        meetingId: "m3",
+        title: "Minutes – 4 Mar (Baselining, bonuses, review capacity, and rubric guidance)",
+        createdAt: "2026-03-04T18:00:00Z",
+        bullets: [
+          "Office hours resumed after the previous meeting ended early due to technical issues. Contributors from multiple pods attended.",
+          "Baselining remains the main priority. Tasks are currently being claimed faster than engineering can seed them; contributors should monitor announcements and the dashboard for new tasks.",
+          "Bonus structure was clarified: the 7-task requirement refers to submitted tasks (not merged tasks). Once merged, those tasks qualify for the additional $50 bonus.",
+          "Review capacity updates: Ivan is prioritising Pod K reviews, and 12 additional super reviewers have been added to help reduce the backlog.",
+          "Tech leads have begun sharing daily QC tips to support quality improvements.",
+          "Harsh provided technical guidance on rubric writing, requirements, and common review mistakes, including avoiding stacked criteria, vague language, and implementation-specific references.",
+          "Harsh clarified functional vs robustness criteria, interface file rules, and appropriate use of LLMs for validation rather than task generation.",
+          "Phase 1 (rubric creation) and Phase 2 (baselining) remain separate tasks and cannot be completed by the same contributor.",
+          "For full details, examples, and Q&A, see the full meeting minutes PDF."
+        ],
+        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (4th).pdf"
       }
     ];
 
-    // ---------------- Helpers ----------------
     const pad2 = (n) => String(n).padStart(2, "0");
     function escapeHtml(str) {
       return String(str)
@@ -948,7 +936,6 @@
       return `${base}&${params.toString()}`;
     }
 
-    // Toast
     let toastTimer = null;
     function toast(msg) {
       const el = document.getElementById("toast");
@@ -958,7 +945,6 @@
       toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
-    // Tabs
     const tabDashboard = document.getElementById("tab-dashboard");
     const tabArchive = document.getElementById("tab-archive");
     const viewDashboard = document.getElementById("view-dashboard");
@@ -974,7 +960,6 @@
     tabDashboard.addEventListener("click", () => show("dashboard"));
     tabArchive.addEventListener("click", () => show("archive"));
 
-    // Select options
     function populateMeetingSelect(selectEl, includeAll = false) {
       selectEl.innerHTML = "";
       if (includeAll) {
@@ -1011,7 +996,6 @@
       return "•";
     }
 
-    // Dashboard cards
     function cardHtml(m, idx, nextIdx) {
       const now = Date.now();
       const start = new Date(m.startUtc).getTime();
@@ -1105,7 +1089,6 @@
       });
     }
 
-    // Archive
     function meetingLabel(meetingId) {
       const m = meetings.find(x => x.id === meetingId);
       if (!m) return "Unknown meeting";
@@ -1188,7 +1171,6 @@
       }).join("");
     }
 
-    // Toggle bullet expansion
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-bullets-toggle]");
       if (!btn) return;
@@ -1202,7 +1184,6 @@
       btn.textContent = isOpen ? "Show more" : "Show less";
     });
 
-    // Filter persistence
     const FILTER_KEY = "imperium_archive_filter_v1";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
@@ -1218,7 +1199,6 @@
       loadArchive("");
     }
 
-    // Init
     (function init(){
       const url = new URL(window.location.href);
 
@@ -1248,7 +1228,6 @@
       document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
       document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
 
-      // Deep link support: ?tab=archive&meetingId=m1
       const tab = url.searchParams.get("tab");
       const meetingId = url.searchParams.get("meetingId") || "";
       if (tab === "archive") {
