@@ -762,9 +762,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const THEME_KEY = "imperium_theme_v4";
-    const READABLE_KEY = "imperium_readable_v3";
-    const CB_KEY = "imperium_cb_v3";
+    const THEME_KEY = "imperium_theme_v5";
+    const READABLE_KEY = "imperium_readable_v4";
+    const CB_KEY = "imperium_cb_v4";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -823,15 +823,17 @@
     const dashboardMeetings = [
       {
         id: "m4",
-        title: "Project Imperium │ Pod K Office Hours (10th) - APAC focused",
-        startUtc: "2026-03-10T14:30:00Z",
+        title: "Office Hours – 10 Mar (APAC)",
+        calendarTitle: "Project Imperium │ Pod K Office Hours (10th) - APAC focused",
+        startUtc: "2026-03-10T14:00:00Z",
         endUtc: "2026-03-10T14:30:00Z",
         meetLink: "https://meet.google.com/cnf-nxye-ups",
         audience: "APAC"
       },
       {
         id: "m5",
-        title: "Project Imperium │ Pod K Office Hours (12th) - US focused",
+        title: "Office Hours – 12 Mar (US)",
+        calendarTitle: "Project Imperium │ Pod K Office Hours (12th) - US focused",
         startUtc: "2026-03-12T17:00:00Z",
         endUtc: "2026-03-12T17:30:00Z",
         meetLink: "https://meet.google.com/zzi-dxda-ehe",
@@ -840,6 +842,7 @@
       {
         id: "m6",
         title: "TBD",
+        calendarTitle: "",
         startUtc: "",
         endUtc: "",
         meetLink: "",
@@ -962,12 +965,13 @@
       );
     }
 
-    function makeGoogleCalendarUrl({ title, startUtc, endUtc, meetLink }) {
+    function makeGoogleCalendarUrl({ title, calendarTitle, startUtc, endUtc, meetLink }) {
       const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
       const dates = `${toGCalUtc(startUtc)}/${toGCalUtc(endUtc)}`;
       const details = meetLink ? `Meeting link: ${meetLink}` : "";
       const location = meetLink || "";
-      const params = new URLSearchParams({ text: title, dates, details, location });
+      const text = calendarTitle || title || "Meeting";
+      const params = new URLSearchParams({ text, dates, details, location });
       return `${base}&${params.toString()}`;
     }
 
