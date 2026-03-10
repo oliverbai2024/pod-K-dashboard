@@ -220,8 +220,6 @@
       transition: transform .16s ease, background-color var(--trans), color var(--trans), box-shadow .16s ease;
       white-space: nowrap;
       font-size: 14px;
-      letter-spacing: 0;
-      word-spacing: 0;
     }
     .tab:hover{ transform: translateY(-1px); }
     .tab[aria-selected="true"]{
@@ -263,7 +261,6 @@
       font-weight: var(--w-bold);
       line-height: 1.2;
       letter-spacing: .2px;
-      word-spacing: 0;
     }
     .sub{
       margin-top: 6px;
@@ -272,8 +269,6 @@
       line-height: 1.4;
       font-weight: var(--w-regular);
       transition: color var(--trans);
-      letter-spacing: 0;
-      word-spacing: 0;
     }
     body.readable .sub{ line-height: 1.55; }
     body.readable .bullets{ gap: 9px; line-height: 1.6; }
@@ -326,24 +321,24 @@
       border-color: rgba(47,47,51,.22);
       box-shadow: var(--shadow);
     }
-    .card.next::before{
-      content:"";
-      position:absolute;
-      left:0; top:0; bottom:0;
-      width: 6px;
-      background: var(--next-br);
-    }
+    .card.next::before,
+    .card.passed::before,
     .card.tbd::before{
       content:"";
       position:absolute;
       left:0; top:0; bottom:0;
       width: 6px;
-      background: var(--upcoming-br);
     }
+    .card.next::before{ background: var(--next-br); }
+    .card.passed::before{ background: var(--pass-br); }
+    .card.tbd::before{ background: var(--upcoming-br); }
+
     body.readable .card.next::before,
+    body.readable .card.passed::before,
     body.readable .card.tbd::before{ width: 4px; }
 
     body.dark .card.next,
+    body.dark .card.passed,
     body.dark .card.tbd{ border-color: rgba(255,255,255,.22); }
 
     .card-top{
@@ -359,7 +354,6 @@
       margin: 0;
       line-height: 1.25;
       letter-spacing: .1px;
-      word-spacing: 0;
     }
 
     .badge{
@@ -762,9 +756,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const THEME_KEY = "imperium_theme_v5";
-    const READABLE_KEY = "imperium_readable_v4";
-    const CB_KEY = "imperium_cb_v4";
+    const THEME_KEY = "imperium_theme_v6";
+    const READABLE_KEY = "imperium_readable_v5";
+    const CB_KEY = "imperium_cb_v5";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -853,7 +847,8 @@
     const archiveMeetings = {
       m1: { title: "Meeting – 27 Feb", startUtc: "2026-02-27T17:00:00Z" },
       m2: { title: "Meeting – 2 Mar",  startUtc: "2026-03-02T16:00:00Z" },
-      m3: { title: "Meeting – 4 Mar",  startUtc: "2026-03-04T17:00:00Z" }
+      m3: { title: "Meeting – 4 Mar",  startUtc: "2026-03-04T17:00:00Z" },
+      m4: { title: "Office Hours – 10 Mar (APAC)", startUtc: "2026-03-10T14:00:00Z" }
     };
 
     const notes = [
@@ -869,7 +864,8 @@
           "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly).",
           "Oliver closed by thanking everyone and confirmed that future office hours will focus on specific areas in more depth."
         ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (27th).pdf"
+        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (27th).pdf",
+        presentationUrl: ""
       },
       {
         id: "n-2026-03-02",
@@ -885,7 +881,8 @@
           "Participants were invited to follow up with further questions after the session.",
           "The meeting ended earlier than planned due to technical issues; remaining topics will be covered in a future session."
         ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (2nd).pdf"
+        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (2nd).pdf",
+        presentationUrl: ""
       },
       {
         id: "n-2026-03-04",
@@ -903,7 +900,25 @@
           "Phase 1 (rubric creation) and Phase 2 (baselining) remain separate tasks and cannot be completed by the same contributor.",
           "For full details, examples, and Q&A, see the full meeting minutes PDF."
         ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (4th).pdf"
+        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (4th).pdf",
+        presentationUrl: ""
+      },
+      {
+        id: "n-2026-03-10",
+        meetingId: "m4",
+        title: "Minutes – 10 Mar (Rubric and knowledge-base review guidance)",
+        createdAt: "2026-03-10T15:00:00Z",
+        bullets: [
+          "Gabriel led a walkthrough of common rubric and knowledge-base issues from recent reviews, focusing on improving submission quality and reducing avoidable failures.",
+          "He highlighted discoverable knowledge-base questions as the most frequent failure and reminded contributors that answers must address ambiguous or unspecified behaviours rather than information directly available in the codebase or task files.",
+          "Gabriel emphasised that knowledge-base answers must add value, with rationales explaining consequences or failure modes. An empty knowledge base was confirmed as a hard failure.",
+          "He stressed trajectory alignment and test confidentiality: trajectories must map to knowledge-base questions, remain high-level, and avoid references to tests, files, or implementation details.",
+          "The team reviewed weak versus strong submissions and discussed patch validation.",
+          "Contributors were reminded to align rubric criteria with the golden patch and focus robustness criteria on defensive engineering.",
+          "Oliver closed by noting that further questions would be handled in Slack and recorded in the meeting minutes."
+        ],
+        pdfUrl: "",
+        presentationUrl: ""
       }
     ];
 
@@ -1076,7 +1091,10 @@
         ? `<div class="row"><div class="label">Focus</div><div class="value">${escapeHtml(m.audience)}</div></div>`
         : "";
 
-      const cardClass = !hasTime ? "card tbd" : (idx === nextIdx ? "card next" : "card");
+      let cardClass = "card";
+      if (!hasTime) cardClass += " tbd";
+      else if (passed) cardClass += " passed";
+      else if (idx === nextIdx) cardClass += " next";
 
       return `
         <article class="${cardClass}">
@@ -1194,9 +1212,16 @@
         const hasPdf = !!(n.pdfUrl && String(n.pdfUrl).trim());
         const pdfLink = hasPdf ? safeHref(String(n.pdfUrl).trim()) : "";
 
+        const hasPresentation = !!(n.presentationUrl && String(n.presentationUrl).trim());
+        const presentationLink = hasPresentation ? safeHref(String(n.presentationUrl).trim()) : "";
+
         const pdfBtn = hasPdf
           ? `<a class="btn btn-primary" href="${escapeHtml(pdfLink)}" target="_blank" rel="noopener noreferrer">Open minutes (PDF)</a>`
-          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No PDF attached">Open minutes (PDF)</span>`;
+          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No minutes PDF attached">Open minutes (PDF)</span>`;
+
+        const presentationBtn = hasPresentation
+          ? `<a class="btn" href="${escapeHtml(presentationLink)}" target="_blank" rel="noopener noreferrer">Open presentation (PDF)</a>`
+          : `<span class="btn disabled" aria-disabled="true" title="No presentation PDF attached">Open presentation (PDF)</span>`;
 
         return `
           <div class="item">
@@ -1222,6 +1247,7 @@
 
             <div class="item-actions">
               ${pdfBtn}
+              ${presentationBtn}
             </div>
           </div>
         `;
@@ -1241,7 +1267,7 @@
       btn.textContent = isOpen ? "Show more" : "Show less";
     });
 
-    const FILTER_KEY = "imperium_archive_filter_v2";
+    const FILTER_KEY = "imperium_archive_filter_v3";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
