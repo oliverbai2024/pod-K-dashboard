@@ -30,6 +30,10 @@
       --upcoming-br: rgba(47,47,51,.16);
       --upcoming-tx: rgba(47,47,51,.84);
 
+      --cancel-bg: rgba(255, 196, 64, .18);
+      --cancel-br: rgba(255, 196, 64, .42);
+      --cancel-tx: rgba(138, 88, 0, 1);
+
       --tab-on:#2f2f33;
       --tab-on-ink:#ffffff;
 
@@ -85,6 +89,10 @@
       --upcoming-br: rgba(255,255,255,.18);
       --upcoming-tx: rgba(255,255,255,.84);
 
+      --cancel-bg: rgba(255, 196, 64, .14);
+      --cancel-br: rgba(255, 196, 64, .34);
+      --cancel-tx: rgba(255, 225, 163, 1);
+
       --tab-on:#ffffff;
       --tab-on-ink:#0f1115;
 
@@ -112,6 +120,10 @@
       --pass-bg: rgba(255, 168, 76, .18);
       --pass-br: rgba(255, 168, 76, .42);
       --pass-tx: rgba(150, 92, 18, 1);
+
+      --cancel-bg: rgba(171, 111, 255, .18);
+      --cancel-br: rgba(171, 111, 255, .42);
+      --cancel-tx: rgba(99, 46, 176, 1);
     }
     body.dark.cb{
       --next-bg: rgba(72, 122, 255, .16);
@@ -121,6 +133,10 @@
       --pass-bg: rgba(255, 168, 76, .14);
       --pass-br: rgba(255, 168, 76, .34);
       --pass-tx: rgba(255, 214, 168, 1);
+
+      --cancel-bg: rgba(171, 111, 255, .14);
+      --cancel-br: rgba(171, 111, 255, .34);
+      --cancel-tx: rgba(222, 196, 255, 1);
     }
 
     body.readable{
@@ -323,7 +339,8 @@
     }
     .card.next::before,
     .card.passed::before,
-    .card.tbd::before{
+    .card.tbd::before,
+    .card.cancelled::before{
       content:"";
       position:absolute;
       left:0; top:0; bottom:0;
@@ -332,14 +349,17 @@
     .card.next::before{ background: var(--next-br); }
     .card.passed::before{ background: var(--pass-br); }
     .card.tbd::before{ background: var(--upcoming-br); }
+    .card.cancelled::before{ background: var(--cancel-br); }
 
     body.readable .card.next::before,
     body.readable .card.passed::before,
-    body.readable .card.tbd::before{ width: 4px; }
+    body.readable .card.tbd::before,
+    body.readable .card.cancelled::before{ width: 4px; }
 
     body.dark .card.next,
     body.dark .card.passed,
-    body.dark .card.tbd{ border-color: rgba(255,255,255,.22); }
+    body.dark .card.tbd,
+    body.dark .card.cancelled{ border-color: rgba(255,255,255,.22); }
 
     .card-top{
       display:flex;
@@ -373,6 +393,7 @@
     .badge-next{ background: var(--next-bg); border-color: var(--next-br); color: var(--next-tx); }
     .badge-pass{ background: var(--pass-bg); border-color: var(--pass-br); color: var(--pass-tx); }
     .badge-upcoming{ background: var(--upcoming-bg); border-color: var(--upcoming-br); color: var(--upcoming-tx); }
+    .badge-cancelled{ background: var(--cancel-bg); border-color: var(--cancel-br); color: var(--cancel-tx); }
 
     .times{ margin-top: 10px; display:grid; gap: 8px; }
     .row{
@@ -756,9 +777,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const THEME_KEY = "imperium_theme_v6";
-    const READABLE_KEY = "imperium_readable_v5";
-    const CB_KEY = "imperium_cb_v5";
+    const THEME_KEY = "imperium_theme_v7";
+    const READABLE_KEY = "imperium_readable_v6";
+    const CB_KEY = "imperium_cb_v6";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -822,7 +843,8 @@
         startUtc: "2026-03-10T14:00:00Z",
         endUtc: "2026-03-10T14:30:00Z",
         meetLink: "https://meet.google.com/cnf-nxye-ups",
-        audience: "APAC"
+        audience: "APAC",
+        statusOverride: "passed"
       },
       {
         id: "m5",
@@ -831,7 +853,9 @@
         startUtc: "2026-03-12T17:00:00Z",
         endUtc: "2026-03-12T17:30:00Z",
         meetLink: "https://meet.google.com/zzi-dxda-ehe",
-        audience: "US"
+        audience: "US",
+        statusOverride: "cancelled",
+        cancelNote: "Today’s office hours have been cancelled."
       },
       {
         id: "m6",
@@ -840,7 +864,8 @@
         startUtc: "",
         endUtc: "",
         meetLink: "",
-        audience: ""
+        audience: "",
+        statusOverride: "upcoming"
       }
     ];
 
@@ -917,8 +942,8 @@
           "Contributors were reminded to align rubric criteria with the golden patch and focus robustness criteria on defensive engineering.",
           "Oliver closed by noting that further questions would be handled in Slack and recorded in the meeting minutes."
         ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (10th).pdf",
-        presentationUrl: "/minutes/Project Imperium (10th pptx).pdf"
+        pdfUrl: "",
+        presentationUrl: ""
       }
     ];
 
@@ -1037,7 +1062,10 @@
     function getNextMeetingIndex() {
       const now = Date.now();
       const future = dashboardMeetings
-        .map((m, i) => ({ i, t: m.startUtc ? new Date(m.startUtc).getTime() : Infinity }))
+        .map((m, i) => ({
+          i,
+          t: (m.startUtc && m.statusOverride !== "cancelled") ? new Date(m.startUtc).getTime() : Infinity
+        }))
         .filter(x => x.t > now)
         .sort((a,b) => a.t - b.t);
       return future.length ? future[0].i : -1;
@@ -1046,12 +1074,14 @@
     function badgeClass(badge) {
       if (badge === "Next up") return "badge badge-next";
       if (badge === "Passed") return "badge badge-pass";
+      if (badge === "Cancelled") return "badge badge-cancelled";
       return "badge badge-upcoming";
     }
 
     function statusGlyph(badge) {
       if (badge === "Next up") return "✓";
       if (badge === "Passed") return "–";
+      if (badge === "Cancelled") return "!";
       return "•";
     }
 
@@ -1059,41 +1089,49 @@
       const hasTime = !!(m.startUtc && m.endUtc);
       const now = Date.now();
       const start = hasTime ? new Date(m.startUtc).getTime() : NaN;
+      const isCancelled = m.statusOverride === "cancelled";
       const passed = hasTime ? now >= start : false;
 
       let badge = "Upcoming";
-      if (!hasTime) badge = "Upcoming";
+      if (isCancelled) badge = "Cancelled";
+      else if (!hasTime) badge = "Upcoming";
       else if (idx === nextIdx && !passed) badge = "Next up";
-      else if (passed) badge = "Passed";
+      else if (passed || m.statusOverride === "passed") badge = "Passed";
 
-      const countdownBlock = !hasTime
-        ? `<div class="count"><div class="k">Status</div><div class="v">To be confirmed</div></div>`
-        : passed
-          ? `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`
-          : `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+      let countdownBlock = "";
+      if (isCancelled) {
+        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">${escapeHtml(m.cancelNote || "This meeting has been cancelled.")}</div></div>`;
+      } else if (!hasTime) {
+        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">To be confirmed</div></div>`;
+      } else if (passed || m.statusOverride === "passed") {
+        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`;
+      } else {
+        countdownBlock = `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+      }
 
-      const notesBtn = passed
+      const notesBtn = (passed || m.statusOverride === "passed")
         ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}" type="button">View notes</button>`
         : "";
 
-      const hasCalendar = !!(m.title && m.startUtc && m.endUtc);
+      const hasCalendar = !!(m.title && m.startUtc && m.endUtc && !isCancelled);
       const gcal = hasCalendar ? makeGoogleCalendarUrl(m) : "";
       const gcalBtn = hasCalendar
         ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>`
-        : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not set">Add to Google Calendar</span>`;
+        : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not available">Add to Google Calendar</span>`;
 
-      const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim());
+      const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim() && !isCancelled);
       const meetBtn = hasMeetLink
         ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
-        : `<span class="btn disabled" aria-disabled="true" title="Meeting link not set">Open meeting link</span>`;
+        : `<span class="btn disabled" aria-disabled="true" title="${isCancelled ? "Meeting cancelled" : "Meeting link not set"}">Open meeting link</span>`;
 
       const audienceRow = m.audience
         ? `<div class="row"><div class="label">Focus</div><div class="value">${escapeHtml(m.audience)}</div></div>`
         : "";
 
       let cardClass = "card";
-      if (!hasTime) cardClass += " tbd";
-      else if (passed) cardClass += " passed";
+      if (isCancelled) cardClass += " cancelled";
+      else if (!hasTime) cardClass += " tbd";
+      else if (passed || m.statusOverride === "passed") cardClass += " passed";
       else if (idx === nextIdx) cardClass += " next";
 
       return `
@@ -1148,7 +1186,7 @@
       document.querySelectorAll("[data-countdown]").forEach(el => {
         const meetingId = el.getAttribute("data-countdown");
         const m = dashboardMeetings.find(x => x.id === meetingId);
-        if (!m || !m.startUtc) return;
+        if (!m || !m.startUtc || m.statusOverride === "cancelled") return;
 
         const start = new Date(m.startUtc).getTime();
         const diff = start - now;
@@ -1267,7 +1305,7 @@
       btn.textContent = isOpen ? "Show more" : "Show less";
     });
 
-    const FILTER_KEY = "imperium_archive_filter_v3";
+    const FILTER_KEY = "imperium_archive_filter_v4";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
