@@ -1079,11 +1079,8 @@
     }
 
     function statusGlyph(badge) {
-      if (badge === "Next up") return "✓";
-      if (badge === "Passed") return "–";
-      if (badge === "Cancelled") return "!";
-      return "•";
-    }
+  return "";
+}
 
     function cardHtml(m, idx, nextIdx) {
       const hasTime = !!(m.startUtc && m.endUtc);
@@ -1138,7 +1135,7 @@
         <article class="${cardClass}">
           <div class="card-top">
             <p class="title">${escapeHtml(m.title || "Meeting")}</p>
-            <span class="${badgeClass(badge)}">${escapeHtml(statusGlyph(badge))} ${escapeHtml(badge)}</span>
+            <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
           </div>
 
           <div class="times">
