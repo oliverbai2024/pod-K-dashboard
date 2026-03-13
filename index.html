@@ -1,1523 +1,483 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Project Imperium – Pod K Meeting Dashboard</title>
-
-  <style>
-    :root{
-      --bg:#ffffff;
-      --ink:#2f2f33;
-      --muted:rgba(47,47,51,.68);
-      --border:rgba(47,47,51,.14);
-      --panel:#ffffff;
-
-      --shadow: 0 12px 30px rgba(0,0,0,.08);
-      --shadow-soft: 0 10px 22px rgba(0,0,0,.05);
-      --radius: 16px;
-      --focus: rgba(47,47,51,.12);
-
-      --next-bg: rgba(66, 180, 120, .18);
-      --next-br: rgba(66, 180, 120, .38);
-      --next-tx: rgba(24, 110, 70, 1);
-
-      --pass-bg: rgba(245, 106, 106, .16);
-      --pass-br: rgba(245, 106, 106, .36);
-      --pass-tx: rgba(150, 40, 40, 1);
-
-      --upcoming-bg: rgba(47,47,51,.05);
-      --upcoming-br: rgba(47,47,51,.16);
-      --upcoming-tx: rgba(47,47,51,.84);
-
-      --cancel-bg: rgba(255, 196, 64, .18);
-      --cancel-br: rgba(255, 196, 64, .42);
-      --cancel-tx: rgba(138, 88, 0, 1);
-
-      --tab-on:#2f2f33;
-      --tab-on-ink:#ffffff;
-
-      --glass: rgba(255,255,255,.88);
-      --glass-border: rgba(47,47,51,.14);
-
-      --btn-bg: rgba(0,0,0,.01);
-      --btn-ink: var(--ink);
-      --btn-br: var(--border);
-      --btn-primary-bg: var(--tab-on);
-      --btn-primary-ink: var(--tab-on-ink);
-      --btn-primary-br: var(--tab-on);
-
-      --dock-bg: rgba(255,255,255,.92);
-      --dock-border: rgba(47,47,51,.16);
-      --dock-shadow: 0 18px 50px rgba(0,0,0,.14);
-      --dock-track: rgba(0,0,0,.06);
-
-      --trans: 220ms ease;
-
-      --base-font: 16px;
-      --small-font: 12px;
-      --body-line: 1.35;
-      --readable-letter: 0px;
-      --readable-word: 0px;
-
-      --w-regular: 400;
-      --w-medium: 500;
-      --w-semibold: 600;
-      --w-bold: 700;
-
-      /* Matrix effect */
-      --matrix-opacity: 0.06;
-      --matrix-colour: rgba(47,47,51,.22);
-    }
-
-    body.dark{
-      --bg:#0f1115;
-      --ink:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.64);
-      --border:rgba(255,255,255,.16);
-      --panel:#141824;
-
-      --shadow: 0 18px 48px rgba(0,0,0,.55);
-      --shadow-soft: 0 14px 30px rgba(0,0,0,.40);
-      --focus: rgba(255,255,255,.08);
-
-      --next-bg: rgba(66, 180, 120, .16);
-      --next-br: rgba(66, 180, 120, .34);
-      --next-tx: rgba(140, 235, 195, 1);
-
-      --pass-bg: rgba(245, 106, 106, .14);
-      --pass-br: rgba(245, 106, 106, .30);
-      --pass-tx: rgba(255, 178, 178, 1);
-
-      --upcoming-bg: rgba(255,255,255,.05);
-      --upcoming-br: rgba(255,255,255,.18);
-      --upcoming-tx: rgba(255,255,255,.84);
-
-      --cancel-bg: rgba(255, 196, 64, .14);
-      --cancel-br: rgba(255, 196, 64, .34);
-      --cancel-tx: rgba(255, 225, 163, 1);
-
-      --tab-on:#ffffff;
-      --tab-on-ink:#0f1115;
-
-      --glass: rgba(15,17,21,.74);
-      --glass-border: rgba(255,255,255,.12);
-
-      --btn-bg: rgba(255,255,255,.05);
-      --btn-ink: var(--ink);
-      --btn-br: var(--border);
-      --btn-primary-bg: #ffffff;
-      --btn-primary-ink: #0f1115;
-      --btn-primary-br: #ffffff;
-
-      --dock-bg: rgba(20,24,36,.92);
-      --dock-border: rgba(255,255,255,.16);
-      --dock-shadow: 0 22px 60px rgba(0,0,0,.70);
-      --dock-track: rgba(255,255,255,.08);
-
-      --matrix-opacity: 0.11;
-      --matrix-colour: rgba(120,255,180,.38);
-    }
-
-    body.cb{
-      --next-bg: rgba(72, 122, 255, .18);
-      --next-br: rgba(72, 122, 255, .42);
-      --next-tx: rgba(40, 78, 190, 1);
-
-      --pass-bg: rgba(255, 168, 76, .18);
-      --pass-br: rgba(255, 168, 76, .42);
-      --pass-tx: rgba(150, 92, 18, 1);
-
-      --cancel-bg: rgba(171, 111, 255, .18);
-      --cancel-br: rgba(171, 111, 255, .42);
-      --cancel-tx: rgba(99, 46, 176, 1);
-    }
-    body.dark.cb{
-      --next-bg: rgba(72, 122, 255, .16);
-      --next-br: rgba(72, 122, 255, .38);
-      --next-tx: rgba(170, 195, 255, 1);
-
-      --pass-bg: rgba(255, 168, 76, .14);
-      --pass-br: rgba(255, 168, 76, .34);
-      --pass-tx: rgba(255, 214, 168, 1);
-
-      --cancel-bg: rgba(171, 111, 255, .14);
-      --cancel-br: rgba(171, 111, 255, .34);
-      --cancel-tx: rgba(222, 196, 255, 1);
-    }
-
-    body.readable{
-      --small-font: 13px;
-      --body-line: 1.45;
-      --readable-letter: .15px;
-      --readable-word: .45px;
-    }
-
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; }
-
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-      min-height:100vh;
-      font-weight: var(--w-regular);
-      font-size: var(--base-font);
-      line-height: var(--body-line);
-      letter-spacing: var(--readable-letter);
-      word-spacing: var(--readable-word);
-      transition: background-color var(--trans), color var(--trans);
-      font-variant-numeric: tabular-nums;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Matrix background */
-    #matrix-bg{
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      opacity: var(--matrix-opacity);
-      transition: opacity var(--trans);
-    }
-    body.readable #matrix-bg,
-    body.reduce-motion #matrix-bg{
-      opacity: 0 !important;
-    }
-
-    body.readable .card,
-    body.readable .item,
-    body.readable .view{
-      box-shadow: none;
-    }
-    body.readable .row,
-    body.readable .count{
-      background: transparent;
-    }
-    body.readable .tab:hover,
-    body.readable .btn:hover,
-    body.readable .pill button:hover,
-    body.readable .toggle-link:hover{
-      transform: none;
-      box-shadow: none;
-    }
-
-    .topbar,
-    .wrap,
-    .dock,
-    .toast{
-      position: relative;
-      z-index: 1;
-    }
-
-    .wrap{
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 18px 16px 118px;
-    }
-
-    .topbar{
-      position: sticky;
-      top: 0;
-      background: var(--glass);
-      border-bottom: 1px solid var(--glass-border);
-      backdrop-filter: blur(10px);
-      z-index: 10;
-      transition: background-color var(--trans), border-color var(--trans);
-    }
-    .topbar-inner{
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 12px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .brand{
-      font-weight: var(--w-bold);
-      letter-spacing: .2px;
-      line-height: 1.2;
-      max-width: 70ch;
-    }
-
-    .tabs{
-      display:flex;
-      gap: 8px;
-      padding: 6px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: rgba(0,0,0,.02);
-      transition: background-color var(--trans), border-color var(--trans);
-    }
-    body.dark .tabs{ background: rgba(255,255,255,.04); }
-
-    .tab{
-      appearance:none;
-      border:0;
-      background: transparent;
-      color: var(--muted);
-      padding: 10px 14px;
-      border-radius: 999px;
-      cursor:pointer;
-      font-weight: var(--w-semibold);
-      transition: transform .16s ease, background-color var(--trans), color var(--trans), box-shadow .16s ease;
-      white-space: nowrap;
-      font-size: 14px;
-    }
-    .tab:hover{ transform: translateY(-1px); }
-    .tab[aria-selected="true"]{
-      background: var(--tab-on);
-      color: var(--tab-on-ink);
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-    }
-
-    .views{ position: relative; margin-top: 16px; }
-    .view{
-      background: color-mix(in srgb, var(--panel) 92%, transparent);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-      transform-origin: top centre;
-      transition: opacity .18s ease, transform .18s ease, filter .18s ease, background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
-      backdrop-filter: blur(8px);
-    }
-    .view.hidden{
-      position:absolute;
-      inset:0;
-      opacity:0;
-      transform: translateY(10px) scale(.99);
-      filter: blur(2px);
-      pointer-events:none;
-    }
-
-    .header{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    h1{
-      font-size: 20px;
-      margin: 0;
-      font-weight: var(--w-bold);
-      line-height: 1.2;
-      letter-spacing: .2px;
-    }
-    .sub{
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.4;
-      font-weight: var(--w-regular);
-      transition: color var(--trans);
-    }
-    body.readable .sub{ line-height: 1.55; }
-    body.readable .bullets{ gap: 9px; line-height: 1.6; }
-    body.readable .item-meta{ line-height: 1.55; }
-
-    .divider{
-      height:1px;
-      background: var(--border);
-      opacity:.6;
-      margin: 12px 0;
-      transition: background-color var(--trans);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
-
-    .card{
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: color-mix(in srgb, var(--panel) 92%, transparent);
-      padding: 14px;
-      box-shadow: var(--shadow-soft);
-      transition:
-        transform .24s ease,
-        box-shadow .24s ease,
-        border-color var(--trans),
-        background-color var(--trans);
-      position: relative;
-      overflow: hidden;
-      will-change: transform;
-      backdrop-filter: blur(6px);
-    }
-    .card:hover{
-      transform: translateY(-4px);
-      box-shadow: 0 20px 36px rgba(0,0,0,.12);
-    }
-    body.dark .card:hover{
-      box-shadow: 0 24px 42px rgba(0,0,0,.5);
-    }
-    body.readable .card:hover{
-      transform: none;
-      box-shadow: none;
-    }
-
-    .card.next{
-      border-color: rgba(47,47,51,.22);
-      box-shadow: var(--shadow);
-    }
-    .card.next::before,
-    .card.passed::before,
-    .card.tbd::before,
-    .card.cancelled::before{
-      content:"";
-      position:absolute;
-      left:0; top:0; bottom:0;
-      width: 6px;
-    }
-    .card.next::before{ background: var(--next-br); }
-    .card.passed::before{ background: var(--pass-br); }
-    .card.tbd::before{ background: var(--upcoming-br); }
-    .card.cancelled::before{ background: var(--cancel-br); }
-
-    body.readable .card.next::before,
-    body.readable .card.passed::before,
-    body.readable .card.tbd::before,
-    body.readable .card.cancelled::before{ width: 4px; }
-
-    body.dark .card.next,
-    body.dark .card.passed,
-    body.dark .card.tbd,
-    body.dark .card.cancelled{ border-color: rgba(255,255,255,.22); }
-
-    .card-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .title{
-      font-weight: var(--w-bold);
-      font-size: 15px;
-      margin: 0;
-      line-height: 1.25;
-      letter-spacing: .1px;
-    }
-
-    .badge{
-      font-size: var(--small-font);
-      border: 1px solid var(--border);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight: var(--w-semibold);
-      white-space: nowrap;
-      background: rgba(0,0,0,.02);
-      color: var(--ink);
-      transition: background-color var(--trans), border-color var(--trans), color var(--trans);
-      line-height: 1.1;
-    }
-    body.dark .badge{ background: rgba(255,255,255,.04); }
-
-    .badge-next{ background: var(--next-bg); border-color: var(--next-br); color: var(--next-tx); }
-    .badge-pass{ background: var(--pass-bg); border-color: var(--pass-br); color: var(--pass-tx); }
-    .badge-upcoming{ background: var(--upcoming-bg); border-color: var(--upcoming-br); color: var(--upcoming-tx); }
-    .badge-cancelled{ background: var(--cancel-bg); border-color: var(--cancel-br); color: var(--cancel-tx); }
-
-    .times{ margin-top: 10px; display:grid; gap: 8px; }
-    .row{
-      display:flex; justify-content:space-between; gap: 10px;
-      padding: 10px 10px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(0,0,0,.015);
-      transition: background-color var(--trans), border-color var(--trans);
-    }
-    body.dark .row{ background: rgba(255,255,255,.04); }
-
-    .label{
-      font-size: var(--small-font);
-      color: var(--muted);
-      font-weight: var(--w-regular);
-      transition: color var(--trans);
-    }
-    .value{
-      font-size: 13px;
-      font-weight: var(--w-medium);
-    }
-
-    .count{
-      margin-top: 10px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 10px;
-      background: rgba(0,0,0,.015);
-      transition: background-color var(--trans), border-color var(--trans);
-    }
-    body.dark .count{ background: rgba(255,255,255,.04); }
-
-    .count .k{
-      font-size: var(--small-font);
-      color: var(--muted);
-      font-weight: var(--w-regular);
-      transition: color var(--trans);
-    }
-    .count .v{
-      margin-top: 6px;
-      font-size: 14px;
-      font-weight: var(--w-bold);
-      letter-spacing: .2px;
-    }
-
-    .actions{
-      display:flex;
-      gap: 10px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 8px;
-      text-decoration:none;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: var(--w-medium);
-      font-size: 13px;
-      transition: transform .16s ease, box-shadow .16s ease, background-color var(--trans), border-color var(--trans), color var(--trans);
-      cursor: pointer;
-      user-select:none;
-      border: 1px solid var(--btn-br);
-      background: var(--btn-bg);
-      color: var(--btn-ink);
-      line-height: 1.1;
-      min-height: 38px;
-    }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
-    body.dark .btn:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
-
-    .btn-primary{
-      background: var(--btn-primary-bg);
-      color: var(--btn-primary-ink);
-      border-color: var(--btn-primary-br);
-      font-weight: var(--w-semibold);
-    }
-
-    .btn.disabled,
-    .btn[aria-disabled="true"]{
-      opacity: .45;
-      cursor: not-allowed;
-      pointer-events: none;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .panel{
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: color-mix(in srgb, var(--panel) 92%, transparent);
-      padding: 14px;
-      box-shadow: var(--shadow-soft);
-      transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
-      backdrop-filter: blur(6px);
-    }
-    .form-grid{
-      display:grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
-    @media (max-width: 920px){ .form-grid{ grid-template-columns: 1fr; } }
-
-    label{
-      display:block;
-      font-size: var(--small-font);
-      color: var(--muted);
-      font-weight: var(--w-regular);
-      margin-bottom: 6px;
-      transition: color var(--trans);
-    }
-    select{
-      width: 100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      outline: none;
-      font-size: 14px;
-      line-height: 1.4;
-      background: rgba(0,0,0,.01);
-      color: var(--ink);
-      font-weight: var(--w-regular);
-      transition: background-color var(--trans), border-color var(--trans), color var(--trans), box-shadow var(--trans);
-    }
-    body.dark select{ background: rgba(255,255,255,.05); }
-    select:focus{
-      border-color: rgba(47,47,51,.28);
-      box-shadow: 0 0 0 6px var(--focus);
-    }
-    body.dark select:focus{ border-color: rgba(255,255,255,.22); }
-
-    .list{ margin-top: 12px; display:grid; gap: 10px; }
-    .item{
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: color-mix(in srgb, var(--panel) 92%, transparent);
-      padding: 12px 12px;
-      box-shadow: 0 10px 22px rgba(0,0,0,.04);
-      transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
-      backdrop-filter: blur(6px);
-    }
-    body.dark .item{ box-shadow: 0 18px 34px rgba(0,0,0,.42); }
-
-    .item-top{
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
-      align-items:flex-start;
-      flex-wrap: wrap;
-    }
-    .item-title{
-      font-weight: var(--w-bold);
-      font-size: 14px;
-      margin: 0;
-      line-height: 1.25;
-    }
-    .item-meta{
-      font-size: var(--small-font);
-      color: var(--muted);
-      margin-top: 6px;
-      line-height: 1.4;
-      font-weight: var(--w-regular);
-      transition: color var(--trans);
-    }
-    .item-actions{
-      margin-top: 10px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .bullets{
-      margin: 10px 0 0 0;
-      padding-left: 18px;
-      display: grid;
-      gap: 6px;
-      font-size: 14px;
-      line-height: 1.45;
-    }
-    .bullets li{ margin: 0; }
-
-    .toggle-link{
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.01);
-      cursor: pointer;
-      font-size: var(--small-font);
-      color: var(--ink);
-      font-weight: var(--w-medium);
-      transition: background-color var(--trans), border-color var(--trans), color var(--trans), transform .16s ease, box-shadow .16s ease;
-      margin-top: 10px;
-      min-height: 36px;
-      text-decoration: none;
-    }
-    body.dark .toggle-link{ background: rgba(255,255,255,.05); }
-    .toggle-link:hover{ transform: translateY(-1px); box-shadow: 0 12px 22px rgba(0,0,0,.08); }
-    body.dark .toggle-link:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.45); }
-
-    .toast{
-      position: fixed;
-      bottom: 86px;
-      left: 50%;
-      transform: translateX(-50%) translateY(18px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .18s ease, transform .18s ease, background-color var(--trans), color var(--trans);
-      z-index: 220;
-      background: var(--tab-on);
-      color: var(--tab-on-ink);
-      border-radius: 999px;
-      padding: 10px 14px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.16);
-      font-weight: var(--w-medium);
-      font-size: 13px;
-      line-height: 1.1;
-    }
-    .toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .dock{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      z-index: 200;
-      background: var(--dock-bg);
-      border: 1px solid var(--dock-border);
-      box-shadow: var(--dock-shadow);
-      border-radius: 999px;
-      padding: 10px 12px;
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      backdrop-filter: blur(12px);
-      transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
-      user-select:none;
-      max-width: calc(100% - 24px);
-    }
-
-    .dock .hint{
-      font-size: 12px;
-      color: var(--muted);
-      transition: color var(--trans);
-      white-space: nowrap;
-      font-weight: var(--w-medium);
-    }
-
-    .pill{
-      display:flex;
-      gap: 6px;
-      padding: 4px;
-      border: 1px solid var(--dock-border);
-      background: var(--dock-track);
-      border-radius: 999px;
-      transition: background-color var(--trans), border-color var(--trans);
-    }
-
-    .pill button{
-      appearance:none;
-      border:0;
-      background: transparent;
-      color: var(--muted);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: var(--w-semibold);
-      font-size: 12px;
-      cursor: pointer;
-      transition: background-color var(--trans), color var(--trans), transform .16s ease, box-shadow .16s ease;
-      line-height: 1.1;
-      white-space: nowrap;
-    }
-    .pill button:hover{ transform: translateY(-1px); }
-    .pill button[aria-pressed="true"]{
-      background: var(--tab-on);
-      color: var(--tab-on-ink);
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-    }
-
-    @media (max-width: 720px){
-      .dock{
-        border-radius: 18px;
-        padding: 10px;
-        flex-wrap: wrap;
-      }
-      .dock .hint{ width: 100%; text-align: center; }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      *{ transition: none !important; }
-      .tab:hover, .btn:hover, .pill button:hover, .toggle-link:hover, .card:hover{ transform:none !important; }
-      #matrix-bg{ display:none !important; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Imperium – Pod K Meeting Dashboard</title>
+
+<style>
+
+/* ---------------- Base theme variables ---------------- */
+
+:root{
+
+--bg:#ffffff;
+--ink:#2f2f33;
+--muted:rgba(47,47,51,.65);
+--border:rgba(47,47,51,.14);
+--panel:#ffffff;
+
+--shadow:0 12px 28px rgba(0,0,0,.08);
+--radius:16px;
+
+--next-bg:rgba(66,180,120,.18);
+--next-br:rgba(66,180,120,.38);
+--next-tx:rgb(24,110,70);
+
+--pass-bg:rgba(245,106,106,.18);
+--pass-br:rgba(245,106,106,.42);
+--pass-tx:rgb(150,40,40);
+
+--cancel-bg:rgba(255,196,64,.18);
+--cancel-br:rgba(255,196,64,.42);
+--cancel-tx:rgb(138,88,0);
+
+--btn-bg:#fff;
+--btn-border:rgba(0,0,0,.12);
+
+--matrix-opacity:.35;
+--matrix-colour:rgba(0,0,0,.35);
+
+}
+
+/* ---------------- Dark mode ---------------- */
+
+body.dark{
+
+--bg:#0f1115;
+--ink:rgba(255,255,255,.92);
+--muted:rgba(255,255,255,.6);
+--border:rgba(255,255,255,.16);
+--panel:#151823;
+
+--btn-bg:#fff;
+--btn-border:#fff;
+
+--matrix-opacity:.5;
+--matrix-colour:rgba(120,255,180,.8);
+
+}
+
+/* ---------------- Layout ---------------- */
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+background:var(--bg);
+color:var(--ink);
+transition:.25s;
+}
+
+.wrap{
+max-width:1040px;
+margin:auto;
+padding:24px 18px 120px;
+position:relative;
+z-index:1;
+}
+
+/* ---------------- Matrix canvas ---------------- */
+
+#matrix-bg{
+position:fixed;
+inset:0;
+z-index:0;
+pointer-events:none;
+opacity:var(--matrix-opacity);
+}
+
+/* ---------------- Header ---------------- */
+
+.topbar{
+position:sticky;
+top:0;
+background:rgba(255,255,255,.85);
+backdrop-filter:blur(10px);
+border-bottom:1px solid var(--border);
+z-index:2;
+}
+
+body.dark .topbar{
+background:rgba(15,17,21,.85);
+}
+
+.topbar-inner{
+max-width:1040px;
+margin:auto;
+padding:14px 18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:12px;
+}
+
+.brand{
+font-weight:700;
+font-size:15px;
+}
+
+.tabs{
+display:flex;
+gap:6px;
+border:1px solid var(--border);
+padding:4px;
+border-radius:999px;
+}
+
+.tab{
+border:0;
+background:transparent;
+padding:8px 12px;
+border-radius:999px;
+font-weight:600;
+cursor:pointer;
+color:var(--muted);
+}
+
+.tab[aria-selected="true"]{
+background:var(--ink);
+color:#fff;
+}
+
+/* ---------------- Cards ---------------- */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+margin-top:18px;
+}
+
+@media(max-width:920px){
+.grid{grid-template-columns:1fr}
+}
+
+.card{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:var(--radius);
+padding:16px;
+box-shadow:var(--shadow);
+transition:.2s;
+position:relative;
+}
+
+.card:hover{
+transform:translateY(-4px);
+box-shadow:0 22px 40px rgba(0,0,0,.12);
+}
+
+.card::before{
+content:"";
+position:absolute;
+left:0;
+top:0;
+bottom:0;
+width:6px;
+border-radius:16px 0 0 16px;
+}
+
+.card.next::before{background:var(--next-br)}
+.card.passed::before{background:var(--pass-br)}
+.card.cancelled::before{background:var(--cancel-br)}
+
+.title{
+font-weight:700;
+font-size:15px;
+margin:0 0 4px 0;
+}
+
+.badge{
+font-size:12px;
+padding:6px 10px;
+border-radius:999px;
+font-weight:600;
+border:1px solid var(--border);
+}
+
+.badge-next{background:var(--next-bg);border-color:var(--next-br);color:var(--next-tx)}
+.badge-pass{background:var(--pass-bg);border-color:var(--pass-br);color:var(--pass-tx)}
+.badge-cancel{background:var(--cancel-bg);border-color:var(--cancel-br);color:var(--cancel-tx)}
+
+.row{
+display:flex;
+justify-content:space-between;
+padding:10px;
+border:1px solid var(--border);
+border-radius:10px;
+margin-top:8px;
+font-size:13px;
+}
+
+.actions{
+display:flex;
+gap:10px;
+margin-top:12px;
+flex-wrap:wrap;
+}
+
+.btn{
+padding:10px 12px;
+border-radius:10px;
+border:1px solid var(--btn-border);
+background:var(--btn-bg);
+cursor:pointer;
+font-weight:600;
+font-size:13px;
+}
+
+.btn-primary{
+background:var(--ink);
+color:#fff;
+border-color:var(--ink);
+}
+
+.btn.disabled{
+opacity:.4;
+pointer-events:none;
+}
+
+/* ---------------- Archive ---------------- */
+
+.list{margin-top:16px;display:grid;gap:12px}
+
+.item{
+border:1px solid var(--border);
+border-radius:16px;
+padding:14px;
+background:var(--panel);
+}
+
+.item-title{
+font-weight:700;
+font-size:14px;
+margin:0;
+}
+
+.item-meta{
+font-size:12px;
+color:var(--muted);
+margin-top:4px;
+}
+
+.bullets{
+margin-top:10px;
+padding-left:18px;
+}
+
+/* ---------------- Toggle dock ---------------- */
+
+.dock{
+position:fixed;
+bottom:18px;
+left:50%;
+transform:translateX(-50%);
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:999px;
+padding:10px 14px;
+display:flex;
+gap:16px;
+z-index:3;
+box-shadow:0 18px 40px rgba(0,0,0,.15);
+}
+
+.pill{
+display:flex;
+gap:6px;
+}
+
+.pill button{
+border:0;
+padding:8px 12px;
+border-radius:999px;
+cursor:pointer;
+font-weight:600;
+background:transparent;
+}
+
+.pill button[aria-pressed="true"]{
+background:var(--ink);
+color:#fff;
+}
+
+/* ---------------- Toast ---------------- */
+
+.toast{
+position:fixed;
+bottom:90px;
+left:50%;
+transform:translateX(-50%);
+background:var(--ink);
+color:#fff;
+padding:10px 16px;
+border-radius:999px;
+opacity:0;
+transition:.2s;
+}
+
+.toast.show{opacity:1}
+
+</style>
 </head>
 
 <body>
-  <canvas id="matrix-bg" aria-hidden="true"></canvas>
-
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">Project Imperium – Pod K Meeting Dashboard</div>
-
-      <div class="tabs" role="tablist" aria-label="Dashboard tabs">
-        <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
-        <button class="tab" id="tab-archive" role="tab" aria-selected="false" aria-controls="view-archive">Meeting Notes Archive</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="views">
-      <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
-        <div class="header">
-          <div>
-            <h1>Meeting Dashboard</h1>
-            <div class="sub" id="tz-line"></div>
-          </div>
-          <div class="badge" id="now-pill">–</div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="grid" id="cards"></div>
-      </section>
-
-      <section class="view hidden" id="view-archive" role="tabpanel" aria-labelledby="tab-archive">
-        <div class="header">
-          <div>
-            <h1>Meeting Notes Archive</h1>
-            <div class="sub">Summary and key outcomes from previous meetings.</div>
-          </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn" id="refresh-archive" type="button">Refresh</button>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="panel">
-          <div class="form-grid" style="margin-top:0;">
-            <div>
-              <label for="filter-meeting">Filter by meeting</label>
-              <select id="filter-meeting"></select>
-              <div class="sub" style="margin-top:8px;">Tip: the dashboard ‘View notes’ button will jump you here for the right meeting.</div>
-            </div>
-            <div>
-              <label>&nbsp;</label>
-              <div class="actions" style="margin-top:0;">
-                <button class="btn btn-primary" id="apply-filter" type="button">Apply filter</button>
-                <button class="btn" id="clear-filter" type="button">Clear</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="list" id="archive-list" style="margin-top:12px;"></div>
-      </section>
-    </div>
-  </div>
-
-  <div class="dock" role="group" aria-label="Preferences">
-    <div class="hint">Theme</div>
-    <div class="pill" aria-label="Theme options">
-      <button type="button" id="theme-light" aria-pressed="true">Light</button>
-      <button type="button" id="theme-dark" aria-pressed="false">Dark</button>
-    </div>
-
-    <div class="hint" style="margin-left:6px;">Accessibility</div>
-    <div class="pill" aria-label="Accessibility options">
-      <button type="button" id="acc-readable" aria-pressed="false">Readability</button>
-      <button type="button" id="acc-cb" aria-pressed="false">Colour-blind</button>
-    </div>
-  </div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    const THEME_KEY = "imperium_theme_v8";
-    const READABLE_KEY = "imperium_readable_v7";
-    const CB_KEY = "imperium_cb_v7";
-
-    function setPressed(id, pressed) {
-      const el = document.getElementById(id);
-      if (el) el.setAttribute("aria-pressed", String(!!pressed));
-    }
-
-    function applyTheme(theme) {
-      const isDark = theme === "dark";
-      document.body.classList.toggle("dark", isDark);
-      setPressed("theme-light", !isDark);
-      setPressed("theme-dark", isDark);
-      try { localStorage.setItem(THEME_KEY, isDark ? "dark" : "light"); } catch {}
-      restartMatrix();
-    }
-
-    function applyReadable(on) {
-      document.body.classList.toggle("readable", !!on);
-      setPressed("acc-readable", !!on);
-      try { localStorage.setItem(READABLE_KEY, on ? "1" : "0"); } catch {}
-      restartMatrix();
-    }
-
-    function applyCb(on) {
-      document.body.classList.toggle("cb", !!on);
-      setPressed("acc-cb", !!on);
-      try { localStorage.setItem(CB_KEY, on ? "1" : "0"); } catch {}
-    }
-
-    function getPreferredTheme() {
-      try {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === "light" || saved === "dark") return saved;
-      } catch {}
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      return prefersDark ? "dark" : "light";
-    }
-
-    function getPrefBool(key, fallback=false) {
-      try {
-        const v = localStorage.getItem(key);
-        if (v === "1") return true;
-        if (v === "0") return false;
-      } catch {}
-      return fallback;
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      document.body.classList.toggle("reduce-motion", !!reduceMotion);
-
-      applyTheme(getPreferredTheme());
-      applyReadable(getPrefBool(READABLE_KEY, false));
-      applyCb(getPrefBool(CB_KEY, false));
-
-      document.getElementById("theme-light").addEventListener("click", () => applyTheme("light"));
-      document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark"));
-      document.getElementById("acc-readable").addEventListener("click", () => applyReadable(!document.body.classList.contains("readable")));
-      document.getElementById("acc-cb").addEventListener("click", () => applyCb(!document.body.classList.contains("cb")));
-
-      initMatrix();
-    });
-
-    const dashboardMeetings = [
-      {
-        id: "m4",
-        title: "Office Hours – 10 Mar (APAC)",
-        calendarTitle: "Project Imperium │ Pod K Office Hours (10th) - APAC focused",
-        startUtc: "2026-03-10T14:00:00Z",
-        endUtc: "2026-03-10T14:30:00Z",
-        meetLink: "https://meet.google.com/cnf-nxye-ups",
-        audience: "APAC",
-        statusOverride: "passed"
-      },
-      {
-        id: "m5",
-        title: "Office Hours – 12 Mar (US)",
-        calendarTitle: "Project Imperium │ Pod K Office Hours (12th) - US focused",
-        startUtc: "2026-03-12T17:00:00Z",
-        endUtc: "2026-03-12T17:30:00Z",
-        meetLink: "https://meet.google.com/zzi-dxda-ehe",
-        audience: "US",
-        statusOverride: "cancelled",
-        cancelNote: "Today’s office hours have been cancelled."
-      },
-      {
-        id: "m6",
-        title: "TBD",
-        calendarTitle: "",
-        startUtc: "",
-        endUtc: "",
-        meetLink: "",
-        audience: "",
-        statusOverride: "upcoming"
-      }
-    ];
-
-    const archiveMeetings = {
-      m1: { title: "Meeting – 27 Feb", startUtc: "2026-02-27T17:00:00Z" },
-      m2: { title: "Meeting – 2 Mar",  startUtc: "2026-03-02T16:00:00Z" },
-      m3: { title: "Meeting – 4 Mar",  startUtc: "2026-03-04T17:00:00Z" },
-      m4: { title: "Office Hours – 10 Mar (APAC)", startUtc: "2026-03-10T14:00:00Z" }
-    };
-
-    const notes = [
-      {
-        id: "n-2026-02-27",
-        meetingId: "m1",
-        title: "Minutes – 27 Feb (Pod K Kick-off)",
-        createdAt: "2026-02-27T18:00:00Z",
-        bullets: [
-          "Oliver (EPM) introduced himself, highlighting a background in project management and law.",
-          "Harsh and Ivan were introduced as technical leads with software engineering backgrounds and strong familiarity with the task workflow; they confirmed availability for technical questions.",
-          "The group discussed the recent contract payment changes announced by Max, including how the structure becomes more favourable once the first two tasks are completed.",
-          "Harsh walked through task best practice and addressed technical questions (answers to be shared shortly).",
-          "Oliver closed by thanking everyone and confirmed that future office hours will focus on specific areas in more depth."
-        ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (27th).pdf",
-        presentationUrl: ""
-      },
-      {
-        id: "n-2026-03-02",
-        meetingId: "m2",
-        title: "Minutes – 2 Mar (Process updates and rubric/requirements guidance)",
-        createdAt: "2026-03-02T18:00:00Z",
-        bullets: [
-          "The session covered recent process updates and technical guidance on drafting rubrics and requirement.json files for task PRs.",
-          "Oliver shared housekeeping items: session transcription, use of the Imperium custom LLM (ImperiumHelpBot) for 24/7 support, and plans to expand QA capacity from ~15 to ~60 reviewers to reach ~400 reviews/day and reduce turnaround times.",
-          "Oliver offered to share the onboarding payment documentation link, asked participants to flag payment delays beyond 72 hours, and posted a support form for contract or payment issues.",
-          "Harsh led a technical walkthrough using reviewed PR examples to highlight common mistakes and best practices.",
-          "Best practices included: keeping requirements strictly testable and reflected in both golden and test patches; splitting stacked functional criteria into separate, test-aligned points; keeping functional and robustness criteria distinct; and avoiding implementation-specific language to prevent coupling to particular solutions.",
-          "Participants were invited to follow up with further questions after the session.",
-          "The meeting ended earlier than planned due to technical issues; remaining topics will be covered in a future session."
-        ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (2nd).pdf",
-        presentationUrl: ""
-      },
-      {
-        id: "n-2026-03-04",
-        meetingId: "m3",
-        title: "Minutes – 4 Mar (Baselining, bonuses, review capacity, and rubric guidance)",
-        createdAt: "2026-03-04T18:00:00Z",
-        bullets: [
-          "Office hours resumed after the previous meeting ended early due to technical issues. Contributors from multiple pods attended.",
-          "Baselining remains the main priority. Tasks are currently being claimed faster than engineering can seed them; contributors should monitor announcements and the dashboard for new tasks.",
-          "Bonus structure was clarified: the 7-task requirement refers to submitted tasks, not merged tasks. Once merged, those tasks qualify for the additional $50 bonus.",
-          "Review capacity updates: Ivan is prioritising Pod K reviews, and 12 additional super reviewers have been added to help reduce the backlog.",
-          "Tech leads have begun sharing daily QC tips to support quality improvements.",
-          "Harsh provided technical guidance on rubric writing, requirements, and common review mistakes, including avoiding stacked criteria, vague language, and implementation-specific references.",
-          "Harsh clarified functional vs robustness criteria, interface file rules, and appropriate use of LLMs for validation rather than task generation.",
-          "Phase 1 (rubric creation) and Phase 2 (baselining) remain separate tasks and cannot be completed by the same contributor.",
-          "For full details, examples, and Q&A, see the full meeting minutes PDF."
-        ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (4th).pdf",
-        presentationUrl: ""
-      },
-      {
-        id: "n-2026-03-10",
-        meetingId: "m4",
-        title: "Minutes – 10 Mar (Rubric and knowledge-base review guidance)",
-        createdAt: "2026-03-10T15:00:00Z",
-        bullets: [
-          "Gabriel led a walkthrough of common rubric and knowledge-base issues from recent reviews, focusing on improving submission quality and reducing avoidable failures.",
-          "He highlighted discoverable knowledge-base questions as the most frequent failure and reminded contributors that answers must address ambiguous or unspecified behaviours rather than information directly available in the codebase or task files.",
-          "Gabriel emphasised that knowledge-base answers must add value, with rationales explaining consequences or failure modes. An empty knowledge base was confirmed as a hard failure.",
-          "He stressed trajectory alignment and test confidentiality: trajectories must map to knowledge-base questions, remain high-level, and avoid references to tests, files, or implementation details.",
-          "The team reviewed weak versus strong submissions and discussed patch validation.",
-          "Contributors were reminded to align rubric criteria with the golden patch and focus robustness criteria on defensive engineering.",
-          "Oliver closed by noting that further questions would be handled in Slack and recorded in the meeting minutes."
-        ],
-        pdfUrl: "",
-        presentationUrl: ""
-      }
-    ];
-
-    const pad2 = (n) => String(n).padStart(2, "0");
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function safeHref(path) {
-      if (!path) return "";
-      return encodeURI(path);
-    }
-
-    function formatUtcLabel(isoZ) {
-      if (!isoZ) return "TBD";
-      const d = new Date(isoZ);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
-      return `${date}, ${time} (GMT)`;
-    }
-
-    function formatLocalLabel(isoZ) {
-      if (!isoZ) return "To be confirmed";
-      const d = new Date(isoZ);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
-      const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" })
-        .formatToParts(d)
-        .find(p => p.type === "timeZoneName")?.value;
-      return `${date}, ${time} (${tzAbbr || "local"})`;
-    }
-
-    function msToParts(ms) {
-      const total = Math.max(0, Math.floor(ms / 1000));
-      const days = Math.floor(total / 86400);
-      const hours = Math.floor((total % 86400) / 3600);
-      const mins = Math.floor((total % 3600) / 60);
-      const secs = total % 60;
-      return { days, hours, mins, secs };
-    }
-
-    function toGCalUtc(isoZ) {
-      const d = new Date(isoZ);
-      return (
-        d.getUTCFullYear() +
-        pad2(d.getUTCMonth() + 1) +
-        pad2(d.getUTCDate()) +
-        "T" +
-        pad2(d.getUTCHours()) +
-        pad2(d.getUTCMinutes()) +
-        pad2(d.getUTCSeconds()) +
-        "Z"
-      );
-    }
-
-    function makeGoogleCalendarUrl({ title, calendarTitle, startUtc, endUtc, meetLink }) {
-      const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
-      const dates = `${toGCalUtc(startUtc)}/${toGCalUtc(endUtc)}`;
-      const details = meetLink ? `Meeting link: ${meetLink}` : "";
-      const location = meetLink || "";
-      const text = calendarTitle || title || "Meeting";
-      const params = new URLSearchParams({ text, dates, details, location });
-      return `${base}&${params.toString()}`;
-    }
-
-    let toastTimer = null;
-    function toast(msg) {
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
-    }
-
-    const tabDashboard = document.getElementById("tab-dashboard");
-    const tabArchive = document.getElementById("tab-archive");
-    const viewDashboard = document.getElementById("view-dashboard");
-    const viewArchive = document.getElementById("view-archive");
-
-    function show(which) {
-      const isDash = which === "dashboard";
-      tabDashboard.setAttribute("aria-selected", String(isDash));
-      tabArchive.setAttribute("aria-selected", String(!isDash));
-      viewDashboard.classList.toggle("hidden", !isDash);
-      viewArchive.classList.toggle("hidden", isDash);
-    }
-    tabDashboard.addEventListener("click", () => show("dashboard"));
-    tabArchive.addEventListener("click", () => show("archive"));
-
-    function populateMeetingSelect(selectEl, includeAll = false) {
-      selectEl.innerHTML = "";
-      if (includeAll) {
-        const opt = document.createElement("option");
-        opt.value = "";
-        opt.textContent = "All meetings";
-        selectEl.appendChild(opt);
-      }
-
-      for (const note of notes) {
-        const meta = archiveMeetings[note.meetingId];
-        const opt = document.createElement("option");
-        opt.value = note.meetingId;
-        opt.textContent = meta
-          ? `${meta.title} — ${formatUtcLabel(meta.startUtc)}`
-          : note.title;
-        selectEl.appendChild(opt);
-      }
-    }
-
-    function getNextMeetingIndex() {
-      const now = Date.now();
-      const future = dashboardMeetings
-        .map((m, i) => ({
-          i,
-          t: (m.startUtc && m.statusOverride !== "cancelled") ? new Date(m.startUtc).getTime() : Infinity
-        }))
-        .filter(x => x.t > now)
-        .sort((a,b) => a.t - b.t);
-      return future.length ? future[0].i : -1;
-    }
-
-    function badgeClass(badge) {
-      if (badge === "Next up") return "badge badge-next";
-      if (badge === "Passed") return "badge badge-pass";
-      if (badge === "Cancelled") return "badge badge-cancelled";
-      return "badge badge-upcoming";
-    }
-
-    function cardHtml(m, idx, nextIdx) {
-      const hasTime = !!(m.startUtc && m.endUtc);
-      const now = Date.now();
-      const start = hasTime ? new Date(m.startUtc).getTime() : NaN;
-      const isCancelled = m.statusOverride === "cancelled";
-      const passed = hasTime ? now >= start : false;
-
-      let badge = "Upcoming";
-      if (isCancelled) badge = "Cancelled";
-      else if (!hasTime) badge = "Upcoming";
-      else if (idx === nextIdx && !passed) badge = "Next up";
-      else if (passed || m.statusOverride === "passed") badge = "Passed";
-
-      let countdownBlock = "";
-      if (isCancelled) {
-        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">${escapeHtml(m.cancelNote || "This meeting has been cancelled.")}</div></div>`;
-      } else if (!hasTime) {
-        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">To be confirmed</div></div>`;
-      } else if (passed || m.statusOverride === "passed") {
-        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`;
-      } else {
-        countdownBlock = `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
-      }
-
-      const notesBtn = (passed || m.statusOverride === "passed")
-        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}" type="button">View notes</button>`
-        : "";
-
-      const hasCalendar = !!(m.title && m.startUtc && m.endUtc && !isCancelled);
-      const gcal = hasCalendar ? makeGoogleCalendarUrl(m) : "";
-      const gcalBtn = hasCalendar
-        ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>`
-        : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not available">Add to Google Calendar</span>`;
-
-      const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim() && !isCancelled);
-      const meetBtn = hasMeetLink
-        ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
-        : `<span class="btn disabled" aria-disabled="true" title="${isCancelled ? "Meeting cancelled" : "Meeting link not set"}">Open meeting link</span>`;
-
-      const audienceRow = m.audience
-        ? `<div class="row"><div class="label">Focus</div><div class="value">${escapeHtml(m.audience)}</div></div>`
-        : "";
-
-      let cardClass = "card";
-      if (isCancelled) cardClass += " cancelled";
-      else if (!hasTime) cardClass += " tbd";
-      else if (passed || m.statusOverride === "passed") cardClass += " passed";
-      else if (idx === nextIdx) cardClass += " next";
-
-      return `
-        <article class="${cardClass}">
-          <div class="card-top">
-            <p class="title">${escapeHtml(m.title || "Meeting")}</p>
-            <span class="${badgeClass(badge)}">${escapeHtml(badge)}</span>
-          </div>
-
-          <div class="times">
-            <div class="row">
-              <div class="label">GMT time</div>
-              <div class="value">${formatUtcLabel(m.startUtc)}</div>
-            </div>
-            <div class="row">
-              <div class="label">Your local time</div>
-              <div class="value">${formatLocalLabel(m.startUtc)}</div>
-            </div>
-            ${audienceRow}
-          </div>
-
-          ${countdownBlock}
-
-          <div class="actions">
-            ${gcalBtn}
-            ${meetBtn}
-            ${notesBtn}
-          </div>
-        </article>
-      `;
-    }
-
-    function renderMeetings() {
-      const nextIdx = getNextMeetingIndex();
-      const cardsEl = document.getElementById("cards");
-      cardsEl.innerHTML = dashboardMeetings.map((m, i) => cardHtml(m, i, nextIdx)).join("");
-
-      cardsEl.querySelectorAll("[data-view-notes]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const meetingId = btn.getAttribute("data-view-notes");
-          document.getElementById("filter-meeting").value = meetingId || "";
-          rememberFilter(meetingId || "");
-          show("archive");
-          loadArchive(meetingId || "");
-          toast("Showing notes for selected meeting.");
-        });
-      });
-    }
-
-    function tickCountdowns() {
-      const now = Date.now();
-      document.querySelectorAll("[data-countdown]").forEach(el => {
-        const meetingId = el.getAttribute("data-countdown");
-        const m = dashboardMeetings.find(x => x.id === meetingId);
-        if (!m || !m.startUtc || m.statusOverride === "cancelled") return;
-
-        const start = new Date(m.startUtc).getTime();
-        const diff = start - now;
-
-        if (diff <= 0) {
-          el.textContent = "Meeting passed";
-          return;
-        }
-
-        const p = msToParts(diff);
-        const dayPart = p.days > 0 ? `${p.days}d ` : "";
-        el.textContent = `${dayPart}${pad2(p.hours)}:${pad2(p.mins)}:${pad2(p.secs)}`;
-      });
-    }
-
-    function meetingLabel(meetingId) {
-      const meta = archiveMeetings[meetingId];
-      if (!meta) return "Unknown meeting";
-      return `${meta.title} — ${formatUtcLabel(meta.startUtc)}`;
-    }
-
-    function formatWhen(isoZ) {
-      if (!isoZ) return "–";
-      const d = new Date(isoZ);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
-      return `${date}, ${time}`;
-    }
-
-    function loadArchive(meetingId = "") {
-      const list = document.getElementById("archive-list");
-
-      const filtered = notes
-        .filter(n => !meetingId || n.meetingId === meetingId)
-        .sort((a,b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-
-      if (!filtered.length) {
-        list.innerHTML = `
-          <div class="item">
-            <p class="item-title">No notes yet.</p>
-            <div class="item-meta">Minutes will appear here once added.</div>
-          </div>
-        `;
-        return;
-      }
-
-      const maxBulletsDefault = 2;
-
-      list.innerHTML = filtered.map(n => {
-        const title = (n.title && String(n.title).trim()) ? String(n.title).trim() : "Meeting minutes";
-        const createdAt = formatWhen(n.createdAt);
-
-        const bullets = Array.isArray(n.bullets)
-          ? n.bullets.filter(Boolean).map(x => String(x).trim()).filter(Boolean)
-          : [];
-
-        const visible = bullets.slice(0, maxBulletsDefault).map(b => `<li>${escapeHtml(b)}</li>`).join("");
-        const hidden = bullets.slice(maxBulletsDefault).map(b => `<li>${escapeHtml(b)}</li>`).join("");
-        const hasMore = bullets.length > maxBulletsDefault;
-
-        const hasPdf = !!(n.pdfUrl && String(n.pdfUrl).trim());
-        const pdfLink = hasPdf ? safeHref(String(n.pdfUrl).trim()) : "";
-
-        const hasPresentation = !!(n.presentationUrl && String(n.presentationUrl).trim());
-        const presentationLink = hasPresentation ? safeHref(String(n.presentationUrl).trim()) : "";
-
-        const pdfBtn = hasPdf
-          ? `<a class="btn btn-primary" href="${escapeHtml(pdfLink)}" target="_blank" rel="noopener noreferrer">Open minutes (PDF)</a>`
-          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No minutes PDF attached">Open minutes (PDF)</span>`;
-
-        const presentationBtn = hasPresentation
-          ? `<a class="btn" href="${escapeHtml(presentationLink)}" target="_blank" rel="noopener noreferrer">Open presentation (PDF)</a>`
-          : `<span class="btn disabled" aria-disabled="true" title="No presentation PDF attached">Open presentation (PDF)</span>`;
-
-        return `
-          <div class="item">
-            <div class="item-top">
-              <div>
-                <p class="item-title">${escapeHtml(title)}</p>
-                <div class="item-meta">
-                  <div>Meeting: ${escapeHtml(meetingLabel(n.meetingId))}</div>
-                  <div>Added: ${escapeHtml(createdAt)}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="item-meta" style="margin-top:10px;">
-              ${bullets.length ? `
-                <ul class="bullets">
-                  ${visible}
-                  ${hasMore ? `<span data-bullets-hidden="${escapeHtml(n.id)}" style="display:none;">${hidden}</span>` : ``}
-                </ul>
-                ${hasMore ? `<button class="toggle-link" type="button" data-bullets-toggle="${escapeHtml(n.id)}">Show more</button>` : ``}
-              ` : `–`}
-            </div>
-
-            <div class="item-actions">
-              ${pdfBtn}
-              ${presentationBtn}
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-bullets-toggle]");
-      if (!btn) return;
-
-      const id = btn.getAttribute("data-bullets-toggle");
-      const hidden = document.querySelector(`[data-bullets-hidden="${CSS.escape(id)}"]`);
-      if (!hidden) return;
-
-      const isOpen = hidden.style.display !== "none";
-      hidden.style.display = isOpen ? "none" : "inline";
-      btn.textContent = isOpen ? "Show more" : "Show less";
-    });
-
-    const FILTER_KEY = "imperium_archive_filter_v5";
-    function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
-    function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
-
-    function applyFilter() {
-      const meetingId = document.getElementById("filter-meeting").value || "";
-      rememberFilter(meetingId);
-      loadArchive(meetingId);
-    }
-    function clearFilter() {
-      document.getElementById("filter-meeting").value = "";
-      rememberFilter("");
-      loadArchive("");
-    }
-
-    (function init(){
-      const url = new URL(window.location.href);
-
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
-      document.getElementById("tz-line").textContent = `Your system timezone: ${tz}. Local times update automatically.`;
-
-      function tickNow() {
-        const d = new Date();
-        const t = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false }).format(d);
-        document.getElementById("now-pill").textContent = `Now: ${t}`;
-      }
-      tickNow();
-      setInterval(tickNow, 1000);
-
-      populateMeetingSelect(document.getElementById("filter-meeting"), true);
-
-      const remembered = recallFilter();
-      if (remembered) document.getElementById("filter-meeting").value = remembered;
-
-      renderMeetings();
-      tickCountdowns();
-      setInterval(tickCountdowns, 1000);
-
-      loadArchive(remembered || "");
-
-      document.getElementById("refresh-archive").addEventListener("click", () => applyFilter());
-      document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
-      document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
-
-      const tab = url.searchParams.get("tab");
-      const meetingId = url.searchParams.get("meetingId") || "";
-      if (tab === "archive") {
-        show("archive");
-        if (meetingId) {
-          document.getElementById("filter-meeting").value = meetingId;
-          rememberFilter(meetingId);
-        }
-        loadArchive(meetingId || remembered || "");
-      }
-    })();
-
-    /* ---------------- Matrix background ---------------- */
-    let matrix = {
-      canvas: null,
-      ctx: null,
-      animationId: null,
-      columns: [],
-      fontSize: 15,
-      characters: []
-    };
-
-    function getMatrixColour() {
-      const value = getComputedStyle(document.body).getPropertyValue("--matrix-colour").trim();
-      return value || "rgba(47,47,51,.22)";
-    }
-
-    function shouldRunMatrix() {
-      return !document.body.classList.contains("readable") &&
-             !document.body.classList.contains("reduce-motion");
-    }
-
-    function setupMatrixChars() {
-      matrix.characters = (
-        "01{}[]()<>=+-/*&|!?:;#%$@~" +
-        "rubricpatchmergePRLLMgitcommitQCbaselinevalidation"
-      ).split("");
-    }
-
-    function resizeMatrix() {
-      if (!matrix.canvas || !matrix.ctx) return;
-      const dpr = window.devicePixelRatio || 1;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      matrix.canvas.width = Math.floor(width * dpr);
-      matrix.canvas.height = Math.floor(height * dpr);
-      matrix.canvas.style.width = width + "px";
-      matrix.canvas.style.height = height + "px";
-
-      matrix.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const cols = Math.ceil(width / matrix.fontSize);
-      matrix.columns = new Array(cols).fill(0).map(() => Math.random() * -height);
-    }
-
-    function drawMatrix() {
-      if (!matrix.ctx || !shouldRunMatrix()) return;
-
-      const ctx = matrix.ctx;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = getMatrixColour();
-      ctx.font = `${matrix.fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
-
-      for (let i = 0; i < matrix.columns.length; i++) {
-        const text = matrix.characters[Math.floor(Math.random() * matrix.characters.length)];
-        const x = i * matrix.fontSize;
-        const y = matrix.columns[i];
-
-        ctx.fillText(text, x, y);
-
-        if (y > height + Math.random() * 1200) {
-          matrix.columns[i] = Math.random() * -300;
-        } else {
-          matrix.columns[i] += matrix.fontSize * 0.58;
-        }
-      }
-
-      matrix.animationId = window.requestAnimationFrame(drawMatrix);
-    }
-
-    function stopMatrix() {
-      if (matrix.animationId) {
-        cancelAnimationFrame(matrix.animationId);
-        matrix.animationId = null;
-      }
-      if (matrix.ctx && matrix.canvas) {
-        matrix.ctx.clearRect(0, 0, matrix.canvas.width, matrix.canvas.height);
-      }
-    }
-
-    function startMatrix() {
-      if (!shouldRunMatrix()) {
-        stopMatrix();
-        return;
-      }
-      stopMatrix();
-      resizeMatrix();
-      drawMatrix();
-    }
-
-    function restartMatrix() {
-      if (!matrix.canvas) return;
-      startMatrix();
-    }
-
-    function initMatrix() {
-      matrix.canvas = document.getElementById("matrix-bg");
-      if (!matrix.canvas) return;
-      matrix.ctx = matrix.canvas.getContext("2d");
-      setupMatrixChars();
-      resizeMatrix();
-      startMatrix();
-
-      window.addEventListener("resize", resizeMatrix);
-
-      if (window.matchMedia) {
-        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const onMotionChange = (e) => {
-          document.body.classList.toggle("reduce-motion", !!e.matches);
-          restartMatrix();
-        };
-        if (mq.addEventListener) mq.addEventListener("change", onMotionChange);
-        else if (mq.addListener) mq.addListener(onMotionChange);
-      }
-    }
-  </script>
+
+<canvas id="matrix-bg"></canvas>
+
+<div class="topbar">
+<div class="topbar-inner">
+<div class="brand">Project Imperium – Pod K Meeting Dashboard</div>
+
+<div class="tabs">
+<button class="tab" id="tab-dashboard" aria-selected="true">Meeting Dashboard</button>
+<button class="tab" id="tab-archive" aria-selected="false">Meeting Notes Archive</button>
+</div>
+</div>
+</div>
+
+<div class="wrap">
+
+<div class="grid" id="cards"></div>
+
+<div id="archive" style="display:none">
+
+<div class="list" id="archive-list"></div>
+
+</div>
+
+</div>
+
+<div class="dock">
+
+<div class="pill">
+<button id="theme-light" aria-pressed="true">Light</button>
+<button id="theme-dark" aria-pressed="false">Dark</button>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+/* ---------------- Theme toggle ---------------- */
+
+const themeLight=document.getElementById("theme-light")
+const themeDark=document.getElementById("theme-dark")
+
+themeLight.onclick=()=>{
+document.body.classList.remove("dark")
+themeLight.setAttribute("aria-pressed","true")
+themeDark.setAttribute("aria-pressed","false")
+}
+
+themeDark.onclick=()=>{
+document.body.classList.add("dark")
+themeLight.setAttribute("aria-pressed","false")
+themeDark.setAttribute("aria-pressed","true")
+}
+
+/* ---------------- Meetings ---------------- */
+
+const meetings=[
+{
+title:"Office Hours – 10 Mar (APAC)",
+status:"passed"
+},
+{
+title:"Office Hours – 12 Mar (US)",
+status:"cancelled"
+},
+{
+title:"TBD",
+status:"upcoming"
+}
+]
+
+const cards=document.getElementById("cards")
+
+meetings.forEach(m=>{
+
+let badge="Upcoming"
+let badgeClass="badge"
+
+if(m.status==="passed"){badge="Passed";badgeClass="badge badge-pass"}
+if(m.status==="cancelled"){badge="Cancelled";badgeClass="badge badge-cancel"}
+
+const card=document.createElement("div")
+card.className="card "+m.status
+
+card.innerHTML=`
+
+<div style="display:flex;justify-content:space-between">
+<p class="title">${m.title}</p>
+<span class="${badgeClass}">${badge}</span>
+</div>
+
+<div class="actions">
+<button class="btn disabled">Add to Google Calendar</button>
+<button class="btn disabled">Open meeting link</button>
+</div>
+
+`
+
+cards.appendChild(card)
+
+})
+
+/* ---------------- Matrix background ---------------- */
+
+const canvas=document.getElementById("matrix-bg")
+const ctx=canvas.getContext("2d")
+
+function resize(){
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+}
+resize()
+
+window.addEventListener("resize",resize)
+
+const letters="01{}[]<>/+=*LLMgitmergepatchrubric"
+const fontSize=18
+const columns=Math.floor(window.innerWidth/fontSize)
+
+const drops=[]
+
+for(let i=0;i<columns;i++){
+drops[i]=1
+}
+
+function draw(){
+
+ctx.fillStyle="rgba(0,0,0,0.05)"
+ctx.fillRect(0,0,canvas.width,canvas.height)
+
+ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--matrix-colour")
+ctx.font=fontSize+"px monospace"
+
+for(let i=0;i<drops.length;i++){
+
+const text=letters[Math.floor(Math.random()*letters.length)]
+ctx.fillText(text,i*fontSize,drops[i]*fontSize)
+
+if(drops[i]*fontSize>canvas.height && Math.random()>0.975){
+drops[i]=0
+}
+
+drops[i]++
+
+}
+
+}
+
+setInterval(draw,35)
+
+</script>
+
 </body>
 </html>
