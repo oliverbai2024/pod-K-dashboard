@@ -64,6 +64,10 @@
       --w-medium: 500;
       --w-semibold: 600;
       --w-bold: 700;
+
+      /* Matrix effect */
+      --matrix-opacity: 0.06;
+      --matrix-colour: rgba(47,47,51,.22);
     }
 
     body.dark{
@@ -110,6 +114,9 @@
       --dock-border: rgba(255,255,255,.16);
       --dock-shadow: 0 22px 60px rgba(0,0,0,.70);
       --dock-track: rgba(255,255,255,.08);
+
+      --matrix-opacity: 0.11;
+      --matrix-colour: rgba(120,255,180,.38);
     }
 
     body.cb{
@@ -162,6 +169,24 @@
       word-spacing: var(--readable-word);
       transition: background-color var(--trans), color var(--trans);
       font-variant-numeric: tabular-nums;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Matrix background */
+    #matrix-bg{
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: var(--matrix-opacity);
+      transition: opacity var(--trans);
+    }
+    body.readable #matrix-bg,
+    body.reduce-motion #matrix-bg{
+      opacity: 0 !important;
     }
 
     body.readable .card,
@@ -179,6 +204,14 @@
     body.readable .toggle-link:hover{
       transform: none;
       box-shadow: none;
+    }
+
+    .topbar,
+    .wrap,
+    .dock,
+    .toast{
+      position: relative;
+      z-index: 1;
     }
 
     .wrap{
@@ -246,13 +279,14 @@
 
     .views{ position: relative; margin-top: 16px; }
     .view{
-      background: var(--panel);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 18px;
       transform-origin: top centre;
       transition: opacity .18s ease, transform .18s ease, filter .18s ease, background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
+      backdrop-filter: blur(8px);
     }
     .view.hidden{
       position:absolute;
@@ -309,7 +343,7 @@
     .card{
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: var(--panel);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
       padding: 14px;
       box-shadow: var(--shadow-soft);
       transition:
@@ -320,6 +354,7 @@
       position: relative;
       overflow: hidden;
       will-change: transform;
+      backdrop-filter: blur(6px);
     }
     .card:hover{
       transform: translateY(-4px);
@@ -488,10 +523,11 @@
     .panel{
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: var(--panel);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
       padding: 14px;
       box-shadow: var(--shadow-soft);
       transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
+      backdrop-filter: blur(6px);
     }
     .form-grid{
       display:grid;
@@ -533,10 +569,11 @@
     .item{
       border: 1px solid var(--border);
       border-radius: 16px;
-      background: var(--panel);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
       padding: 12px 12px;
       box-shadow: 0 10px 22px rgba(0,0,0,.04);
       transition: background-color var(--trans), border-color var(--trans), box-shadow var(--trans);
+      backdrop-filter: blur(6px);
     }
     body.dark .item{ box-shadow: 0 18px 34px rgba(0,0,0,.42); }
 
@@ -693,11 +730,14 @@
     @media (prefers-reduced-motion: reduce){
       *{ transition: none !important; }
       .tab:hover, .btn:hover, .pill button:hover, .toggle-link:hover, .card:hover{ transform:none !important; }
+      #matrix-bg{ display:none !important; }
     }
   </style>
 </head>
 
 <body>
+  <canvas id="matrix-bg" aria-hidden="true"></canvas>
+
   <div class="topbar">
     <div class="topbar-inner">
       <div class="brand">Project Imperium – Pod K Meeting Dashboard</div>
@@ -777,9 +817,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const THEME_KEY = "imperium_theme_v7";
-    const READABLE_KEY = "imperium_readable_v6";
-    const CB_KEY = "imperium_cb_v6";
+    const THEME_KEY = "imperium_theme_v8";
+    const READABLE_KEY = "imperium_readable_v7";
+    const CB_KEY = "imperium_cb_v7";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -792,12 +832,14 @@
       setPressed("theme-light", !isDark);
       setPressed("theme-dark", isDark);
       try { localStorage.setItem(THEME_KEY, isDark ? "dark" : "light"); } catch {}
+      restartMatrix();
     }
 
     function applyReadable(on) {
       document.body.classList.toggle("readable", !!on);
       setPressed("acc-readable", !!on);
       try { localStorage.setItem(READABLE_KEY, on ? "1" : "0"); } catch {}
+      restartMatrix();
     }
 
     function applyCb(on) {
@@ -825,6 +867,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.body.classList.toggle("reduce-motion", !!reduceMotion);
+
       applyTheme(getPreferredTheme());
       applyReadable(getPrefBool(READABLE_KEY, false));
       applyCb(getPrefBool(CB_KEY, false));
@@ -833,6 +878,8 @@
       document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark"));
       document.getElementById("acc-readable").addEventListener("click", () => applyReadable(!document.body.classList.contains("readable")));
       document.getElementById("acc-cb").addEventListener("click", () => applyCb(!document.body.classList.contains("cb")));
+
+      initMatrix();
     });
 
     const dashboardMeetings = [
@@ -842,7 +889,7 @@
         calendarTitle: "Project Imperium │ Pod K Office Hours (10th) - APAC focused",
         startUtc: "2026-03-10T14:00:00Z",
         endUtc: "2026-03-10T14:30:00Z",
-        meetLink: "",
+        meetLink: "https://meet.google.com/cnf-nxye-ups",
         audience: "APAC",
         statusOverride: "passed"
       },
@@ -852,10 +899,10 @@
         calendarTitle: "Project Imperium │ Pod K Office Hours (12th) - US focused",
         startUtc: "2026-03-12T17:00:00Z",
         endUtc: "2026-03-12T17:30:00Z",
-        meetLink: "",
+        meetLink: "https://meet.google.com/zzi-dxda-ehe",
         audience: "US",
         statusOverride: "cancelled",
-        cancelNote: "Cancelled (operational realignment)"
+        cancelNote: "Today’s office hours have been cancelled."
       },
       {
         id: "m6",
@@ -942,8 +989,8 @@
           "Contributors were reminded to align rubric criteria with the golden patch and focus robustness criteria on defensive engineering.",
           "Oliver closed by noting that further questions would be handled in Slack and recorded in the meeting minutes."
         ],
-        pdfUrl: "/minutes/Project Imperium - Pod K Minutes (10th).pdf",
-        presentationUrl: "/minutes/Project Imperium 10th (fixed).pdf"
+        pdfUrl: "",
+        presentationUrl: ""
       }
     ];
 
@@ -1077,10 +1124,6 @@
       if (badge === "Cancelled") return "badge badge-cancelled";
       return "badge badge-upcoming";
     }
-
-    function statusGlyph(badge) {
-  return "";
-}
 
     function cardHtml(m, idx, nextIdx) {
       const hasTime = !!(m.startUtc && m.endUtc);
@@ -1302,7 +1345,7 @@
       btn.textContent = isOpen ? "Show more" : "Show less";
     });
 
-    const FILTER_KEY = "imperium_archive_filter_v4";
+    const FILTER_KEY = "imperium_archive_filter_v5";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
@@ -1357,6 +1400,124 @@
         loadArchive(meetingId || remembered || "");
       }
     })();
+
+    /* ---------------- Matrix background ---------------- */
+    let matrix = {
+      canvas: null,
+      ctx: null,
+      animationId: null,
+      columns: [],
+      fontSize: 15,
+      characters: []
+    };
+
+    function getMatrixColour() {
+      const value = getComputedStyle(document.body).getPropertyValue("--matrix-colour").trim();
+      return value || "rgba(47,47,51,.22)";
+    }
+
+    function shouldRunMatrix() {
+      return !document.body.classList.contains("readable") &&
+             !document.body.classList.contains("reduce-motion");
+    }
+
+    function setupMatrixChars() {
+      matrix.characters = (
+        "01{}[]()<>=+-/*&|!?:;#%$@~" +
+        "rubricpatchmergePRLLMgitcommitQCbaselinevalidation"
+      ).split("");
+    }
+
+    function resizeMatrix() {
+      if (!matrix.canvas || !matrix.ctx) return;
+      const dpr = window.devicePixelRatio || 1;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      matrix.canvas.width = Math.floor(width * dpr);
+      matrix.canvas.height = Math.floor(height * dpr);
+      matrix.canvas.style.width = width + "px";
+      matrix.canvas.style.height = height + "px";
+
+      matrix.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const cols = Math.ceil(width / matrix.fontSize);
+      matrix.columns = new Array(cols).fill(0).map(() => Math.random() * -height);
+    }
+
+    function drawMatrix() {
+      if (!matrix.ctx || !shouldRunMatrix()) return;
+
+      const ctx = matrix.ctx;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = getMatrixColour();
+      ctx.font = `${matrix.fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+
+      for (let i = 0; i < matrix.columns.length; i++) {
+        const text = matrix.characters[Math.floor(Math.random() * matrix.characters.length)];
+        const x = i * matrix.fontSize;
+        const y = matrix.columns[i];
+
+        ctx.fillText(text, x, y);
+
+        if (y > height + Math.random() * 1200) {
+          matrix.columns[i] = Math.random() * -300;
+        } else {
+          matrix.columns[i] += matrix.fontSize * 0.58;
+        }
+      }
+
+      matrix.animationId = window.requestAnimationFrame(drawMatrix);
+    }
+
+    function stopMatrix() {
+      if (matrix.animationId) {
+        cancelAnimationFrame(matrix.animationId);
+        matrix.animationId = null;
+      }
+      if (matrix.ctx && matrix.canvas) {
+        matrix.ctx.clearRect(0, 0, matrix.canvas.width, matrix.canvas.height);
+      }
+    }
+
+    function startMatrix() {
+      if (!shouldRunMatrix()) {
+        stopMatrix();
+        return;
+      }
+      stopMatrix();
+      resizeMatrix();
+      drawMatrix();
+    }
+
+    function restartMatrix() {
+      if (!matrix.canvas) return;
+      startMatrix();
+    }
+
+    function initMatrix() {
+      matrix.canvas = document.getElementById("matrix-bg");
+      if (!matrix.canvas) return;
+      matrix.ctx = matrix.canvas.getContext("2d");
+      setupMatrixChars();
+      resizeMatrix();
+      startMatrix();
+
+      window.addEventListener("resize", resizeMatrix);
+
+      if (window.matchMedia) {
+        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const onMotionChange = (e) => {
+          document.body.classList.toggle("reduce-motion", !!e.matches);
+          restartMatrix();
+        };
+        if (mq.addEventListener) mq.addEventListener("change", onMotionChange);
+        else if (mq.addListener) mq.addListener(onMotionChange);
+      }
+    }
   </script>
 </body>
 </html>
