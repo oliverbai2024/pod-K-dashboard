@@ -193,7 +193,7 @@
     .wrap{
       max-width: 1040px;
       margin: 0 auto;
-      padding: 18px 16px 118px;
+      padding: 18px 16px 126px;
     }
 
     .topbar{
@@ -229,20 +229,6 @@
       align-items:center;
       gap:10px;
       flex-wrap:wrap;
-    }
-
-    .lang-select{
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.01);
-      color: var(--ink);
-      font-size: 13px;
-      font-weight: var(--w-medium);
-      outline:none;
-    }
-    body.dark .lang-select{
-      background: rgba(255,255,255,.05);
     }
 
     .tabs{
@@ -565,6 +551,14 @@
     }
     body.dark select:focus{ border-color: rgba(255,255,255,.22); }
 
+    .dock-lang-select{
+      min-width: 170px;
+      width: auto;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
     .list{ margin-top: 12px; display:grid; gap: 10px; }
     .item{
       border: 1px solid var(--border);
@@ -718,13 +712,18 @@
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
     }
 
-    @media (max-width: 720px){
+    @media (max-width: 860px){
       .dock{
         border-radius: 18px;
         padding: 10px;
         flex-wrap: wrap;
+        justify-content: center;
       }
-      .dock .hint{ width: 100%; text-align: center; }
+      .dock .hint{ text-align: center; }
+      .dock-lang-select{
+        width: 100%;
+        min-width: 0;
+      }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -742,13 +741,6 @@
       </div>
 
       <div class="topbar-right">
-        <select id="language-select" class="lang-select" aria-label="Language">
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="de">Deutsch</option>
-        </select>
-
         <div class="tabs" role="tablist" aria-label="Dashboard tabs">
           <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
           <button class="tab" id="tab-archive" role="tab" aria-selected="false" aria-controls="view-archive">Meeting Notes Archive</button>
@@ -815,20 +807,38 @@
       <button type="button" id="theme-dark" aria-pressed="false">Dark</button>
     </div>
 
-    <div class="hint" id="accessibility-hint" style="margin-left:6px;">Accessibility</div>
+    <div class="hint" id="accessibility-hint">Accessibility</div>
     <div class="pill" aria-label="Accessibility options">
       <button type="button" id="acc-readable" aria-pressed="false">Readability</button>
       <button type="button" id="acc-cb" aria-pressed="false">Colour-blind</button>
     </div>
+
+    <div class="hint" id="language-hint">Language</div>
+    <select id="language-select" class="dock-lang-select" aria-label="Language">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="pt">Português</option>
+      <option value="it">Italiano</option>
+      <option value="pl">Polski</option>
+      <option value="tr">Türkçe</option>
+      <option value="ru">Русский</option>
+      <option value="ar">العربية</option>
+      <option value="hi">हिन्दी</option>
+      <option value="zh">中文</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+    </select>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const THEME_KEY = "imperium_theme_v11";
-    const READABLE_KEY = "imperium_readable_v10";
-    const CB_KEY = "imperium_cb_v10";
-    const LANG_KEY = "imperium_lang_v1";
+    const THEME_KEY = "imperium_theme_v12";
+    const READABLE_KEY = "imperium_readable_v11";
+    const CB_KEY = "imperium_cb_v11";
+    const LANG_KEY = "imperium_lang_v2";
 
     const I18N = {
       en: {
@@ -844,6 +854,7 @@
         clear: "Clear",
         theme: "Theme",
         accessibility: "Accessibility",
+        language: "Language",
         light: "Light",
         dark: "Dark",
         readability: "Readability",
@@ -891,6 +902,7 @@
         clear: "Limpiar",
         theme: "Tema",
         accessibility: "Accesibilidad",
+        language: "Idioma",
         light: "Claro",
         dark: "Oscuro",
         readability: "Legibilidad",
@@ -938,6 +950,7 @@
         clear: "Effacer",
         theme: "Thème",
         accessibility: "Accessibilité",
+        language: "Langue",
         light: "Clair",
         dark: "Sombre",
         readability: "Lisibilité",
@@ -980,11 +993,12 @@
         archiveSubheading: "Zusammenfassung und wichtigste Punkte früherer Meetings.",
         refresh: "Aktualisieren",
         filterLabel: "Nach Meeting filtern",
-        filterTip: "Tipp: Die Schaltfläche ‚Notizen ansehen‘ im Dashboard führt dich direkt hierher.",
+        filterTip: "Tipp: Die Schaltfläche ‘Notizen ansehen’ im Dashboard führt dich direkt hierher.",
         applyFilter: "Filter anwenden",
         clear: "Zurücksetzen",
         theme: "Design",
         accessibility: "Barrierefreiheit",
+        language: "Sprache",
         light: "Hell",
         dark: "Dunkel",
         readability: "Lesbarkeit",
@@ -1018,15 +1032,495 @@
         showLess: "Weniger anzeigen",
         showingNotes: "Notizen für das ausgewählte Meeting werden angezeigt.",
         easterEgg: "Imperium-Modus aktiviert."
+      },
+      pt: {
+        dashboardTab: "Painel de reuniões",
+        archiveTab: "Arquivo de notas",
+        dashboardHeading: "Painel de reuniões",
+        archiveHeading: "Arquivo de notas",
+        archiveSubheading: "Resumo e pontos principais de reuniões anteriores.",
+        refresh: "Atualizar",
+        filterLabel: "Filtrar por reunião",
+        filterTip: "Dica: o botão ‘Ver notas’ no painel leva-o até aqui para a reunião certa.",
+        applyFilter: "Aplicar filtro",
+        clear: "Limpar",
+        theme: "Tema",
+        accessibility: "Acessibilidade",
+        language: "Idioma",
+        light: "Claro",
+        dark: "Escuro",
+        readability: "Legibilidade",
+        colourBlind: "Daltónico",
+        nowPrefix: "Agora",
+        timezonePrefix: "O seu fuso horário do sistema",
+        timezoneSuffix: "As horas locais atualizam-se automaticamente.",
+        gmtTime: "Hora GMT",
+        localTime: "Hora local",
+        focus: "Foco",
+        status: "Estado",
+        startsIn: "Começa em",
+        toBeConfirmed: "Por confirmar",
+        meetingPassed: "Reunião terminada",
+        addToCalendar: "Adicionar ao Google Calendar",
+        openMeetingLink: "Abrir link da reunião",
+        viewNotes: "Ver notas",
+        passed: "Terminada",
+        cancelled: "Cancelada",
+        upcoming: "Próxima",
+        nextUp: "A seguir",
+        cancelledNote: "Esta reunião foi cancelada.",
+        allMeetings: "Todas as reuniões",
+        meeting: "Reunião",
+        added: "Adicionado",
+        openMinutes: "Abrir ata (PDF)",
+        openPresentation: "Abrir apresentação (PDF)",
+        noNotesYet: "Ainda não há notas.",
+        notesAppear: "As atas aparecerão aqui quando forem adicionadas.",
+        showMore: "Mostrar mais",
+        showLess: "Mostrar menos",
+        showingNotes: "A mostrar notas da reunião selecionada.",
+        easterEgg: "Modo Imperium ativado."
+      },
+      it: {
+        dashboardTab: "Dashboard riunioni",
+        archiveTab: "Archivio note",
+        dashboardHeading: "Dashboard riunioni",
+        archiveHeading: "Archivio note",
+        archiveSubheading: "Riepilogo e punti chiave delle riunioni precedenti.",
+        refresh: "Aggiorna",
+        filterLabel: "Filtra per riunione",
+        filterTip: "Suggerimento: il pulsante ‘Visualizza note’ nel dashboard ti porterà qui per la riunione corretta.",
+        applyFilter: "Applica filtro",
+        clear: "Cancella",
+        theme: "Tema",
+        accessibility: "Accessibilità",
+        language: "Lingua",
+        light: "Chiaro",
+        dark: "Scuro",
+        readability: "Leggibilità",
+        colourBlind: "Daltonismo",
+        nowPrefix: "Ora",
+        timezonePrefix: "Il tuo fuso orario di sistema",
+        timezoneSuffix: "Gli orari locali si aggiornano automaticamente.",
+        gmtTime: "Ora GMT",
+        localTime: "Ora locale",
+        focus: "Focus",
+        status: "Stato",
+        startsIn: "Inizia tra",
+        toBeConfirmed: "Da confermare",
+        meetingPassed: "Riunione conclusa",
+        addToCalendar: "Aggiungi a Google Calendar",
+        openMeetingLink: "Apri link riunione",
+        viewNotes: "Visualizza note",
+        passed: "Conclusa",
+        cancelled: "Annullata",
+        upcoming: "In arrivo",
+        nextUp: "Prossima",
+        cancelledNote: "Questa riunione è stata annullata.",
+        allMeetings: "Tutte le riunioni",
+        meeting: "Riunione",
+        added: "Aggiunto",
+        openMinutes: "Apri verbale (PDF)",
+        openPresentation: "Apri presentazione (PDF)",
+        noNotesYet: "Ancora nessuna nota.",
+        notesAppear: "I verbali appariranno qui quando saranno aggiunti.",
+        showMore: "Mostra di più",
+        showLess: "Mostra meno",
+        showingNotes: "Visualizzazione delle note della riunione selezionata.",
+        easterEgg: "Modalità Imperium attivata."
+      },
+      pl: {
+        dashboardTab: "Panel spotkań",
+        archiveTab: "Archiwum notatek",
+        dashboardHeading: "Panel spotkań",
+        archiveHeading: "Archiwum notatek",
+        archiveSubheading: "Podsumowanie i najważniejsze punkty poprzednich spotkań.",
+        refresh: "Odśwież",
+        filterLabel: "Filtruj według spotkania",
+        filterTip: "Wskazówka: przycisk ‘Zobacz notatki’ w panelu przeniesie cię tutaj do właściwego spotkania.",
+        applyFilter: "Zastosuj filtr",
+        clear: "Wyczyść",
+        theme: "Motyw",
+        accessibility: "Dostępność",
+        language: "Język",
+        light: "Jasny",
+        dark: "Ciemny",
+        readability: "Czytelność",
+        colourBlind: "Daltonizm",
+        nowPrefix: "Teraz",
+        timezonePrefix: "Twoja strefa czasowa systemu",
+        timezoneSuffix: "Czasy lokalne aktualizują się automatycznie.",
+        gmtTime: "Czas GMT",
+        localTime: "Twój czas lokalny",
+        focus: "Fokus",
+        status: "Status",
+        startsIn: "Zaczyna się za",
+        toBeConfirmed: "Do potwierdzenia",
+        meetingPassed: "Spotkanie zakończone",
+        addToCalendar: "Dodaj do Google Calendar",
+        openMeetingLink: "Otwórz link spotkania",
+        viewNotes: "Zobacz notatki",
+        passed: "Zakończone",
+        cancelled: "Odwołane",
+        upcoming: "Nadchodzące",
+        nextUp: "Następne",
+        cancelledNote: "To spotkanie zostało odwołane.",
+        allMeetings: "Wszystkie spotkania",
+        meeting: "Spotkanie",
+        added: "Dodano",
+        openMinutes: "Otwórz protokół (PDF)",
+        openPresentation: "Otwórz prezentację (PDF)",
+        noNotesYet: "Brak notatek.",
+        notesAppear: "Protokoły pojawią się tutaj po dodaniu.",
+        showMore: "Pokaż więcej",
+        showLess: "Pokaż mniej",
+        showingNotes: "Wyświetlanie notatek dla wybranego spotkania.",
+        easterEgg: "Tryb Imperium aktywowany."
+      },
+      tr: {
+        dashboardTab: "Toplantı paneli",
+        archiveTab: "Not arşivi",
+        dashboardHeading: "Toplantı paneli",
+        archiveHeading: "Not arşivi",
+        archiveSubheading: "Önceki toplantıların özeti ve önemli noktaları.",
+        refresh: "Yenile",
+        filterLabel: "Toplantıya göre filtrele",
+        filterTip: "İpucu: paneldeki ‘Notları görüntüle’ düğmesi seni doğru toplantıya getirir.",
+        applyFilter: "Filtreyi uygula",
+        clear: "Temizle",
+        theme: "Tema",
+        accessibility: "Erişilebilirlik",
+        language: "Dil",
+        light: "Açık",
+        dark: "Koyu",
+        readability: "Okunabilirlik",
+        colourBlind: "Renk körü",
+        nowPrefix: "Şimdi",
+        timezonePrefix: "Sistem saat dilimin",
+        timezoneSuffix: "Yerel saatler otomatik güncellenir.",
+        gmtTime: "GMT saati",
+        localTime: "Yerel saatin",
+        focus: "Odak",
+        status: "Durum",
+        startsIn: "Başlamasına",
+        toBeConfirmed: "Onaylanacak",
+        meetingPassed: "Toplantı geçti",
+        addToCalendar: "Google Calendar'a ekle",
+        openMeetingLink: "Toplantı bağlantısını aç",
+        viewNotes: "Notları görüntüle",
+        passed: "Geçti",
+        cancelled: "İptal edildi",
+        upcoming: "Yaklaşan",
+        nextUp: "Sıradaki",
+        cancelledNote: "Bu toplantı iptal edildi.",
+        allMeetings: "Tüm toplantılar",
+        meeting: "Toplantı",
+        added: "Eklendi",
+        openMinutes: "Tutanak aç (PDF)",
+        openPresentation: "Sunumu aç (PDF)",
+        noNotesYet: "Henüz not yok.",
+        notesAppear: "Tutanaklar eklendiğinde burada görünecek.",
+        showMore: "Daha fazla göster",
+        showLess: "Daha az göster",
+        showingNotes: "Seçilen toplantının notları gösteriliyor.",
+        easterEgg: "Imperium modu etkinleştirildi."
+      },
+      ru: {
+        dashboardTab: "Панель встреч",
+        archiveTab: "Архив заметок",
+        dashboardHeading: "Панель встреч",
+        archiveHeading: "Архив заметок",
+        archiveSubheading: "Краткое содержание и ключевые моменты прошлых встреч.",
+        refresh: "Обновить",
+        filterLabel: "Фильтр по встрече",
+        filterTip: "Подсказка: кнопка ‘Показать заметки’ на панели приведёт вас сюда к нужной встрече.",
+        applyFilter: "Применить фильтр",
+        clear: "Очистить",
+        theme: "Тема",
+        accessibility: "Доступность",
+        language: "Язык",
+        light: "Светлая",
+        dark: "Тёмная",
+        readability: "Читаемость",
+        colourBlind: "Дальтонизм",
+        nowPrefix: "Сейчас",
+        timezonePrefix: "Ваш системный часовой пояс",
+        timezoneSuffix: "Местное время обновляется автоматически.",
+        gmtTime: "Время GMT",
+        localTime: "Ваше местное время",
+        focus: "Фокус",
+        status: "Статус",
+        startsIn: "Начнётся через",
+        toBeConfirmed: "Будет подтверждено",
+        meetingPassed: "Встреча завершена",
+        addToCalendar: "Добавить в Google Calendar",
+        openMeetingLink: "Открыть ссылку на встречу",
+        viewNotes: "Показать заметки",
+        passed: "Завершена",
+        cancelled: "Отменена",
+        upcoming: "Предстоящая",
+        nextUp: "Следующая",
+        cancelledNote: "Эта встреча была отменена.",
+        allMeetings: "Все встречи",
+        meeting: "Встреча",
+        added: "Добавлено",
+        openMinutes: "Открыть протокол (PDF)",
+        openPresentation: "Открыть презентацию (PDF)",
+        noNotesYet: "Пока нет заметок.",
+        notesAppear: "Протоколы появятся здесь после добавления.",
+        showMore: "Показать больше",
+        showLess: "Показать меньше",
+        showingNotes: "Показ заметок для выбранной встречи.",
+        easterEgg: "Режим Imperium активирован."
+      },
+      ar: {
+        dashboardTab: "لوحة الاجتماعات",
+        archiveTab: "أرشيف الملاحظات",
+        dashboardHeading: "لوحة الاجتماعات",
+        archiveHeading: "أرشيف الملاحظات",
+        archiveSubheading: "ملخص وأهم النقاط من الاجتماعات السابقة.",
+        refresh: "تحديث",
+        filterLabel: "تصفية حسب الاجتماع",
+        filterTip: "ملاحظة: زر ‘عرض الملاحظات’ في اللوحة سينقلك إلى الاجتماع الصحيح هنا.",
+        applyFilter: "تطبيق التصفية",
+        clear: "مسح",
+        theme: "المظهر",
+        accessibility: "إمكانية الوصول",
+        language: "اللغة",
+        light: "فاتح",
+        dark: "داكن",
+        readability: "الوضوح",
+        colourBlind: "عمى الألوان",
+        nowPrefix: "الآن",
+        timezonePrefix: "منطقتك الزمنية في النظام",
+        timezoneSuffix: "يتم تحديث الأوقات المحلية تلقائياً.",
+        gmtTime: "وقت GMT",
+        localTime: "وقتك المحلي",
+        focus: "التركيز",
+        status: "الحالة",
+        startsIn: "يبدأ خلال",
+        toBeConfirmed: "سيتم التأكيد",
+        meetingPassed: "انتهى الاجتماع",
+        addToCalendar: "إضافة إلى Google Calendar",
+        openMeetingLink: "فتح رابط الاجتماع",
+        viewNotes: "عرض الملاحظات",
+        passed: "انتهى",
+        cancelled: "أُلغي",
+        upcoming: "قادم",
+        nextUp: "التالي",
+        cancelledNote: "تم إلغاء هذا الاجتماع.",
+        allMeetings: "كل الاجتماعات",
+        meeting: "اجتماع",
+        added: "أضيف",
+        openMinutes: "فتح المحضر (PDF)",
+        openPresentation: "فتح العرض التقديمي (PDF)",
+        noNotesYet: "لا توجد ملاحظات بعد.",
+        notesAppear: "ستظهر المحاضر هنا عند إضافتها.",
+        showMore: "عرض المزيد",
+        showLess: "عرض أقل",
+        showingNotes: "يتم عرض ملاحظات الاجتماع المحدد.",
+        easterEgg: "تم تفعيل وضع Imperium."
+      },
+      hi: {
+        dashboardTab: "मीटिंग डैशबोर्ड",
+        archiveTab: "नोट्स संग्रह",
+        dashboardHeading: "मीटिंग डैशबोर्ड",
+        archiveHeading: "नोट्स संग्रह",
+        archiveSubheading: "पिछली बैठकों का सार और मुख्य बिंदु।",
+        refresh: "रिफ्रेश",
+        filterLabel: "मीटिंग के अनुसार फ़िल्टर करें",
+        filterTip: "सुझाव: डैशबोर्ड में ‘नोट्स देखें’ बटन आपको सही मीटिंग पर यहाँ लाएगा।",
+        applyFilter: "फ़िल्टर लागू करें",
+        clear: "साफ़ करें",
+        theme: "थीम",
+        accessibility: "सुलभता",
+        language: "भाषा",
+        light: "लाइट",
+        dark: "डार्क",
+        readability: "पठनीयता",
+        colourBlind: "रंग-अंधता",
+        nowPrefix: "अब",
+        timezonePrefix: "आपका सिस्टम समय क्षेत्र",
+        timezoneSuffix: "स्थानीय समय अपने आप अपडेट होते हैं।",
+        gmtTime: "GMT समय",
+        localTime: "आपका स्थानीय समय",
+        focus: "फ़ोकस",
+        status: "स्थिति",
+        startsIn: "शुरू होगा",
+        toBeConfirmed: "पुष्टि बाकी है",
+        meetingPassed: "मीटिंग समाप्त हो गई",
+        addToCalendar: "Google Calendar में जोड़ें",
+        openMeetingLink: "मीटिंग लिंक खोलें",
+        viewNotes: "नोट्स देखें",
+        passed: "समाप्त",
+        cancelled: "रद्द",
+        upcoming: "आगामी",
+        nextUp: "अगला",
+        cancelledNote: "यह मीटिंग रद्द कर दी गई है।",
+        allMeetings: "सभी मीटिंग",
+        meeting: "मीटिंग",
+        added: "जोड़ा गया",
+        openMinutes: "मिनट्स खोलें (PDF)",
+        openPresentation: "प्रेज़ेन्टेशन खोलें (PDF)",
+        noNotesYet: "अभी कोई नोट्स नहीं हैं।",
+        notesAppear: "जोड़े जाने पर मिनट्स यहाँ दिखाई देंगे।",
+        showMore: "और दिखाएँ",
+        showLess: "कम दिखाएँ",
+        showingNotes: "चयनित मीटिंग के नोट्स दिखाए जा रहे हैं।",
+        easterEgg: "Imperium मोड सक्रिय हो गया।"
+      },
+      zh: {
+        dashboardTab: "会议面板",
+        archiveTab: "会议记录归档",
+        dashboardHeading: "会议面板",
+        archiveHeading: "会议记录归档",
+        archiveSubheading: "以往会议的摘要和要点。",
+        refresh: "刷新",
+        filterLabel: "按会议筛选",
+        filterTip: "提示：面板中的‘查看记录’按钮会带你来到这里并定位到正确的会议。",
+        applyFilter: "应用筛选",
+        clear: "清除",
+        theme: "主题",
+        accessibility: "无障碍",
+        language: "语言",
+        light: "浅色",
+        dark: "深色",
+        readability: "可读性",
+        colourBlind: "色盲模式",
+        nowPrefix: "当前",
+        timezonePrefix: "你的系统时区",
+        timezoneSuffix: "本地时间会自动更新。",
+        gmtTime: "GMT 时间",
+        localTime: "你的本地时间",
+        focus: "重点",
+        status: "状态",
+        startsIn: "开始于",
+        toBeConfirmed: "待确认",
+        meetingPassed: "会议已结束",
+        addToCalendar: "添加到 Google Calendar",
+        openMeetingLink: "打开会议链接",
+        viewNotes: "查看记录",
+        passed: "已结束",
+        cancelled: "已取消",
+        upcoming: "即将开始",
+        nextUp: "下一场",
+        cancelledNote: "本次会议已取消。",
+        allMeetings: "所有会议",
+        meeting: "会议",
+        added: "添加时间",
+        openMinutes: "打开纪要 (PDF)",
+        openPresentation: "打开演示文稿 (PDF)",
+        noNotesYet: "暂时没有记录。",
+        notesAppear: "添加后，会议纪要会显示在这里。",
+        showMore: "显示更多",
+        showLess: "显示更少",
+        showingNotes: "正在显示所选会议的记录。",
+        easterEgg: "Imperium 模式已开启。"
+      },
+      ja: {
+        dashboardTab: "ミーティングダッシュボード",
+        archiveTab: "議事録アーカイブ",
+        dashboardHeading: "ミーティングダッシュボード",
+        archiveHeading: "議事録アーカイブ",
+        archiveSubheading: "過去の会議の概要と重要ポイントです。",
+        refresh: "更新",
+        filterLabel: "会議で絞り込む",
+        filterTip: "ヒント：ダッシュボードの『ノートを見る』ボタンで該当会議に移動できます。",
+        applyFilter: "フィルターを適用",
+        clear: "クリア",
+        theme: "テーマ",
+        accessibility: "アクセシビリティ",
+        language: "言語",
+        light: "ライト",
+        dark: "ダーク",
+        readability: "読みやすさ",
+        colourBlind: "色覚サポート",
+        nowPrefix: "現在",
+        timezonePrefix: "システムのタイムゾーン",
+        timezoneSuffix: "ローカル時刻は自動更新されます。",
+        gmtTime: "GMT 時刻",
+        localTime: "あなたの現地時刻",
+        focus: "対象",
+        status: "状態",
+        startsIn: "開始まで",
+        toBeConfirmed: "未定",
+        meetingPassed: "会議は終了しました",
+        addToCalendar: "Google Calendar に追加",
+        openMeetingLink: "会議リンクを開く",
+        viewNotes: "ノートを見る",
+        passed: "終了",
+        cancelled: "中止",
+        upcoming: "予定あり",
+        nextUp: "次の予定",
+        cancelledNote: "この会議は中止されました。",
+        allMeetings: "すべての会議",
+        meeting: "会議",
+        added: "追加日",
+        openMinutes: "議事録を開く (PDF)",
+        openPresentation: "資料を開く (PDF)",
+        noNotesYet: "まだノートはありません。",
+        notesAppear: "追加されると議事録がここに表示されます。",
+        showMore: "もっと見る",
+        showLess: "閉じる",
+        showingNotes: "選択した会議のノートを表示しています。",
+        easterEgg: "Imperium モードが有効になりました。"
+      },
+      ko: {
+        dashboardTab: "회의 대시보드",
+        archiveTab: "회의 노트 보관함",
+        dashboardHeading: "회의 대시보드",
+        archiveHeading: "회의 노트 보관함",
+        archiveSubheading: "이전 회의의 요약과 핵심 내용입니다.",
+        refresh: "새로고침",
+        filterLabel: "회의별 필터",
+        filterTip: "팁: 대시보드의 ‘노트 보기’ 버튼을 누르면 해당 회의로 바로 이동합니다.",
+        applyFilter: "필터 적용",
+        clear: "지우기",
+        theme: "테마",
+        accessibility: "접근성",
+        language: "언어",
+        light: "라이트",
+        dark: "다크",
+        readability: "가독성",
+        colourBlind: "색각 보정",
+        nowPrefix: "현재",
+        timezonePrefix: "시스템 시간대",
+        timezoneSuffix: "현지 시간은 자동으로 업데이트됩니다.",
+        gmtTime: "GMT 시간",
+        localTime: "현지 시간",
+        focus: "초점",
+        status: "상태",
+        startsIn: "시작까지",
+        toBeConfirmed: "추후 확정",
+        meetingPassed: "회의가 종료되었습니다",
+        addToCalendar: "Google Calendar에 추가",
+        openMeetingLink: "회의 링크 열기",
+        viewNotes: "노트 보기",
+        passed: "종료됨",
+        cancelled: "취소됨",
+        upcoming: "예정됨",
+        nextUp: "다음 일정",
+        cancelledNote: "이 회의는 취소되었습니다.",
+        allMeetings: "모든 회의",
+        meeting: "회의",
+        added: "추가됨",
+        openMinutes: "회의록 열기 (PDF)",
+        openPresentation: "발표 자료 열기 (PDF)",
+        noNotesYet: "아직 노트가 없습니다.",
+        notesAppear: "추가되면 회의록이 여기에 표시됩니다.",
+        showMore: "더 보기",
+        showLess: "접기",
+        showingNotes: "선택한 회의의 노트를 표시하고 있습니다.",
+        easterEgg: "Imperium 모드가 활성화되었습니다."
       }
     };
 
+    let currentLang = "en";
+
     function t(key){
-      const lang = currentLang in I18N ? currentLang : "en";
+      const lang = I18N[currentLang] ? currentLang : "en";
       return I18N[lang][key] || I18N.en[key] || key;
     }
-
-    let currentLang = "en";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -1083,7 +1577,9 @@
       currentLang = I18N[lang] ? lang : "en";
       try { localStorage.setItem(LANG_KEY, currentLang); } catch {}
 
+      const rtlLangs = ["ar"];
       document.documentElement.lang = currentLang === "en" ? "en-GB" : currentLang;
+      document.documentElement.dir = rtlLangs.includes(currentLang) ? "rtl" : "ltr";
 
       document.getElementById("tab-dashboard").textContent = t("dashboardTab");
       document.getElementById("tab-archive").textContent = t("archiveTab");
@@ -1097,6 +1593,7 @@
       document.getElementById("clear-filter").textContent = t("clear");
       document.getElementById("theme-hint").textContent = t("theme");
       document.getElementById("accessibility-hint").textContent = t("accessibility");
+      document.getElementById("language-hint").textContent = t("language");
       document.getElementById("theme-light").textContent = t("light");
       document.getElementById("theme-dark").textContent = t("dark");
       document.getElementById("acc-readable").textContent = t("readability");
@@ -1112,9 +1609,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      document.body.classList.toggle("reduce-motion", !!reduceMotion);
-
       applyTheme(getPreferredTheme());
       applyReadable(getPrefBool(READABLE_KEY, false));
       applyCb(getPrefBool(CB_KEY, false));
@@ -1599,7 +2093,7 @@
       btn.textContent = isOpen ? t("showMore") : t("showLess");
     });
 
-    const FILTER_KEY = "imperium_archive_filter_v8";
+    const FILTER_KEY = "imperium_archive_filter_v9";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
@@ -1626,8 +2120,6 @@
     }
 
     (function init(){
-      const url = new URL(window.location.href);
-
       updateTimezoneLine();
       updateNowPill();
       setInterval(updateNowPill, 1000);
@@ -1647,8 +2139,8 @@
       document.getElementById("apply-filter").addEventListener("click", () => applyFilter());
       document.getElementById("clear-filter").addEventListener("click", () => clearFilter());
 
-      const tab = url.searchParams.get("tab");
-      const meetingId = url.searchParams.get("meetingId") || "";
+      const tab = new URL(window.location.href).searchParams.get("tab");
+      const meetingId = new URL(window.location.href).searchParams.get("meetingId") || "";
       if (tab === "archive") {
         show("archive");
         if (meetingId) {
@@ -1659,7 +2151,6 @@
       }
     })();
 
-    /* ---------------- Simple easter egg ---------------- */
     (function initEasterEgg(){
       const brand = document.getElementById("brand-easter-egg");
       if (!brand) return;
