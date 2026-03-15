@@ -224,6 +224,27 @@
       user-select: none;
     }
 
+    .topbar-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .lang-select{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.01);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: var(--w-medium);
+      outline:none;
+    }
+    body.dark .lang-select{
+      background: rgba(255,255,255,.05);
+    }
+
     .tabs{
       display:flex;
       gap: 8px;
@@ -720,9 +741,18 @@
         Project Imperium – Pod K Meeting Dashboard
       </div>
 
-      <div class="tabs" role="tablist" aria-label="Dashboard tabs">
-        <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
-        <button class="tab" id="tab-archive" role="tab" aria-selected="false" aria-controls="view-archive">Meeting Notes Archive</button>
+      <div class="topbar-right">
+        <select id="language-select" class="lang-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+        </select>
+
+        <div class="tabs" role="tablist" aria-label="Dashboard tabs">
+          <button class="tab" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="view-dashboard">Meeting Dashboard</button>
+          <button class="tab" id="tab-archive" role="tab" aria-selected="false" aria-controls="view-archive">Meeting Notes Archive</button>
+        </div>
       </div>
     </div>
   </div>
@@ -732,7 +762,7 @@
       <section class="view" id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
         <div class="header">
           <div>
-            <h1>Meeting Dashboard</h1>
+            <h1 id="dashboard-heading">Meeting Dashboard</h1>
             <div class="sub" id="tz-line"></div>
           </div>
           <div class="badge" id="now-pill">–</div>
@@ -746,8 +776,8 @@
       <section class="view hidden" id="view-archive" role="tabpanel" aria-labelledby="tab-archive">
         <div class="header">
           <div>
-            <h1>Meeting Notes Archive</h1>
-            <div class="sub">Summary and key outcomes from previous meetings.</div>
+            <h1 id="archive-heading">Meeting Notes Archive</h1>
+            <div class="sub" id="archive-subheading">Summary and key outcomes from previous meetings.</div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn" id="refresh-archive" type="button">Refresh</button>
@@ -759,9 +789,9 @@
         <div class="panel">
           <div class="form-grid" style="margin-top:0;">
             <div>
-              <label for="filter-meeting">Filter by meeting</label>
+              <label for="filter-meeting" id="filter-label">Filter by meeting</label>
               <select id="filter-meeting"></select>
-              <div class="sub" style="margin-top:8px;">Tip: the dashboard ‘View notes’ button will jump you here for the right meeting.</div>
+              <div class="sub" id="filter-tip" style="margin-top:8px;">Tip: the dashboard ‘View notes’ button will jump you here for the right meeting.</div>
             </div>
             <div>
               <label>&nbsp;</label>
@@ -779,13 +809,13 @@
   </div>
 
   <div class="dock" role="group" aria-label="Preferences">
-    <div class="hint">Theme</div>
+    <div class="hint" id="theme-hint">Theme</div>
     <div class="pill" aria-label="Theme options">
       <button type="button" id="theme-light" aria-pressed="true">Light</button>
       <button type="button" id="theme-dark" aria-pressed="false">Dark</button>
     </div>
 
-    <div class="hint" style="margin-left:6px;">Accessibility</div>
+    <div class="hint" id="accessibility-hint" style="margin-left:6px;">Accessibility</div>
     <div class="pill" aria-label="Accessibility options">
       <button type="button" id="acc-readable" aria-pressed="false">Readability</button>
       <button type="button" id="acc-cb" aria-pressed="false">Colour-blind</button>
@@ -795,9 +825,208 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const THEME_KEY = "imperium_theme_v10";
-    const READABLE_KEY = "imperium_readable_v9";
-    const CB_KEY = "imperium_cb_v9";
+    const THEME_KEY = "imperium_theme_v11";
+    const READABLE_KEY = "imperium_readable_v10";
+    const CB_KEY = "imperium_cb_v10";
+    const LANG_KEY = "imperium_lang_v1";
+
+    const I18N = {
+      en: {
+        dashboardTab: "Meeting Dashboard",
+        archiveTab: "Meeting Notes Archive",
+        dashboardHeading: "Meeting Dashboard",
+        archiveHeading: "Meeting Notes Archive",
+        archiveSubheading: "Summary and key outcomes from previous meetings.",
+        refresh: "Refresh",
+        filterLabel: "Filter by meeting",
+        filterTip: "Tip: the dashboard ‘View notes’ button will jump you here for the right meeting.",
+        applyFilter: "Apply filter",
+        clear: "Clear",
+        theme: "Theme",
+        accessibility: "Accessibility",
+        light: "Light",
+        dark: "Dark",
+        readability: "Readability",
+        colourBlind: "Colour-blind",
+        nowPrefix: "Now",
+        timezonePrefix: "Your system timezone",
+        timezoneSuffix: "Local times update automatically.",
+        gmtTime: "GMT time",
+        localTime: "Your local time",
+        focus: "Focus",
+        status: "Status",
+        startsIn: "Starts in",
+        toBeConfirmed: "To be confirmed",
+        meetingPassed: "Meeting passed",
+        addToCalendar: "Add to Google Calendar",
+        openMeetingLink: "Open meeting link",
+        viewNotes: "View notes",
+        passed: "Passed",
+        cancelled: "Cancelled",
+        upcoming: "Upcoming",
+        nextUp: "Next up",
+        cancelledNote: "This meeting has been cancelled.",
+        allMeetings: "All meetings",
+        meeting: "Meeting",
+        added: "Added",
+        openMinutes: "Open minutes (PDF)",
+        openPresentation: "Open presentation (PDF)",
+        noNotesYet: "No notes yet.",
+        notesAppear: "Minutes will appear here once added.",
+        showMore: "Show more",
+        showLess: "Show less",
+        showingNotes: "Showing notes for selected meeting.",
+        easterEgg: "Imperium mode unlocked."
+      },
+      es: {
+        dashboardTab: "Panel de reuniones",
+        archiveTab: "Archivo de notas",
+        dashboardHeading: "Panel de reuniones",
+        archiveHeading: "Archivo de notas",
+        archiveSubheading: "Resumen y puntos clave de reuniones anteriores.",
+        refresh: "Actualizar",
+        filterLabel: "Filtrar por reunión",
+        filterTip: "Consejo: el botón ‘Ver notas’ del panel te llevará aquí a la reunión correcta.",
+        applyFilter: "Aplicar filtro",
+        clear: "Limpiar",
+        theme: "Tema",
+        accessibility: "Accesibilidad",
+        light: "Claro",
+        dark: "Oscuro",
+        readability: "Legibilidad",
+        colourBlind: "Daltónico",
+        nowPrefix: "Ahora",
+        timezonePrefix: "Tu zona horaria del sistema",
+        timezoneSuffix: "Las horas locales se actualizan automáticamente.",
+        gmtTime: "Hora GMT",
+        localTime: "Tu hora local",
+        focus: "Enfoque",
+        status: "Estado",
+        startsIn: "Empieza en",
+        toBeConfirmed: "Por confirmar",
+        meetingPassed: "Reunión finalizada",
+        addToCalendar: "Añadir a Google Calendar",
+        openMeetingLink: "Abrir enlace de reunión",
+        viewNotes: "Ver notas",
+        passed: "Finalizada",
+        cancelled: "Cancelada",
+        upcoming: "Próxima",
+        nextUp: "Siguiente",
+        cancelledNote: "Esta reunión ha sido cancelada.",
+        allMeetings: "Todas las reuniones",
+        meeting: "Reunión",
+        added: "Añadido",
+        openMinutes: "Abrir acta (PDF)",
+        openPresentation: "Abrir presentación (PDF)",
+        noNotesYet: "Aún no hay notas.",
+        notesAppear: "Las actas aparecerán aquí cuando se añadan.",
+        showMore: "Mostrar más",
+        showLess: "Mostrar menos",
+        showingNotes: "Mostrando notas de la reunión seleccionada.",
+        easterEgg: "Modo Imperium activado."
+      },
+      fr: {
+        dashboardTab: "Tableau des réunions",
+        archiveTab: "Archive des notes",
+        dashboardHeading: "Tableau des réunions",
+        archiveHeading: "Archive des notes",
+        archiveSubheading: "Résumé et points clés des réunions précédentes.",
+        refresh: "Actualiser",
+        filterLabel: "Filtrer par réunion",
+        filterTip: "Astuce : le bouton ‘Voir les notes’ du tableau vous amènera ici à la bonne réunion.",
+        applyFilter: "Appliquer le filtre",
+        clear: "Effacer",
+        theme: "Thème",
+        accessibility: "Accessibilité",
+        light: "Clair",
+        dark: "Sombre",
+        readability: "Lisibilité",
+        colourBlind: "Daltonisme",
+        nowPrefix: "Maintenant",
+        timezonePrefix: "Votre fuseau horaire système",
+        timezoneSuffix: "Les heures locales se mettent à jour automatiquement.",
+        gmtTime: "Heure GMT",
+        localTime: "Votre heure locale",
+        focus: "Cible",
+        status: "Statut",
+        startsIn: "Commence dans",
+        toBeConfirmed: "À confirmer",
+        meetingPassed: "Réunion terminée",
+        addToCalendar: "Ajouter à Google Calendar",
+        openMeetingLink: "Ouvrir le lien",
+        viewNotes: "Voir les notes",
+        passed: "Terminée",
+        cancelled: "Annulée",
+        upcoming: "À venir",
+        nextUp: "Prochaine",
+        cancelledNote: "Cette réunion a été annulée.",
+        allMeetings: "Toutes les réunions",
+        meeting: "Réunion",
+        added: "Ajouté",
+        openMinutes: "Ouvrir le compte rendu (PDF)",
+        openPresentation: "Ouvrir la présentation (PDF)",
+        noNotesYet: "Aucune note pour le moment.",
+        notesAppear: "Les comptes rendus apparaîtront ici une fois ajoutés.",
+        showMore: "Voir plus",
+        showLess: "Voir moins",
+        showingNotes: "Affichage des notes de la réunion sélectionnée.",
+        easterEgg: "Mode Imperium activé."
+      },
+      de: {
+        dashboardTab: "Meeting-Dashboard",
+        archiveTab: "Notizarchiv",
+        dashboardHeading: "Meeting-Dashboard",
+        archiveHeading: "Notizarchiv",
+        archiveSubheading: "Zusammenfassung und wichtigste Punkte früherer Meetings.",
+        refresh: "Aktualisieren",
+        filterLabel: "Nach Meeting filtern",
+        filterTip: "Tipp: Die Schaltfläche ‚Notizen ansehen‘ im Dashboard führt dich direkt hierher.",
+        applyFilter: "Filter anwenden",
+        clear: "Zurücksetzen",
+        theme: "Design",
+        accessibility: "Barrierefreiheit",
+        light: "Hell",
+        dark: "Dunkel",
+        readability: "Lesbarkeit",
+        colourBlind: "Farbenblind",
+        nowPrefix: "Jetzt",
+        timezonePrefix: "Deine Systemzeitzone",
+        timezoneSuffix: "Lokale Zeiten werden automatisch aktualisiert.",
+        gmtTime: "GMT-Zeit",
+        localTime: "Deine lokale Zeit",
+        focus: "Fokus",
+        status: "Status",
+        startsIn: "Beginnt in",
+        toBeConfirmed: "Noch offen",
+        meetingPassed: "Meeting vorbei",
+        addToCalendar: "Zu Google Calendar hinzufügen",
+        openMeetingLink: "Meeting-Link öffnen",
+        viewNotes: "Notizen ansehen",
+        passed: "Vorbei",
+        cancelled: "Abgesagt",
+        upcoming: "Bevorstehend",
+        nextUp: "Als Nächstes",
+        cancelledNote: "Dieses Meeting wurde abgesagt.",
+        allMeetings: "Alle Meetings",
+        meeting: "Meeting",
+        added: "Hinzugefügt",
+        openMinutes: "Protokoll öffnen (PDF)",
+        openPresentation: "Präsentation öffnen (PDF)",
+        noNotesYet: "Noch keine Notizen.",
+        notesAppear: "Protokolle erscheinen hier, sobald sie hinzugefügt wurden.",
+        showMore: "Mehr anzeigen",
+        showLess: "Weniger anzeigen",
+        showingNotes: "Notizen für das ausgewählte Meeting werden angezeigt.",
+        easterEgg: "Imperium-Modus aktiviert."
+      }
+    };
+
+    function t(key){
+      const lang = currentLang in I18N ? currentLang : "en";
+      return I18N[lang][key] || I18N.en[key] || key;
+    }
+
+    let currentLang = "en";
 
     function setPressed(id, pressed) {
       const el = document.getElementById(id);
@@ -842,6 +1071,46 @@
       return fallback;
     }
 
+    function getPreferredLang(){
+      try {
+        const saved = localStorage.getItem(LANG_KEY);
+        if (saved && I18N[saved]) return saved;
+      } catch {}
+      return "en";
+    }
+
+    function applyLanguage(lang){
+      currentLang = I18N[lang] ? lang : "en";
+      try { localStorage.setItem(LANG_KEY, currentLang); } catch {}
+
+      document.documentElement.lang = currentLang === "en" ? "en-GB" : currentLang;
+
+      document.getElementById("tab-dashboard").textContent = t("dashboardTab");
+      document.getElementById("tab-archive").textContent = t("archiveTab");
+      document.getElementById("dashboard-heading").textContent = t("dashboardHeading");
+      document.getElementById("archive-heading").textContent = t("archiveHeading");
+      document.getElementById("archive-subheading").textContent = t("archiveSubheading");
+      document.getElementById("refresh-archive").textContent = t("refresh");
+      document.getElementById("filter-label").textContent = t("filterLabel");
+      document.getElementById("filter-tip").textContent = t("filterTip");
+      document.getElementById("apply-filter").textContent = t("applyFilter");
+      document.getElementById("clear-filter").textContent = t("clear");
+      document.getElementById("theme-hint").textContent = t("theme");
+      document.getElementById("accessibility-hint").textContent = t("accessibility");
+      document.getElementById("theme-light").textContent = t("light");
+      document.getElementById("theme-dark").textContent = t("dark");
+      document.getElementById("acc-readable").textContent = t("readability");
+      document.getElementById("acc-cb").textContent = t("colourBlind");
+
+      renderMeetings();
+      populateMeetingSelect(document.getElementById("filter-meeting"), true);
+
+      const selectedMeeting = document.getElementById("filter-meeting").value || recallFilter() || "";
+      loadArchive(selectedMeeting);
+      updateNowPill();
+      updateTimezoneLine();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       document.body.classList.toggle("reduce-motion", !!reduceMotion);
@@ -850,10 +1119,16 @@
       applyReadable(getPrefBool(READABLE_KEY, false));
       applyCb(getPrefBool(CB_KEY, false));
 
+      const langSelect = document.getElementById("language-select");
+      currentLang = getPreferredLang();
+      langSelect.value = currentLang;
+      applyLanguage(currentLang);
+
       document.getElementById("theme-light").addEventListener("click", () => applyTheme("light"));
       document.getElementById("theme-dark").addEventListener("click", () => applyTheme("dark"));
       document.getElementById("acc-readable").addEventListener("click", () => applyReadable(!document.body.classList.contains("readable")));
       document.getElementById("acc-cb").addEventListener("click", () => applyCb(!document.body.classList.contains("cb")));
+      langSelect.addEventListener("change", (e) => applyLanguage(e.target.value));
     });
 
     const dashboardMeetings = [
@@ -987,17 +1262,17 @@
     function formatUtcLabel(isoZ) {
       if (!isoZ) return "TBD";
       const d = new Date(isoZ);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
+      const date = new Intl.DateTimeFormat(undefined, { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" }).format(d);
+      const time = new Intl.DateTimeFormat(undefined, { hour:"2-digit", minute:"2-digit", hour12:false, timeZone:"UTC" }).format(d);
       return `${date}, ${time} (GMT)`;
     }
 
     function formatLocalLabel(isoZ) {
-      if (!isoZ) return "To be confirmed";
+      if (!isoZ) return t("toBeConfirmed");
       const d = new Date(isoZ);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
-      const tzAbbr = new Intl.DateTimeFormat("en-GB", { timeZoneName:"short" })
+      const date = new Intl.DateTimeFormat(undefined, { day:"2-digit", month:"short", year:"numeric" }).format(d);
+      const time = new Intl.DateTimeFormat(undefined, { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
+      const tzAbbr = new Intl.DateTimeFormat(undefined, { timeZoneName:"short" })
         .formatToParts(d)
         .find(p => p.type === "timeZoneName")?.value;
       return `${date}, ${time} (${tzAbbr || "local"})`;
@@ -1061,11 +1336,12 @@
     tabArchive.addEventListener("click", () => show("archive"));
 
     function populateMeetingSelect(selectEl, includeAll = false) {
+      const rememberedValue = selectEl.value;
       selectEl.innerHTML = "";
       if (includeAll) {
         const opt = document.createElement("option");
         opt.value = "";
-        opt.textContent = "All meetings";
+        opt.textContent = t("allMeetings");
         selectEl.appendChild(opt);
       }
 
@@ -1077,6 +1353,10 @@
           ? `${meta.title} — ${formatUtcLabel(meta.startUtc)}`
           : note.title;
         selectEl.appendChild(opt);
+      }
+
+      if ([...selectEl.options].some(o => o.value === rememberedValue)) {
+        selectEl.value = rememberedValue;
       }
     }
 
@@ -1093,9 +1373,9 @@
     }
 
     function badgeClass(badge) {
-      if (badge === "Next up") return "badge badge-next";
-      if (badge === "Passed") return "badge badge-pass";
-      if (badge === "Cancelled") return "badge badge-cancelled";
+      if (badge === t("nextUp")) return "badge badge-next";
+      if (badge === t("passed")) return "badge badge-pass";
+      if (badge === t("cancelled")) return "badge badge-cancelled";
       return "badge badge-upcoming";
     }
 
@@ -1106,40 +1386,40 @@
       const isCancelled = m.statusOverride === "cancelled";
       const passed = hasTime ? now >= start : false;
 
-      let badge = "Upcoming";
-      if (isCancelled) badge = "Cancelled";
-      else if (!hasTime) badge = "Upcoming";
-      else if (idx === nextIdx && !passed) badge = "Next up";
-      else if (passed || m.statusOverride === "passed") badge = "Passed";
+      let badge = t("upcoming");
+      if (isCancelled) badge = t("cancelled");
+      else if (!hasTime) badge = t("upcoming");
+      else if (idx === nextIdx && !passed) badge = t("nextUp");
+      else if (passed || m.statusOverride === "passed") badge = t("passed");
 
       let countdownBlock = "";
       if (isCancelled) {
-        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">${escapeHtml(m.cancelNote || "This meeting has been cancelled.")}</div></div>`;
+        countdownBlock = `<div class="count"><div class="k">${escapeHtml(t("status"))}</div><div class="v">${escapeHtml(m.cancelNote || t("cancelledNote"))}</div></div>`;
       } else if (!hasTime) {
-        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">To be confirmed</div></div>`;
+        countdownBlock = `<div class="count"><div class="k">${escapeHtml(t("status"))}</div><div class="v">${escapeHtml(t("toBeConfirmed"))}</div></div>`;
       } else if (passed || m.statusOverride === "passed") {
-        countdownBlock = `<div class="count"><div class="k">Status</div><div class="v">Meeting passed</div></div>`;
+        countdownBlock = `<div class="count"><div class="k">${escapeHtml(t("status"))}</div><div class="v">${escapeHtml(t("meetingPassed"))}</div></div>`;
       } else {
-        countdownBlock = `<div class="count"><div class="k">Starts in</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
+        countdownBlock = `<div class="count"><div class="k">${escapeHtml(t("startsIn"))}</div><div class="v" data-countdown="${escapeHtml(m.id)}">–</div></div>`;
       }
 
       const notesBtn = (passed || m.statusOverride === "passed")
-        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}" type="button">View notes</button>`
+        ? `<button class="btn btn-primary" data-view-notes="${escapeHtml(m.id)}" type="button">${escapeHtml(t("viewNotes"))}</button>`
         : "";
 
       const hasCalendar = !!(m.title && m.startUtc && m.endUtc && !isCancelled);
       const gcal = hasCalendar ? makeGoogleCalendarUrl(m) : "";
       const gcalBtn = hasCalendar
-        ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>`
-        : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not available">Add to Google Calendar</span>`;
+        ? `<a class="btn btn-primary" href="${gcal}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("addToCalendar"))}</a>`
+        : `<span class="btn btn-primary disabled" aria-disabled="true" title="Calendar details not available">${escapeHtml(t("addToCalendar"))}</span>`;
 
       const hasMeetLink = !!(m.meetLink && String(m.meetLink).trim() && !isCancelled);
       const meetBtn = hasMeetLink
-        ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`
-        : `<span class="btn disabled" aria-disabled="true" title="${isCancelled ? "Meeting cancelled" : "Meeting link not set"}">Open meeting link</span>`;
+        ? `<a class="btn" href="${escapeHtml(m.meetLink)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("openMeetingLink"))}</a>`
+        : `<span class="btn disabled" aria-disabled="true" title="${isCancelled ? escapeHtml(t("cancelled")) : "Meeting link not set"}">${escapeHtml(t("openMeetingLink"))}</span>`;
 
       const audienceRow = m.audience
-        ? `<div class="row"><div class="label">Focus</div><div class="value">${escapeHtml(m.audience)}</div></div>`
+        ? `<div class="row"><div class="label">${escapeHtml(t("focus"))}</div><div class="value">${escapeHtml(m.audience)}</div></div>`
         : "";
 
       let cardClass = "card";
@@ -1157,11 +1437,11 @@
 
           <div class="times">
             <div class="row">
-              <div class="label">GMT time</div>
+              <div class="label">${escapeHtml(t("gmtTime"))}</div>
               <div class="value">${formatUtcLabel(m.startUtc)}</div>
             </div>
             <div class="row">
-              <div class="label">Your local time</div>
+              <div class="label">${escapeHtml(t("localTime"))}</div>
               <div class="value">${formatLocalLabel(m.startUtc)}</div>
             </div>
             ${audienceRow}
@@ -1190,7 +1470,7 @@
           rememberFilter(meetingId || "");
           show("archive");
           loadArchive(meetingId || "");
-          toast("Showing notes for selected meeting.");
+          toast(t("showingNotes"));
         });
       });
     }
@@ -1206,7 +1486,7 @@
         const diff = start - now;
 
         if (diff <= 0) {
-          el.textContent = "Meeting passed";
+          el.textContent = t("meetingPassed");
           return;
         }
 
@@ -1218,15 +1498,15 @@
 
     function meetingLabel(meetingId) {
       const meta = archiveMeetings[meetingId];
-      if (!meta) return "Unknown meeting";
+      if (!meta) return t("meeting");
       return `${meta.title} — ${formatUtcLabel(meta.startUtc)}`;
     }
 
     function formatWhen(isoZ) {
       if (!isoZ) return "–";
       const d = new Date(isoZ);
-      const date = new Intl.DateTimeFormat("en-GB", { day:"2-digit", month:"short", year:"numeric" }).format(d);
-      const time = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
+      const date = new Intl.DateTimeFormat(undefined, { day:"2-digit", month:"short", year:"numeric" }).format(d);
+      const time = new Intl.DateTimeFormat(undefined, { hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
       return `${date}, ${time}`;
     }
 
@@ -1240,8 +1520,8 @@
       if (!filtered.length) {
         list.innerHTML = `
           <div class="item">
-            <p class="item-title">No notes yet.</p>
-            <div class="item-meta">Minutes will appear here once added.</div>
+            <p class="item-title">${escapeHtml(t("noNotesYet"))}</p>
+            <div class="item-meta">${escapeHtml(t("notesAppear"))}</div>
           </div>
         `;
         return;
@@ -1268,12 +1548,12 @@
         const presentationLink = hasPresentation ? safeHref(String(n.presentationUrl).trim()) : "";
 
         const pdfBtn = hasPdf
-          ? `<a class="btn btn-primary" href="${escapeHtml(pdfLink)}" target="_blank" rel="noopener noreferrer">Open minutes (PDF)</a>`
-          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No minutes PDF attached">Open minutes (PDF)</span>`;
+          ? `<a class="btn btn-primary" href="${escapeHtml(pdfLink)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("openMinutes"))}</a>`
+          : `<span class="btn btn-primary disabled" aria-disabled="true" title="No minutes PDF attached">${escapeHtml(t("openMinutes"))}</span>`;
 
         const presentationBtn = hasPresentation
-          ? `<a class="btn" href="${escapeHtml(presentationLink)}" target="_blank" rel="noopener noreferrer">Open presentation (PDF)</a>`
-          : `<span class="btn disabled" aria-disabled="true" title="No presentation PDF attached">Open presentation (PDF)</span>`;
+          ? `<a class="btn" href="${escapeHtml(presentationLink)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t("openPresentation"))}</a>`
+          : `<span class="btn disabled" aria-disabled="true" title="No presentation PDF attached">${escapeHtml(t("openPresentation"))}</span>`;
 
         return `
           <div class="item">
@@ -1281,8 +1561,8 @@
               <div>
                 <p class="item-title">${escapeHtml(title)}</p>
                 <div class="item-meta">
-                  <div>Meeting: ${escapeHtml(meetingLabel(n.meetingId))}</div>
-                  <div>Added: ${escapeHtml(createdAt)}</div>
+                  <div>${escapeHtml(t("meeting"))}: ${escapeHtml(meetingLabel(n.meetingId))}</div>
+                  <div>${escapeHtml(t("added"))}: ${escapeHtml(createdAt)}</div>
                 </div>
               </div>
             </div>
@@ -1293,7 +1573,7 @@
                   ${visible}
                   ${hasMore ? `<span data-bullets-hidden="${escapeHtml(n.id)}" style="display:none;">${hidden}</span>` : ``}
                 </ul>
-                ${hasMore ? `<button class="toggle-link" type="button" data-bullets-toggle="${escapeHtml(n.id)}">Show more</button>` : ``}
+                ${hasMore ? `<button class="toggle-link" type="button" data-bullets-toggle="${escapeHtml(n.id)}">${escapeHtml(t("showMore"))}</button>` : ``}
               ` : `–`}
             </div>
 
@@ -1316,10 +1596,10 @@
 
       const isOpen = hidden.style.display !== "none";
       hidden.style.display = isOpen ? "none" : "inline";
-      btn.textContent = isOpen ? "Show more" : "Show less";
+      btn.textContent = isOpen ? t("showMore") : t("showLess");
     });
 
-    const FILTER_KEY = "imperium_archive_filter_v7";
+    const FILTER_KEY = "imperium_archive_filter_v8";
     function rememberFilter(meetingId) { try { localStorage.setItem(FILTER_KEY, meetingId || ""); } catch {} }
     function recallFilter() { try { return localStorage.getItem(FILTER_KEY) || ""; } catch { return ""; } }
 
@@ -1334,19 +1614,23 @@
       loadArchive("");
     }
 
+    function updateNowPill() {
+      const d = new Date();
+      const time = new Intl.DateTimeFormat(undefined, { hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false }).format(d);
+      document.getElementById("now-pill").textContent = `${t("nowPrefix")}: ${time}`;
+    }
+
+    function updateTimezoneLine() {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
+      document.getElementById("tz-line").textContent = `${t("timezonePrefix")}: ${tz}. ${t("timezoneSuffix")}`;
+    }
+
     (function init(){
       const url = new URL(window.location.href);
 
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
-      document.getElementById("tz-line").textContent = `Your system timezone: ${tz}. Local times update automatically.`;
-
-      function tickNow() {
-        const d = new Date();
-        const t = new Intl.DateTimeFormat("en-GB", { hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false }).format(d);
-        document.getElementById("now-pill").textContent = `Now: ${t}`;
-      }
-      tickNow();
-      setInterval(tickNow, 1000);
+      updateTimezoneLine();
+      updateNowPill();
+      setInterval(updateNowPill, 1000);
 
       populateMeetingSelect(document.getElementById("filter-meeting"), true);
 
@@ -1393,7 +1677,7 @@
 
         if (clicks >= 5) {
           clicks = 0;
-          toast("Imperium mode unlocked.");
+          toast(t("easterEgg"));
           brand.animate(
             [
               { transform: "translateY(0px)", letterSpacing: ".2px" },
